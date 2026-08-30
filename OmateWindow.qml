@@ -432,12 +432,34 @@ PanelWindow {
   property bool cursorProbed: false
   property int pullElapsed: 0
   property bool chaseResting: false
+  // Where the pointer was when the haul started, so it can be handed back.
+  property int pullOriginX: 0
+  property int pullOriginY: 0
+  property int chaseElapsed: 0
 
-  readonly property int noticeRadius: Math.round(spriteW * 2.4)
-  readonly property int pullRadius: Math.round(spriteW * 1.7)
+  // Starts a chase. Generous, because the pointer spends most of its life
+  // nowhere near the floor the mate walks on.
+  readonly property int noticeRadius: Math.round(spriteW * 4.5)
+  // Abandons one. Deliberately far larger than noticeRadius: with a single
+  // threshold the mate sets off, the pointer drifts a little, and it gives up
+  // mid-approach -- it would spend all its time starting chases and none
+  // finishing them.
+  readonly property int giveUpRadius: Math.round(spriteW * 8.0)
+  // Start hauling from well out. Tuned up from 1.7 after watching it: the
+  // mate would trot all the way over and only then tug the last ~80px, so the
+  // haul was invisible and it just looked like a walk. Reaching out from
+  // three body-lengths is what makes it read as a pull.
+  readonly property int pullRadius: Math.round(spriteW * 3.0)
   readonly property int biteRadius: Math.round(spriteW * 0.5)
-  readonly property real pullStrength: 0.17
-  readonly property int maxPullMs: 2200
+  // Strong enough to close a long haul before maxPullMs runs out. At 0.15 a
+  // pull from across the screen timed out every time, which left the pointer
+  // stranded halfway -- the exact "it ended up somewhere I never put it"
+  // problem the hand-back is meant to avoid.
+  readonly property real pullStrength: 0.25
+  readonly property int maxPullMs: 4000
+  // A chase that never gets anywhere is dropped, so the mate cannot end up
+  // trailing the pointer around forever.
+  readonly property int maxChaseMs: 14000
 
   // Where the teeth are, in global coords.
   readonly property real mouthGX: (hyprMonitor ? hyprMonitor.x : 0)
@@ -477,6 +499,7 @@ PanelWindow {
   function endChase(rest) {
     if (action === "chase" || action === "pull") action = "idle"
     pullElapsed = 0
+    chaseElapsed = 0
     if (rest) { chaseResting = true; chaseRestTimer.restart() }
   }
 
@@ -487,11 +510,19 @@ PanelWindow {
       petService.playSound("poke")
       petService.sayFrom("bite")
     }
-    // Spit it out, away from the mate, so the pointer is never left sitting
-    // in its mouth waiting to be grabbed again.
-    var away = facingLeft ? -1 : 1
-    warpCursor(mouthGX + away * biteRadius * 3.0, mouthGY - biteRadius * 2.0)
+    // Hold it in its teeth for a beat before handing it back, so the chomp
+    // is actually visible. Returning it instantly reads as a glitch: the
+    // pointer snaps home before the bite pose has even drawn.
+    biteHoldTimer.restart()
     endChase(true)
+  }
+
+  Timer {
+    id: biteHoldTimer
+    // Shorter than pokeTimer's 550ms, so the pointer is back before the bite
+    // pose finishes and the mate is never left chewing on nothing.
+    interval: 420
+    onTriggered: root.warpCursor(root.pullOriginX, root.pullOriginY)
   }
 
   Timer {
@@ -527,7 +558,10 @@ PanelWindow {
     running: root.visible && root.chaseEnabled && !root.asleep
       && !root.chaseResting
     repeat: true
-    interval: root.action === "pull" ? 45 : 260
+    // A single steady rate. Switching the interval mid-pull left the timer on
+    // the slow tick, so the haul advanced in visible lurches; 90ms is smooth
+    // and still only ~11 socket round-trips a second.
+    interval: 90
     onTriggered: {
       root.cursorBuf = ""
       cursorSocket.connected = true
@@ -553,7 +587,17 @@ PanelWindow {
       pullElapsed += cursorPoll.interval
       if (d < biteRadius) { biteCursor(); return }
       // Hard ceiling, and a bail-out if the user has dragged it well clear.
-      if (pullElapsed > maxPullMs || d > noticeRadius * 1.6) { endChase(true); return }
+      // Two different ways to stop, and they deserve different endings.
+      // If the user dragged the pointer clear, they are holding it: let go
+      // where it is, and do not yank it back. But a plain timeout is the
+      // mate's failure, not theirs, so put the pointer back where it was
+      // picked up rather than abandoning it halfway across the screen.
+      if (d > noticeRadius * 1.6) { endChase(true); return }
+      if (pullElapsed > maxPullMs) {
+        warpCursor(pullOriginX, pullOriginY)
+        endChase(true)
+        return
+      }
       warpCursor(cursorX + (mouthGX - cursorX) * pullStrength,
                  cursorY + (mouthGY - cursorY) * pullStrength)
       return
@@ -562,18 +606,30 @@ PanelWindow {
     if (d < pullRadius) {
       action = "pull"
       pullElapsed = 0
+      pullOriginX = cursorX
+      pullOriginY = cursorY
       if (petService) petService.sayFrom("chase")
       return
     }
 
-    if (d < noticeRadius) {
+    // Hysteresis: it takes noticeRadius to start caring, but giveUpRadius to
+    // stop, so a pointer that drifts while the mate is walking over does not
+    // call the whole thing off.
+    var chasing = action === "chase"
+    if (d < noticeRadius || (chasing && d < giveUpRadius)) {
+      if (chasing) {
+        chaseElapsed += cursorPoll.interval
+        if (chaseElapsed > maxChaseMs) { endChase(true); return }
+      } else {
+        chaseElapsed = 0
+      }
       action = "chase"
       facingLeft = cursorX < mouthGX
       targetX = clampX(cursorX - (hyprMonitor ? hyprMonitor.x : 0) - spriteW / 2)
       return
     }
 
-    if (action === "chase") endChase(false)
+    if (chasing) endChase(false)
   }
 
   // One no-op warp to the pointer's current position tells us whether this
