@@ -437,20 +437,33 @@ PanelWindow {
   property int pullOriginY: 0
   property int chaseElapsed: 0
 
+  // The reach is sprite-relative, so a bigger character has a slightly longer
+  // one -- but CLAMPED, because unclamped it made the same setting mean wildly
+  // different things. Akita (348px sprite) noticed the pointer from ~1560px
+  // away, three quarters of a 2048px screen, while Mochi (72px) barely noticed
+  // it at 324px: near-constant harassment for one character and near-inert for
+  // another. The band keeps every pack inside roughly 2x of each other.
+  function clampRadius(v, lo, hi) {
+    return Math.round(Math.max(lo, Math.min(hi, v)))
+  }
+
   // Starts a chase. Generous, because the pointer spends most of its life
-  // nowhere near the floor the mate walks on.
-  readonly property int noticeRadius: Math.round(spriteW * 4.5)
+  // nowhere near the floor the mate walks on -- but never more than a fraction
+  // of the display, so a small screen does not become one big trigger zone.
+  readonly property int noticeRadius: clampRadius(spriteW * 4.5, 380,
+    Math.max(380, Math.min(720, width * 0.45)))
   // Abandons one. Deliberately far larger than noticeRadius: with a single
   // threshold the mate sets off, the pointer drifts a little, and it gives up
   // mid-approach -- it would spend all its time starting chases and none
   // finishing them.
-  readonly property int giveUpRadius: Math.round(spriteW * 8.0)
-  // Start hauling from well out. Tuned up from 1.7 after watching it: the
-  // mate would trot all the way over and only then tug the last ~80px, so the
-  // haul was invisible and it just looked like a walk. Reaching out from
-  // three body-lengths is what makes it read as a pull.
-  readonly property int pullRadius: Math.round(spriteW * 3.0)
-  readonly property int biteRadius: Math.round(spriteW * 0.5)
+  readonly property int giveUpRadius: Math.round(noticeRadius * 1.8)
+  // Start hauling from well out. Tuned up from 1.7 body-lengths after watching
+  // it: the mate would trot all the way over and only then tug the last ~80px,
+  // so the haul was invisible and it just looked like a walk. Held below
+  // noticeRadius so it can never out-reach the thing that starts the chase.
+  readonly property int pullRadius: Math.min(
+    clampRadius(spriteW * 3.0, 260, 520), Math.round(noticeRadius * 0.7))
+  readonly property int biteRadius: clampRadius(spriteW * 0.5, 40, 110)
   // Strong enough to close a long haul before maxPullMs runs out. At 0.15 a
   // pull from across the screen timed out every time, which left the pointer
   // stranded halfway -- the exact "it ended up somewhere I never put it"
@@ -527,7 +540,7 @@ PanelWindow {
 
   Timer {
     id: chaseRestTimer
-    interval: 9000
+    interval: (petService ? petService.chaseCooldownSec : 60) * 1000
     onTriggered: root.chaseResting = false
   }
 
@@ -1255,7 +1268,7 @@ PanelWindow {
         ...(root.hasCornerArt()
             ? [{ label: "Find a corner", action: () => root.startCornerTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
-        { label: root.chaseEnabled ? "Leave the cursor alone" : "Chase the cursor",
+        { label: root.chaseEnabled ? "Stop chasing" : "Chase cursor",
           action: () => petService && petService.setCursorChase(!root.chaseEnabled) },
         { label: root.asleep ? "Wake up" : "Nap now", action: () => petService && (root.asleep ? petService.wake(true) : petService.doze()) },
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },

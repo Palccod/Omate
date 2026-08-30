@@ -51,10 +51,13 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   play that pose before carrying on. Packs without that art never do it, so
   none of the bundled characters are affected.
 - **Chase the cursor** (off by default): switch it on and the mate stalks
-  your mouse pointer, hauls it in when it strays close, and bites it before
-  spitting it back out. It can never keep the pointer — each pull is capped,
-  the pointer is always flung clear, and a cooldown follows — so you win a
-  tug of war just by out-lasting it. Toggle it from the right-click menu.
+  your mouse pointer, hauls it in when it strays close, bites it, and hands
+  it straight back to where it picked it up. It can never keep the pointer —
+  every pull is capped and always ends by returning it — so you win a tug of
+  war just by out-lasting it. Pick how often it happens in the settings
+  panel, from every ten seconds to twice an hour, or turn it off there or
+  from the right-click menu. Unlike corner trips this needs no special art,
+  so it works with any character.
 - **Speech bubbles**: idle chatter, event reactions, and any message you
   send it.
 - **Sounds**: tiny synthesized blips (grab, purr, poke, thud, zzz, wake).

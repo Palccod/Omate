@@ -137,6 +137,11 @@ Item {
     // this is the one behaviour that reaches outside the mate's own window
     // and moves something the user owns.
     cursorChase: false,
+    // Seconds of peace after each bite. The whole point of exposing this is
+    // that "every ten seconds" is delightful for an afternoon and unbearable
+    // for a working week -- without a dial, the second group just turns the
+    // feature off and never comes back.
+    chaseCooldownSec: 60,
     // Roughly one idle line every N minutes while awake.
     chatterMinutes: 4
   })
@@ -197,6 +202,10 @@ Item {
 
   readonly property bool roaming: settings.roamEnabled === true
   readonly property bool cursorChase: settings.cursorChase === true
+  readonly property int chaseCooldownSec: {
+    var v = Number(settings.chaseCooldownSec)
+    return isFinite(v) ? Math.max(5, Math.min(3600, Math.round(v))) : 60
+  }
   // What the bar widget should show.
   readonly property string barAnim: sleeping ? drawableAnim("sleep", ["idle"]) : "idle"
   readonly property string moodLabel: sleeping ? "Omate — sleeping" : "Omate"
@@ -289,6 +298,12 @@ Item {
 
   function setCursorChase(enabled) {
     updateSettings({ cursorChase: enabled === true })
+  }
+
+  function setChaseCooldown(seconds) {
+    var v = Number(seconds)
+    updateSettings({ chaseCooldownSec:
+      isFinite(v) ? Math.max(5, Math.min(3600, Math.round(v))) : 60 })
   }
 
   function setSoundVolume(volume) {
@@ -720,6 +735,8 @@ Item {
     function corner(): void { mateWindow.startCornerTrip() }
     function setCursorChase(enabled: bool): void { root.setCursorChase(enabled) }
     function toggleCursorChase(): void { root.setCursorChase(!root.cursorChase) }
+    // Seconds between chases, 5-3600.
+    function setChaseCooldown(seconds: int): void { root.setChaseCooldown(seconds) }
     function status(): string {
       return (root.sleeping ? "sleeping" : "awake")
         + " pack=" + root.packName
@@ -728,7 +745,7 @@ Item {
         + " scale=" + root.petScale
         + " windows=" + (mateWindow ? mateWindow.platforms.length : -1)
         + " floor=" + (mateWindow ? Math.round(mateWindow.floorY) : -1)
-        + " chase=" + (root.cursorChase ? "on" : "off")
+        + " chase=" + (root.cursorChase ? "on/" + root.chaseCooldownSec + "s" : "off")
     }
   }
 

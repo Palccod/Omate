@@ -525,6 +525,50 @@ Panel {
             }
           }
         }
+
+        // Cursor chasing. One control for both the on/off and the cadence:
+        // the interesting choice is not "should it happen" but "how often",
+        // and "every ten seconds" vs "twice an hour" is the difference
+        // between a toy people keep and one they switch off on day two.
+        Item {
+          width: parent.width
+          height: chaseDropdown.implicitHeight
+
+          Text {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            text: "Chase cursor"
+            color: root.foreground
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.bodySmall
+            renderType: Text.NativeRendering
+          }
+          Dropdown {
+            id: chaseDropdown
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            width: Style.space(194)
+            showLabel: false
+            value: root.ready && root.petService.cursorChase
+              ? String(root.petService.chaseCooldownSec) : "off"
+            options: [
+              { value: "off",  label: "Off" },
+              { value: "10",   label: "Playful — every 10s" },
+              { value: "60",   label: "Now and then — 1 min" },
+              { value: "300",  label: "Occasional — 5 min" },
+              { value: "1800", label: "Rare — 30 min" }
+            ]
+            foreground: root.foreground
+            fontFamily: root.fontFamily
+            enabled: root.ready
+            onChanged: function(v) {
+              if (!root.ready) return
+              if (v === "off") { root.petService.setCursorChase(false); return }
+              root.petService.setChaseCooldown(Number(v))
+              root.petService.setCursorChase(true)
+            }
+          }
+        }
       }
     }
   }
