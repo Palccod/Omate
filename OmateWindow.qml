@@ -170,6 +170,8 @@ PanelWindow {
   property var support: null
   // Chosen climb target {wallX, platform} while walking to a wall.
   property var pendingClimb: null
+  // Set while walking to a corner for a pee; consumed on arrival.
+  property bool pendingPee: false
 
   function rebuildPlatforms() {
     if (!hyprMonitor) { platforms = []; validateSupport(); return }
@@ -258,7 +260,7 @@ PanelWindow {
   property real petX: 0
   property real petY: 0            // the mate's feet line
   property bool facingLeft: false
-  property string action: "idle"   // idle | walk | climb | drag | fall | stunned
+  property string action: "idle"   // idle | walk | climb | drag | fall | stunned | pee
   property real targetX: 0
   property real targetY: 0
   // Throw velocity from the last drag samples.
@@ -289,6 +291,7 @@ PanelWindow {
     case "sit": return "sit"
     case "lie": return "lie"
     case "fall": return "fall"
+    case "pee": return "pee"
     // Grounded as a result of the fall: the impact pose (frozen, since the
     // mate is dazed until the stun wears off).
     case "stunned": return "land"
@@ -308,6 +311,7 @@ PanelWindow {
     case "sit": return petService.drawableAnim("sit", ["idle"])
     case "lie": return petService.drawableAnim("lie", ["sit", "idle"])
     case "land": return petService.drawableAnim("land", ["fall", "idle"])
+    case "pee": return petService.drawableAnim("pee", ["idle"])
     default: return petService.drawableAnim(rawAnim, ["idle"])
     }
   }
@@ -366,6 +370,39 @@ PanelWindow {
     action = "fall"
   }
 
+  // Whether this pack actually ships pee frames. Deliberately NOT
+  // petService.hasAnim("pee"): that answers true for any name on legacy a/b
+  // packs, which would make Mochi mime the whole routine with its idle
+  // sprite. Every bundled character is unaffected because none of them
+  // declares a "pee" animation.
+  function hasPeeArt() {
+    var pack = petService ? petService.pack : null
+    var a = pack && pack.anims ? pack.anims["pee"] : null
+    return !!(a && a.frames && a.frames.length > 0)
+  }
+
+  // Idle, on the floor, awake, and drawable: the conditions for the brain to
+  // pick a corner trip of its own accord.
+  function canPee() {
+    if (!petService || support || asleep || action !== "idle") return false
+    return hasPeeArt()
+  }
+
+  // Trot to whichever end of the current surface is nearer, then go.
+  // Reachable from the brain roll, the menu and IPC, so it guards itself
+  // rather than trusting the caller.
+  function startPeeTrip() {
+    if (!hasPeeArt()) return
+    if (action === "drag" || action === "fall" || action === "climb"
+        || action === "stunned" || action === "pee") return
+    if (petService) petService.wake(false)
+    var bounds = currentSurfaceBounds()
+    var leftX = bounds.x1
+    var rightX = bounds.x2 - spriteW
+    pendingPee = true
+    startWalkTo((petX - leftX) <= (rightX - petX) ? leftX : rightX, null)
+  }
+
   function startWalkTo(x, climb) {
     if (asleep && petService) petService.wake(false)
     var bounds = currentSurfaceBounds()
@@ -420,6 +457,13 @@ PanelWindow {
   }
 
   Timer {
+    id: peeTimer
+    // Long enough to play the four frames through twice.
+    interval: 2600
+    onTriggered: if (root.action === "pee") root.action = "idle"
+  }
+
+  Timer {
     id: stunTimer
     interval: 1200
     onTriggered: if (root.action === "stunned") root.action = "idle"
@@ -468,6 +512,7 @@ PanelWindow {
       // still — the sleep pose, or idle for packs without sleep art.
       if (root.asleep && (root.action === "walk" || root.action === "climb")) {
         root.pendingClimb = null
+        root.pendingPee = false
         root.targetX = root.petX
         root.action = "idle"
       }
@@ -478,6 +523,16 @@ PanelWindow {
           if (root.pendingClimb) {
             root.targetY = root.pendingClimb.platform.y
             root.action = "climb"
+          } else if (root.pendingPee) {
+            root.pendingPee = false
+            // Turn tail to the wall: the sprite pees rearward, so face away
+            // from whichever edge we just walked to.
+            var mid = (root.currentSurfaceBounds().x1
+                       + root.currentSurfaceBounds().x2) / 2
+            root.facingLeft = root.petX > mid
+            root.action = "pee"
+            peeTimer.restart()
+            if (root.petService) root.petService.sayFrom("pee")
           } else {
             root.action = "idle"
           }
@@ -551,7 +606,9 @@ PanelWindow {
       var roll = Math.random()
       var climbs = root.climbCandidates()
 
-      if (roll < 0.22 && climbs.length > 0) {
+      if (roll < 0.07 && root.canPee()) {
+        root.startPeeTrip()
+      } else if (roll < 0.22 && climbs.length > 0) {
         var pick = climbs[Math.floor(Math.random() * climbs.length)]
         root.startWalkTo(pick.wallX, pick)
       } else if (roll < 0.34 && root.support) {
@@ -709,6 +766,7 @@ PanelWindow {
           root.action = "drag"
           root.support = null
           root.pendingClimb = null
+          root.pendingPee = false
           root.vx = 0
           root.vy = 0
           if (petService) petService.grabStart()
@@ -935,6 +993,8 @@ PanelWindow {
       entries = [
         { label: "Settings…", action: () => petService && petService.panelRequested() },
         { label: "Window hop", action: () => root.hopToWindow() },
+        ...(root.hasPeeArt()
+            ? [{ label: "Find a corner", action: () => root.startPeeTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
         { label: root.asleep ? "Wake up" : "Nap now", action: () => petService && (root.asleep ? petService.wake(true) : petService.doze()) },
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },
