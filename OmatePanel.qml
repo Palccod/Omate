@@ -171,80 +171,119 @@ Panel {
           fontFamily: root.fontFamily
         }
 
-        Flow {
+        // The picker shows three rows and scrolls past that, so the panel
+        // stays a popup instead of growing with the pack roster. The height
+        // is a constant on purpose: deriving it from contentHeight lets the
+        // transient 0 at popup construction breathe the whole card.
+        Item {
+          id: skinViewport
           width: parent.width
-          spacing: Style.space(8)
+          height: Style.space(300)
 
-          Repeater {
-            model: root.petService ? root.petService.packList : []
-            Rectangle {
-              id: card
-              required property var modelData
+          Flickable {
+            id: skinGrid
+            anchors.fill: parent
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            contentHeight: skinFlow.implicitHeight
+            contentWidth: width
 
-              readonly property bool selected: root.ready
-                && root.petService.packName === modelData.name
+            Flow {
+              id: skinFlow
+              width: skinGrid.width
+              spacing: Style.space(8)
 
-              width: Math.floor((parent.width - Style.space(16)) / 3)
-              height: cardColumn.implicitHeight + Style.space(18)
-              radius: Style.cornerRadius > 0 ? Style.space(8) : 0
-              color: selected ? Qt.alpha(Color.accent, 0.14)
-                              : Qt.alpha(root.foreground, 0.05)
-              border.width: 1
-              border.color: selected ? Color.accent
-                                     : Qt.alpha(root.foreground, 0.14)
+              Repeater {
+                model: root.petService ? root.petService.packList : []
+                Rectangle {
+                  id: card
+                  required property var modelData
 
-              Behavior on color { ColorAnimation { duration: 150 } }
-              Behavior on border.color { ColorAnimation { duration: 150 } }
+                  readonly property bool selected: root.ready
+                    && root.petService.packName === modelData.name
 
-              MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: if (root.ready) root.petService.selectPack(card.modelData.name)
-              }
+                  width: Math.floor((parent.width - Style.space(16)) / 3)
+                  height: cardColumn.implicitHeight + Style.space(18)
+                  radius: Style.cornerRadius > 0 ? Style.space(8) : 0
+                  color: selected ? Qt.alpha(Color.accent, 0.14)
+                                  : Qt.alpha(root.foreground, 0.05)
+                  border.width: 1
+                  border.color: selected ? Color.accent
+                                         : Qt.alpha(root.foreground, 0.14)
 
-              Column {
-                id: cardColumn
-                anchors.top: parent.top
-                anchors.topMargin: Style.space(9)
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: Style.space(6)
+                  Behavior on color { ColorAnimation { duration: 150 } }
+                  Behavior on border.color { ColorAnimation { duration: 150 } }
 
-                // Each pack previews its own idle animation, so the picker
-                // reads like a character select screen.
-                Item {
-                  width: card.width - Style.space(16)
-                  height: Style.space(44)
-
-                  PetSprite {
+                  MouseArea {
                     anchors.fill: parent
-                    // One object per card: dir + anims swap atomically.
-                    skin: {
-                      var packData = card.modelData.pack
-                      return {
-                        dir: card.modelData.dir,
-                        anims: packData ? packData.anims : null
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: if (root.ready) root.petService.selectPack(card.modelData.name)
+                  }
+
+                  Column {
+                    id: cardColumn
+                    anchors.top: parent.top
+                    anchors.topMargin: Style.space(9)
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: Style.space(6)
+
+                    // Each pack previews its own idle animation, so the picker
+                    // reads like a character select screen.
+                    Item {
+                      width: card.width - Style.space(16)
+                      height: Style.space(44)
+
+                      PetSprite {
+                        anchors.fill: parent
+                        // One object per card: dir + anims swap atomically.
+                        skin: {
+                          var packData = card.modelData.pack
+                          return {
+                            dir: card.modelData.dir,
+                            anims: packData ? packData.anims : null
+                          }
+                        }
+                        anim: "idle"
+                        fallbackAnim: "idle"
+                        frameMs: 500
                       }
                     }
-                    anim: "idle"
-                    fallbackAnim: "idle"
-                    frameMs: 500
-                  }
-                }
 
-                Text {
-                  anchors.horizontalCenter: parent.horizontalCenter
-                  width: card.width - Style.space(10)
-                  horizontalAlignment: Text.AlignHCenter
-                  elide: Text.ElideRight
-                  text: card.modelData.title
-                  color: card.selected ? Color.accent
-                                       : Qt.alpha(root.foreground, 0.75)
-                  font.family: root.fontFamily
-                  font.pixelSize: Style.font.caption
-                  renderType: Text.NativeRendering
+                    Text {
+                      anchors.horizontalCenter: parent.horizontalCenter
+                      width: card.width - Style.space(10)
+                      horizontalAlignment: Text.AlignHCenter
+                      elide: Text.ElideRight
+                      text: card.modelData.title
+                      color: card.selected ? Color.accent
+                                           : Qt.alpha(root.foreground, 0.75)
+                      font.family: root.fontFamily
+                      font.pixelSize: Style.font.caption
+                      renderType: Text.NativeRendering
+                    }
+                  }
                 }
               }
             }
+          }
+
+          // Slim scroll indicator while the grid overflows. The thumb math
+          // is guarded against the transient 0 contentHeight at popup
+          // construction (division would read as Infinity) and clamped so
+          // overscroll can never push it outside the viewport.
+          Rectangle {
+            anchors.right: parent.right
+            anchors.rightMargin: Style.space(2)
+            width: 3
+            radius: 1.5
+            visible: skinGrid.contentHeight > skinGrid.height + 1
+            color: Qt.alpha(root.foreground, 0.25)
+            height: visible && skinGrid.contentHeight > 0
+              ? Math.max(Style.space(30),
+                         skinGrid.height * skinGrid.height / skinGrid.contentHeight)
+              : 0
+            y: Math.max(0, Math.min(skinGrid.height - height,
+                                    skinGrid.visibleArea.yPosition * skinGrid.height))
           }
         }
 
