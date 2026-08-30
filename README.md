@@ -54,22 +54,22 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   your mouse pointer, hauls it in when it strays close, bites it, and hands
   it straight back to where it picked it up. It can never keep the pointer —
   every pull is capped and always ends by returning it — so you win a tug of
-  war just by out-lasting it. Pick how often it happens in the settings
-  panel, from every ten seconds to twice an hour, or turn it off there or
-  from the right-click menu. Unlike corner trips this needs no special art,
-  so it works with any character.
+  war just by out-lasting it. Switching it *on* lives only in the settings
+  panel, next to the cadence — every ten seconds through twice an hour — so
+  it cannot be armed by a stray click; the right-click menu only ever stops
+  it. Needs a `bite` pose, so it is offered for packs that ship one.
 - **Speech bubbles**: idle chatter, event reactions, and any message you
   send it.
 - **Sounds**: tiny synthesized blips (grab, purr, poke, thud, zzz, wake).
 - **Menu**: right-click the cat for settings / window-hop / walk / nap /
-  mute / hide, plus "Chase the cursor" and — for packs with `corner` art —
-  "Find a corner".
+  mute / hide, plus "Stop chasing" while a chase is armed and — for packs
+  with `corner` art — "Find a corner".
 - **Settings panel**: click the bar button (or the cat's "Settings…" menu
   entry) for a popup card styled like the plugin manager's rows — an
   animated sprite in the header, an enable/disable power switch in the top
   right, a **skin picker where every installed pack previews its own idle
   animation**, and live controls for roaming, volume, size, walkiness,
-  home screen, and nap/chatter cadence.
+  home screen, nap/chatter cadence, and the cursor chase.
 - **Eighteen characters bundled** — Pikachu, Miku, Totoro, SpongeBob,
   Spider-Man, Deadpool, Luffy, Dieter the cat, Hornet, Gojo, Rem,
   Mitsuri, a fox, an akita, a panda, a turtle, a rubber duck, and Mochi

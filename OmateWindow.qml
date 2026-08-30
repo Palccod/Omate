@@ -1289,9 +1289,16 @@ PanelWindow {
         ...(root.hasCornerArt()
             ? [{ label: "Find a corner", action: () => root.startCornerTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
-        ...(root.hasBiteArt()
-            ? [{ label: root.chaseEnabled ? "Stop chasing" : "Chase cursor",
-                 action: () => petService && petService.setCursorChase(!root.chaseEnabled) }]
+        // Only ever the *off* switch. Chasing is the one behaviour that
+        // reaches out and moves something the user owns, so arming it stays in
+        // the settings panel, next to the cadence and the sentence explaining
+        // what it does -- a right-click menu sat between "Walk over" and "Nap
+        // now" is too easy to arm by accident, and someone who does that has
+        // no idea why their pointer started moving on its own. Turning it off
+        // has no such cost, so that stays one click away from the mate itself.
+        ...(root.chaseEnabled
+            ? [{ label: "Stop chasing",
+                 action: () => petService && petService.setCursorChase(false) }]
             : []),
         { label: root.asleep ? "Wake up" : "Nap now", action: () => petService && (root.asleep ? petService.wake(true) : petService.doze()) },
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },
