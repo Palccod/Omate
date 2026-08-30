@@ -57,7 +57,9 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   war just by out-lasting it. Switching it *on* lives only in the settings
   panel, next to the cadence — every ten seconds through twice an hour — so
   it cannot be armed by a stray click; the right-click menu only ever stops
-  it. Needs a `bite` pose, so it is offered for packs that ship one.
+  it. The chomp is played with the pack's `poke` pose, so a character that
+  ships no `poke` art is never offered the chase at all — the pointer would be
+  hauled in and nothing would visibly happen.
 - **Speech bubbles**: idle chatter, event reactions, and any message you
   send it.
 - **Sounds**: tiny synthesized blips (grab, purr, poke, thud, zzz, wake).
