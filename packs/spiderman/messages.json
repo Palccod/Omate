@@ -1,0 +1,49 @@
+{
+  "greet": [
+    "Friendly neighborhood Spider-Man, checking in!",
+    "Just your friendly desktop spider."
+  ],
+  "idle": [
+    "With great power comes great responsibility.",
+    "Anyone seen my web fluid?",
+    "Just hanging around.",
+    "My spider-sense is tingling... nah, false alarm.",
+    "Ever tried web-swinging between monitors?",
+    "Miles would love this desktop.",
+    "Pink pixel pajamas? It's a whole thing.",
+    "Crime never sleeps, but I might."
+  ],
+  "drag": [
+    "Hey, hands off the mask!",
+    "This is not how webs work.",
+    "Careful! Secret identity in progress!"
+  ],
+  "pet": [
+    "Thwip. Okay, that's nice.",
+    "Even heroes need head pats."
+  ],
+  "poke": [
+    "My spider-sense was NOT ready for that.",
+    "Boop? Really?"
+  ],
+  "land": [
+    "Stuck the landing. As always.",
+    "Web-drop complete."
+  ],
+  "dizzy": [
+    "That building came out of nowhere...",
+    "Note to self: walls are climbable. Ceilings, debatable."
+  ],
+  "sleep": [
+    "Recharging the web-shooters...",
+    "zzz... catching criminals... zzz"
+  ],
+  "wake": [
+    "Trouble, web-heads? Let's swing!",
+    "Spider-sense: online."
+  ],
+  "hop": [
+    "Thwip! Instant relocation.",
+    "Web-zip!"
+  ]
+}

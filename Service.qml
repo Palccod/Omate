@@ -71,8 +71,12 @@ Item {
   // another pack's directory.
   property string spriteDir: repoPacksRoot + defaultPack + "/sprites/"
   // One-object snapshot of the active pack's sprite source, written in a
-  // single assignment when a pack lands.
-  property var skin: ({ dir: repoPacksRoot + defaultPack + "/sprites/", anims: pack.anims })
+  // single assignment when a pack lands. Deliberately NOT a binding over
+  // `pack`: a binding re-evaluates the moment pack changes, while spriteDir
+  // still holds the previous pack's directory — a frame list under the
+  // wrong directory. anims null renders legacy a/b sprites until the first
+  // real pack lands.
+  property var skin: ({ dir: repoPacksRoot + defaultPack + "/sprites/", anims: null })
   // Frame-list packs (imported anime sprites) list exactly the animations
   // they ship; legacy packs name a/b files by convention.
   readonly property bool packUsesFrameLists: Number(pack.width) > 0
@@ -81,9 +85,15 @@ Item {
   // so views can fall back without provoking the image loader.
   function hasAnim(anim) {
     var a = pack && pack.anims ? pack.anims[anim] : null
-    if (!a) return !packUsesFrameLists
-    if (a.frames && a.frames.length > 0) return true
-    return !packUsesFrameLists
+    if (a) return !packUsesFrameLists || !!(a.frames && a.frames.length > 0)
+    if (!packUsesFrameLists) {
+      // Legacy a/b pack: an anims entry, when present, names exactly the
+      // pairs on disk; with no anims object at all every name is worth a
+      // try (PetSprite's error fallback catches the misses).
+      var anims = pack && pack.anims ? pack.anims : null
+      return !anims || Object.keys(anims).length === 0
+    }
+    return false
   }
 
   // The nearest drawable animation for a requested one.

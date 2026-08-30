@@ -1,0 +1,49 @@
+{
+  "greet": [
+    "Dieter has entered the kitchen.",
+    "Mrrp. The cat is here."
+  ],
+  "idle": [
+    "*slow blink*",
+    "That cursor looks like a bug. It lies.",
+    "The keyboard is warm. Dieter approves.",
+    "3 a.m. is for running. It is not 3 a.m.? Dieter disagrees.",
+    "*tail flick*",
+    "This box? Mine. This screen? Also mine.",
+    "Dieter has judged you. Verdict: acceptable.",
+    "Feed me and nobody gets scratched."
+  ],
+  "drag": [
+    "MRROW! Undignified!",
+    "Cats do not fly! Put Dieter down!"
+  ],
+  "pet": [
+    "prrrrrrr",
+    "Behind the ears. Yes. There.",
+    "*biscuits* *biscuits*"
+  ],
+  "poke": [
+    "Hiss! ...okay, one boop is allowed.",
+    "Mrrp?"
+  ],
+  "land": [
+    "Cats always land on their feet. Mostly.",
+    "Dieter meant to do that."
+  ],
+  "dizzy": [
+    "The floor moved. Dieter saw nothing.",
+    "*sits and pretends nothing happened*"
+  ],
+  "sleep": [
+    "zzz... birds... zzz",
+    "Do not disturb the loaf."
+  ],
+  "wake": [
+    "Mrow. Dieter is awake. Unfortunately.",
+    "Breakfast? BREAKFAST!"
+  ],
+  "hop": [
+    "Pounce!",
+    "Zoomies engaged."
+  ]
+}

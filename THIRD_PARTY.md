@@ -1,11 +1,11 @@
 # Third-party pack notices
 
-Omate ships with twelve character packs. The default cat is
-self-generated; the eleven others are third-party fan art converted with
-this plugin's `tools/import-*.py` converters, with author credit kept in
-each pack's `pack.json`. All character names belong to their respective
-owners; the packs are included as non-commercial fan art for personal
-use, and a rights holder may request removal at any time.
+Omate ships with eighteen character packs. The default cat is
+self-generated; the seventeen others are third-party fan art converted
+with this plugin's `tools/import-*.py` converters, with author credit
+kept in each pack's `pack.json`. All character names belong to their
+respective owners; the packs are included as non-commercial fan art for
+personal use, and a rights holder may request removal at any time.
 
 - **Miku** — sprites from [MikuPet](https://github.com/CharlesWiiFlowers/MikuPet)
   (© BYP Studio and Chaim Videogames for the game *Miku 'n Pop*).
@@ -23,6 +23,12 @@ use, and a rights holder may request removal at any time.
   shimeji packs distributed through public shimeji repositories
   (shimeji.org / DeviantArt); the source zips carry no explicit license
   or author attribution beyond what is noted here.
+- **SpongeBob**, **Spider-Man**, **Deadpool**, **Dieter** (a tuxedo cat),
+  **Pikachu** (Pokémon) — classic shimeji packs distributed through
+  public shimeji repositories; likewise no explicit license or author
+  attribution beyond the pack names.
+- **Luffy** (One Piece) — classic shimeji pack by **AniRize**
+  (AniRize.TK / vk.com/AniRize), as credited in the pack's own README.
 
 Everything else in the repository (default cat sprites, sounds, code) is
 original and self-generated — see `tools/gen-sprites.py` and

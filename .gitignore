@@ -2,3 +2,8 @@
 .zcode/
 __pycache__/
 *.pyc
+
+# Import source material (kept locally, never committed)
+/*.zip
+/Luffy/
+/Pikachu/

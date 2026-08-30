@@ -1,0 +1,48 @@
+{
+  "greet": [
+    "Shishishi! I'm Monkey D. Luffy, the man who'll be King of the Pirates!",
+    "Ore wa Luffy! Pirate King, incoming!"
+  ],
+  "idle": [
+    "Got any meat?",
+    "I'm gonna be King of the Pirates!",
+    "Shishishi! This desktop is my ship now.",
+    "Adventure? Where? Let's go!",
+    "Sanji! MEAT!",
+    "Gomu gomu no... nap.",
+    "Nami says I can't spend berries. Nami isn't here.",
+    "The Straw Hat stays on."
+  ],
+  "drag": [
+    "Oiii! I stretch but not like this!",
+    "Gomu gomu no— hey, let go!"
+  ],
+  "pet": [
+    "Shishishi! That feels weird!",
+    "Zoro pets harder."
+  ],
+  "poke": [
+    "Ow! ...okay, rubber. Barely felt it.",
+    "You wanna fight?! Shishishi!"
+  ],
+  "land": [
+    "I'm rubber, remember? Bouncy!",
+    "Nakama landing!"
+  ],
+  "dizzy": [
+    "Who turned the sea upside down...",
+    "Zoro, we're lost again."
+  ],
+  "sleep": [
+    "zzz... meat... adventure... zzz",
+    "Snack time in my dreams."
+  ],
+  "wake": [
+    "Kaizoku ou ni, ore wa naru!",
+    "Set sail! Second breakfast awaits!"
+  ],
+  "hop": [
+    "Gomu gomu no rocket!",
+    "To the Going Merry!"
+  ]
+}

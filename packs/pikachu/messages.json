@@ -1,0 +1,48 @@
+{
+  "greet": [
+    "Pika pika!",
+    "Pikachu just plugged in."
+  ],
+  "idle": [
+    "Pika pika pika...",
+    "*cheeks spark*",
+    "Is that a Thunder Stone? ...no? Okay.",
+    "Pi-kaaaa~",
+    "Ketchup? Where?!",
+    "*naps on a warm console*",
+    "The bar looks like a good branch to sit on.",
+    "Pikachu is storing static for later."
+  ],
+  "drag": [
+    "Pikaaaaa!!",
+    "Put me down, I'll shock you!"
+  ],
+  "pet": [
+    "Pika pika! <3",
+    "*happy sparks*"
+  ],
+  "poke": [
+    "Pika!",
+    "*zap* ...sorry, reflex."
+  ],
+  "land": [
+    "Soft landing, pika.",
+    "Ten out of ten, pika."
+  ],
+  "dizzy": [
+    "...pika... (dizzy swirls)",
+    "Too many Thunderbolts..."
+  ],
+  "sleep": [
+    "zzz... pika... zzz",
+    "Dreaming of ketchup."
+  ],
+  "wake": [
+    "Pika pika!",
+    "Charged up and ready!"
+  ],
+  "hop": [
+    "Pika-swoosh!",
+    "Agility stat: maxed."
+  ]
+}

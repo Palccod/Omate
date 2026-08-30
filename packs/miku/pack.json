@@ -45,6 +45,13 @@
         "drag_02.png"
       ],
       "frameMs": 111
+    },
+    "sleep": {
+      "frames": [
+        "sleep_00.png",
+        "sleep_01.png"
+      ],
+      "frameMs": 650
     }
   }
 }

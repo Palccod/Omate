@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "palccod.omate",
   "name": "Omate",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "palccod",
   "license": "MIT",
-  "description": "A lightweight desktop mate for Omarchy: a little cat that roams your screen, rides along when you drag it, purrs when you pet it, and drops by with messages. No AI, no network — just a companion.",
+  "description": "A lightweight desktop mate for Omarchy: eighteen characters that roam your screen, ride along when you drag them, sit, lie down, stumble when poked, and drop by with messages. No AI, no network — just companions.",
   "keywords": ["pet", "mate", "companion", "cat", "fun"],
   "kinds": ["service", "bar-widget"],
   "entryPoints": {

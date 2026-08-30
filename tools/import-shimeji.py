@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 """Convert a Shimeji-ee mascot into an Omate character pack.
 
-Shimeji-ee packs ship a group-finity "Mascot" XML (actions.xml) describing
-animations as pose lists, next to loose shime*.png art. This tool maps the
-animations Omate needs:
+Shimeji-ee packs ship a group-finity "Mascot" XML describing animations as
+pose lists, next to loose shime*.png art. Both the English shimeji-ee
+dialect (actions.xml) and the original Japanese one (動作.xml, element
+names アクション/ポーズ/画像) are understood — the actions file is found
+by structure, so mojibake or renamed conf files work too. The animations
+Omate needs are mapped from either name table:
 
-    Stand                   -> idle      Sit (optional) -> sleep
-    Walk                    -> walk      Falling        -> fall
-    Pinched + Resisting     -> drag
+    Stand        -> idle      Pinched + Resisting -> drag
+    Walk         -> walk      Falling/Fall        -> fall
+    Sit          -> sit       LieDown             -> sleep + lie
+    Jumping      -> jump      Bouncing            -> land
+    Tripping     -> poke (click reaction)
 
 Omitted animations simply stay out of pack.json, where PetSprite's fallback
-chain (fall -> drag -> idle, sleep -> idle) picks something sensible.
+chain (fall -> drag -> idle, sleep/sit/lie -> idle) picks something
+sensible.
 
 Two format quirks are handled here rather than at runtime:
 
@@ -60,9 +66,34 @@ TIMING = {
     "fall": (80, 300),
     "drag": (100, 300),
     "sleep": (500, 2000),
+    "sit": (400, 1500),
+    "lie": (400, 1500),
+    "jump": (80, 200),
+    "land": (200, 600),
+    "poke": (100, 300),
 }
 # Pose caps keep odd packs with huge variant lists manageable.
-CAPS = {"idle": 10, "walk": 12, "fall": 6, "drag": 16, "sleep": 4}
+CAPS = {"idle": 10, "walk": 12, "fall": 6, "drag": 16, "sleep": 4,
+        "sit": 6, "lie": 4, "jump": 6, "land": 4, "poke": 5}
+
+# English and Japanese names for the same actions, tried in order. The
+# original group-finity format names actions in Japanese; shimeji-ee
+# translated them to English (sometimes with extra variants). Sleeping
+# prefers the lying pose and falls back to sitting; "land" is the
+# landing-bounce action, used as the ground-impact pose.
+ALIASES = {
+    "idle": ["stand", "立つ"],
+    "walk": ["walk", "歩く"],
+    "fall": ["falling", "落下する", "fall", "落ちる"],
+    "drag": ["pinched", "つままれる", "resisting", "抵抗する"],
+    "sleep": ["sleep", "寝る", "liedown", "寝そべる", "sprawl", "sit", "座る"],
+    "sit": ["sit", "座る", "sitdown", "座ってボーっとする"],
+    "lie": ["liedown", "寝そべる", "sprawl", "寝そべってボーっとする"],
+    "jump": ["jumping", "ジャンプ", "jump", "bouncing", "跳ねる"],
+    "land": ["bouncing", "跳ねる"],
+    # Click reaction: the stumble art, so poking the mate gets a response.
+    "poke": ["tripping", "転ぶ"],
+}
 
 
 def localname(tag):
@@ -76,35 +107,42 @@ def attr(el, *names):
     return None
 
 
+def name_of(el):
+    """Action name in either dialect (shimeji-ee Name, group-finity 名前)."""
+    return attr(el, "Name", "名前")
+
+
 def parse_actions(xml_path):
-    """Read actions.xml into {lowercase name: [animation, ...]} where each
-    animation is a list of {img, ax, ay, dur} poses."""
+    """Read a Mascot actions file into {lowercase name: [animation, ...]}
+    where each animation is a list of {img, ax, ay, dur} poses. Accepts the
+    English shimeji-ee dialect and the original Japanese one."""
     tree = ET.parse(str(xml_path))
     actions = {}
     for el in tree.getroot().iter():
-        if localname(el.tag) != "Action":
+        if localname(el.tag) not in ("Action", "動作"):
             continue
-        name = attr(el, "Name", "name")
+        name = name_of(el)
         if not name:
             continue
         anims = actions.setdefault(name.lower(), [])
         for anim in el:
-            if localname(anim.tag) != "Animation":
+            if localname(anim.tag) not in ("Animation", "アニメーション"):
                 continue
             poses = []
             for pose in anim:
-                if localname(pose.tag) != "Pose":
+                if localname(pose.tag) not in ("Pose", "ポーズ"):
                     continue
-                img = attr(pose, "Image", "image")
+                img = attr(pose, "Image", "画像")
                 if not img:
                     continue
-                anchor = (attr(pose, "ImageAnchor", "imageAnchor") or "0,0").split(",")[:2]
+                anchor = (attr(pose, "ImageAnchor", "基準座標")
+                          or "0,0").split(",")[:2]
                 try:
                     ax, ay = int(float(anchor[0])), int(float(anchor[1]))
                 except ValueError:
                     ax = ay = 0
                 try:
-                    dur = int(float(attr(pose, "Duration", "duration") or 1))
+                    dur = int(float(attr(pose, "Duration", "長さ") or 1))
                 except ValueError:
                     dur = 1
                 poses.append({"img": img.lstrip("/"), "ax": max(0, ax),
@@ -114,25 +152,25 @@ def parse_actions(xml_path):
     return actions
 
 
-def take(actions, name, limit):
-    """Flatten an action's animations into at most `limit` poses."""
+def take(actions, names, limit, first_only=False):
+    """Flatten actions into at most `limit` poses. By default aliases are
+    tried in order and fill the cap together (Pinched + Resisting); with
+    first_only, the first alias that has any poses wins outright (sleep
+    must not mix a lying pose with sitting ones)."""
     out = []
-    for poses in actions.get(name, []):
-        out.extend(poses)
-        if len(out) >= limit:
-            break
+    for name in names:
+        for poses in actions.get(name, []):
+            out.extend(poses)
+            if len(out) >= limit:
+                return out[:limit]
+        if first_only and out:
+            return out[:limit]
     return out[:limit]
 
 
 def build_anims(actions):
-    anims = {
-        "idle": take(actions, "stand", CAPS["idle"]),
-        "walk": take(actions, "walk", CAPS["walk"]),
-        "fall": take(actions, "falling", CAPS["fall"]),
-        "drag": (take(actions, "pinched", CAPS["drag"] // 2)
-                 + take(actions, "resisting", CAPS["drag"] // 2))[:CAPS["drag"]],
-        "sleep": take(actions, "sit", CAPS["sleep"]),
-    }
+    anims = {key: take(actions, names, CAPS[key], first_only=key == "sleep")
+             for key, names in ALIASES.items()}
     # Drop consecutive duplicates (Resisting lists the same pair repeatedly)
     # and empty animations.
     result = {}
@@ -153,12 +191,31 @@ def frame_ms(anim, poses):
 def find_img_dir(root):
     img = root / "img"
     if img.is_dir():
+        # The mascot's own subfolder wins (img/ itself often holds banners
+        # and icons next to it); loose PNGs are the fallback layout.
         for sub in sorted(img.iterdir()):
             if sub.is_dir() and list(sub.glob("*.png")):
                 return sub
+        if list(img.glob("*.png")):
+            return img
     if list(root.glob("*.png")):
         return root
-    raise SystemExit(f"{root}: no mascot images found (looked in img/*/ and .)")
+    raise SystemExit(f"{root}: no mascot images found (looked in img/ and img/*/ and .)")
+
+
+def looks_like_actions(path):
+    """True when the XML defines actions with poses (rules out the sibling
+    behaviors file, XSDs and logging configs whatever they are named)."""
+    try:
+        tree = ET.parse(str(path))
+    except ET.ParseError:
+        return False
+    for el in tree.getroot().iter():
+        if (localname(el.tag) in ("Action", "動作")
+                and any(localname(p.tag) in ("Pose", "ポーズ")
+                        for p in el.iter())):
+            return True
+    return False
 
 
 def find_actions_xml(root, img_dir, explicit):
@@ -167,13 +224,12 @@ def find_actions_xml(root, img_dir, explicit):
         if not path.is_file():
             raise SystemExit(f"{path}: --conf file not found")
         return path
-    for candidate in (root / "conf" / "actions.xml",
-                      img_dir / "conf" / "actions.xml"):
-        if candidate.is_file():
+    candidates = list(root.glob("*.xml")) + list(root.glob("conf/*.xml")) \
+        + list(img_dir.glob("*.xml")) + list(img_dir.glob("conf/*.xml")) \
+        + sorted(root.rglob("*.xml"))
+    for candidate in candidates:
+        if candidate.is_file() and looks_like_actions(candidate):
             return candidate
-    found = sorted(root.rglob("actions.xml"))
-    if found:
-        return found[0]
     return None
 
 
@@ -249,7 +305,8 @@ def main():
             anims[key] = kept
         else:
             del anims[key]
-    anims = {k: anims[k] for k in ("idle", "walk", "drag", "fall", "sleep")
+    anims = {k: anims[k] for k in ("idle", "walk", "drag", "fall", "sleep",
+                                   "sit", "lie", "jump", "land", "poke")
              if k in anims}
 
     # Shared canvas. The foot line (max anchor height) is recorded as

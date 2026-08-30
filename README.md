@@ -57,9 +57,17 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   right, a **skin picker where every installed pack previews its own idle
   animation**, and live controls for roaming, volume, size, walkiness,
   home screen, and nap/chatter cadence.
-- **Twelve characters bundled** — Miku, Totoro, Hornet, Gojo, Rem,
+- **Eighteen characters bundled** — Pikachu, Miku, Totoro, SpongeBob,
+  Spider-Man, Deadpool, Luffy, Dieter the cat, Hornet, Gojo, Rem,
   Mitsuri, a fox, an akita, a panda, a turtle, a rubber duck, and Mochi
   the cat; import your own with the built-in converters.
+- **Full behavior set where the art allows it** — besides walking,
+  roaming and napping, characters with the right frames sit down, lie
+  down, and hit a ground-impact pose after a fall (sleep uses the lying
+  pose whenever a pack ships one, and pokes get a stumble reaction);
+  every shimeji import maps those animations automatically. Name an
+  import's impact sprite `land_00.png` (or let the converter take the
+  bounce action) and it plays on every landing.
 - Click-through everywhere except the cat itself — your desktop stays
   fully usable.
 
@@ -72,7 +80,7 @@ omarchy plugin add https://github.com/Palccod/Omate.git --enable
 ```
 
 That's the whole setup: a bar button appears in the right section, the
-mate walks in on your desktop, and all twelve characters are bundled —
+mate walks in on your desktop, and all eighteen characters are bundled —
 left click opens her settings, middle click pets the bar sprite. Future
 updates bring new packs and fixes through the same update command; her
 position, settings, and any characters you imported yourself live
@@ -115,8 +123,8 @@ rm ~/.local/state/omarchy/omate-state.json
 
 ## Characters
 
-Everything works out of the box: the twelve bundled characters need no
-setup at all. This section is only for adding a **thirteenth** of your
+Everything works out of the box: the eighteen bundled characters need no
+setup at all. This section is only for adding an **nineteenth** of your
 own — the converters take three formats, all offline.
 
 **MikuPet-style** (a directory with `character.json` + sprite strips):
@@ -126,8 +134,9 @@ python3 tools/import-spritesheet.py ~/Downloads/miku-char \
   ~/.local/state/omarchy/omate-packs/mine "My Character"
 ```
 
-**Shimeji-ee** (`img/shime*.png` + `conf/actions.xml` — the classic
-desktop-shimeji zips):
+**Shimeji** (`img/shime*.png` + `conf/` — the classic desktop-shimeji
+zips; both the English shimeji-ee and the original Japanese conf formats
+work, and sit/lie/jump animations are mapped automatically):
 
 ```sh
 unzip ~/Downloads/some-shimeji.zip -d /tmp/pet
@@ -153,7 +162,7 @@ hunting grounds: [shimeji.org](https://shimeji.org/), the
 
 Characters are fan art of copyrighted characters: fine for personal
 offline use, don't redistribute. Every pack keeps its author credit in
-its own `pack.json`; the twelve bundled ones are inventoried in
+its own `pack.json`; the eighteen bundled ones are inventoried in
 [THIRD_PARTY.md](THIRD_PARTY.md).
 
 ## Command line (IPC)

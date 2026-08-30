@@ -1,0 +1,50 @@
+{
+  "greet": [
+    "I'm ready! I'm ready! I'm ready!",
+    "SpongeBob SquarePants, reporting for duty!"
+  ],
+  "idle": [
+    "Is mayonnaise an instrument?",
+    "The inner machinations of my mind are an enigma.",
+    "Anybody ready for jellyfishing?",
+    "F is for friends who do stuff together!",
+    "I'm a good noodle! See? I have the stars to prove it!",
+    "Once upon a time there was a Krabby Patty...",
+    "are you feeling it now, Mr. Krabs?",
+    "The best time to wear a striped sweater is all the time."
+  ],
+  "drag": [
+    "Sweet mother of Neptune!",
+    "Not the pants! Anything but the pants!",
+    "Weee! This is better than jellyfishing!"
+  ],
+  "pet": [
+    "Aww, that tickles!",
+    "Patrick, is that you?",
+    "Best day ever!"
+  ],
+  "poke": [
+    "Ouch! That was my kitchen sponge spot!",
+    "Tartar sauce!"
+  ],
+  "land": [
+    "I abhor flying! ...but landing is okay.",
+    "Ta-daa!"
+  ],
+  "dizzy": [
+    "I think I swallowed my(square)pants...",
+    "How many barnacles did I just see?"
+  ],
+  "sleep": [
+    "Dreaming of the Krusty Krab...",
+    "Gary... no... not the ball..."
+  ],
+  "wake": [
+    "I'm ready! Promotion!",
+    "Order up!"
+  ],
+  "hop": [
+    "Sea bear attack! Wait, that's just a window.",
+    "To the Krusty Krab!"
+  ]
+}

@@ -286,8 +286,13 @@ PanelWindow {
     case "walk": return "walk"
     case "climb": return "climb"
     case "drag": return "drag"
+    case "sit": return "sit"
+    case "lie": return "lie"
     case "fall": return "fall"
-    case "stunned": return "fall"
+    // Grounded as a result of the fall: the impact pose (frozen, since the
+    // mate is dazed until the stun wears off).
+    case "stunned": return "land"
+    case "land": return "land"
     default: return "idle"
     }
   }
@@ -300,6 +305,9 @@ PanelWindow {
     case "poke": return petService.drawableAnim("poke", ["idle"])
     case "fall": return petService.drawableAnim("fall", ["drag", "idle"])
     case "climb": return petService.drawableAnim("climb", ["walk", "idle"])
+    case "sit": return petService.drawableAnim("sit", ["idle"])
+    case "lie": return petService.drawableAnim("lie", ["sit", "idle"])
+    case "land": return petService.drawableAnim("land", ["fall", "idle"])
     default: return petService.drawableAnim(rawAnim, ["idle"])
     }
   }
@@ -423,6 +431,29 @@ PanelWindow {
     onTriggered: root.poked = false
   }
 
+  // Ends a sitting/lying pose. Grabbing or anything else that changes the
+  // action simply makes the tick a no-op.
+  Timer {
+    id: poseTimer
+    onTriggered: if (root.action === "sit" || root.action === "lie")
+                   root.action = "idle"
+  }
+
+  // Brief ground-impact beat after a fall (packs with impact art only).
+  Timer {
+    id: landTimer
+    interval: 450
+    onTriggered: if (root.action === "land") root.action = "idle"
+  }
+
+  // Settle into a resting pose for a while.
+  function takePose(pose) {
+    if (action !== "idle") return
+    action = pose
+    poseTimer.interval = 5000 + Math.floor(Math.random() * 9000)
+    poseTimer.restart()
+  }
+
   // --- physics -----------------------------------------------------------------
 
   Timer {
@@ -489,10 +520,14 @@ PanelWindow {
           if (bigDrop) {
             root.action = "stunned"
             root.facingLeft = false
-            // Freeze on the first fall frame: a paused, consistent "flat on
-            // the ground" pose instead of whatever frame the fall was on.
+            // Freeze on the impact pose: a paused "flat on the ground"
+            // beat instead of whatever frame the fall was on.
             sprite.restart()
             stunTimer.restart()
+          } else if (root.petService && root.petService.hasAnim("land")) {
+            // A short impact beat before carrying on.
+            root.action = "land"
+            landTimer.restart()
           } else {
             root.action = "idle"
           }
@@ -522,7 +557,11 @@ PanelWindow {
       } else if (roll < 0.34 && root.support) {
         // Hop off the current window.
         root.startFall()
-      } else if (roll < 0.34 + root.petService.walkiness * 0.45) {
+      } else if (roll < 0.46 && root.petService.hasAnim("sit")) {
+        root.takePose("sit")
+      } else if (roll < 0.51 && root.petService.hasAnim("lie")) {
+        root.takePose("lie")
+      } else if (roll < 0.51 + root.petService.walkiness * 0.45) {
         var bounds = root.currentSurfaceBounds()
         var span = Math.max(0, bounds.x2 - bounds.x1 - root.spriteW)
         root.walkTo(bounds.x1 + Math.random() * span)

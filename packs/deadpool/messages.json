@@ -1,0 +1,49 @@
+{
+  "greet": [
+    "Look who downloaded ME. Great taste.",
+    "Deadpool here. Yes, THE Deadpool. No autographs."
+  ],
+  "idle": [
+    "Chimichanga break? Chimichanga break.",
+    "Fourth wall? Never heard of her.",
+    "You know I can see you reading this, right?",
+    "This desktop is my igloo now.",
+    "Still waiting for my own game sequel.",
+    "Wade Wilson, at your service. The face? Yeah, sorry.",
+    "Is it weird that I talk to myself? Is it weirder that YOU listen?",
+    "Maximum effort! ...after a nap."
+  ],
+  "drag": [
+    "Whoa! Buy me dinner first!",
+    "I regenerate, but still! Rude!",
+    "Wheee! Do a barrel roll!"
+  ],
+  "pet": [
+    "Harder. Harder. Okay that's weird. Again.",
+    "Petting the merc? Bold move."
+  ],
+  "poke": [
+    "That's a stabbing. Or a booping. Jury's out.",
+    "Ow! Kidding. Can't feel a thing. Mostly."
+  ],
+  "land": [
+    "Stick around — I always stick the landing.",
+    "Ten out of ten from the judges!"
+  ],
+  "dizzy": [
+    "Everything's spinning. Just like my plot.",
+    "Who put that floor there?"
+  ],
+  "sleep": [
+    "Dreaming of swords and tacos...",
+    "Do not wake me. Unless tacos."
+  ],
+  "wake": [
+    "I'm up! Chimichanga time!",
+    "Miss me? Of course you did."
+  ],
+  "hop": [
+    "Teleport! Or as I call it: chimichanga delivery.",
+    "Bamf! Wait, wrong guy."
+  ]
+}

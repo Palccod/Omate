@@ -1,0 +1,93 @@
+{
+  "name": "Luffy",
+  "author": "Shimeji-ee community",
+  "width": 128,
+  "height": 152,
+  "footY": 128,
+  "defaultScale": 1,
+  "anims": {
+    "idle": {
+      "frames": [
+        "idle_00.png"
+      ],
+      "frameMs": 800
+    },
+    "walk": {
+      "frames": [
+        "walk_00.png",
+        "walk_01.png",
+        "walk_02.png",
+        "walk_03.png"
+      ],
+      "frameMs": 240
+    },
+    "drag": {
+      "frames": [
+        "drag_00.png",
+        "drag_01.png",
+        "drag_02.png",
+        "drag_03.png",
+        "drag_04.png",
+        "drag_05.png",
+        "drag_06.png",
+        "drag_07.png",
+        "drag_08.png",
+        "drag_09.png",
+        "drag_10.png",
+        "drag_11.png",
+        "drag_12.png",
+        "drag_13.png",
+        "drag_14.png",
+        "drag_15.png"
+      ],
+      "frameMs": 200
+    },
+    "fall": {
+      "frames": [
+        "fall_00.png"
+      ],
+      "frameMs": 300
+    },
+    "sleep": {
+      "frames": [
+        "sleep_00.png"
+      ],
+      "frameMs": 2000
+    },
+    "sit": {
+      "frames": [
+        "sit_00.png"
+      ],
+      "frameMs": 1500
+    },
+    "lie": {
+      "frames": [
+        "lie_00.png"
+      ],
+      "frameMs": 1500
+    },
+    "jump": {
+      "frames": [
+        "jump_00.png",
+        "jump_01.png",
+        "jump_02.png"
+      ],
+      "frameMs": 160
+    },
+    "land": {
+      "frames": [
+        "land_00.png"
+      ],
+      "frameMs": 400
+    },
+    "poke": {
+      "frames": [
+        "poke_00.png",
+        "poke_01.png",
+        "poke_02.png",
+        "poke_03.png"
+      ],
+      "frameMs": 160
+    }
+  }
+}
