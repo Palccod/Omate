@@ -1,5 +1,10 @@
 # Third-party pack notices
 
+> **Fork note.** This fork adds one extra pack, **Perry the Pug**, which is
+> *not* third-party fan art: it is an original character generated for this
+> fork, depicting no existing intellectual property. It is included here so
+> the fork installs with the pack ready to use.
+
 Omate ships with eighteen character packs. The default cat is
 self-generated; the seventeen others are third-party fan art converted
 with this plugin's `tools/import-*.py` converters, with author credit
