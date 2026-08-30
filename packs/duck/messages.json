@@ -1,0 +1,16 @@
+{
+  "greet": ["Quack! Your captain is here."],
+  "idle": [
+    "All systems quacking.",
+    "Have you tried being a duck?",
+    "Bread? Did someone say bread?"
+  ],
+  "drag": ["Unhand the captain!", "This is a mutiny!"],
+  "pet": ["(pleased quack)", "(radio crackles softly)"],
+  "poke": ["QUACK!"],
+  "land": ["Water landing. Perfect."],
+  "dizzy": ["(dizzy quack)"],
+  "sleep": ["Floating offline..."],
+  "wake": ["Quack! Ready for duty."],
+  "hop": ["Takeoff!"]
+}

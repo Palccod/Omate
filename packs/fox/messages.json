@@ -1,0 +1,16 @@
+{
+  "greet": ["Yip! Foxy on patrol."],
+  "idle": [
+    "Nothing escapes the nose.",
+    "Blending in with the shrubs...",
+    "Squirrel detected. Probably."
+  ],
+  "drag": ["Legs! I need those!", "Hey hey hey—"],
+  "pet": ["Ear scratches accepted.", "(happy tail thump)"],
+  "poke": ["Yip!"],
+  "land": ["Light as a feather."],
+  "dizzy": ["The ground moved..."],
+  "sleep": ["(curled up tight)"],
+  "wake": ["Squirrel?!"],
+  "hop": ["Pounce!"]
+}

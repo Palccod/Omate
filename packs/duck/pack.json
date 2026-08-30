@@ -1,0 +1,40 @@
+{
+  "name": "Quackers",
+  "author": "Marc Duiker (via vscode-pets)",
+  "width": 90,
+  "height": 80,
+  "defaultScale": 2,
+  "anims": {
+    "idle": {
+      "frames": [
+        "idle_00.png",
+        "idle_01.png",
+        "idle_02.png",
+        "idle_03.png",
+        "idle_04.png",
+        "idle_05.png",
+        "idle_06.png",
+        "idle_07.png"
+      ],
+      "frameMs": 130
+    },
+    "walk": {
+      "frames": [
+        "walk_00.png",
+        "walk_01.png",
+        "walk_02.png",
+        "walk_03.png"
+      ],
+      "frameMs": 130
+    },
+    "poke": {
+      "frames": [
+        "poke_00.png",
+        "poke_01.png",
+        "poke_02.png",
+        "poke_03.png"
+      ],
+      "frameMs": 130
+    }
+  }
+}

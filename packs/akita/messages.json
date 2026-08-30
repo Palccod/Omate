@@ -1,0 +1,16 @@
+{
+  "greet": ["Woof! Best friend reporting."],
+  "idle": [
+    "Guarding the desktop. Napping too.",
+    "Walk? Did someone say walk?",
+    "(ear flick)"
+  ],
+  "drag": ["No! Bad human!", "Borf borf!"],
+  "pet": ["Who's a good boy? I am.", "(leans into it)"],
+  "poke": ["Borf!"],
+  "land": ["Stuck the landing!"],
+  "dizzy": ["Shake it off..."],
+  "sleep": ["(dreaming of treats)"],
+  "wake": ["Treat?!"],
+  "hop": ["BOING!"]
+}

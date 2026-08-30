@@ -1,0 +1,87 @@
+{
+  "name": "Panda",
+  "author": "Jessie Ferris (via vscode-pets)",
+  "width": 96,
+  "height": 96,
+  "defaultScale": 2,
+  "anims": {
+    "idle": {
+      "frames": [
+        "idle_00.png",
+        "idle_01.png",
+        "idle_02.png",
+        "idle_03.png",
+        "idle_04.png",
+        "idle_05.png",
+        "idle_06.png",
+        "idle_07.png",
+        "idle_08.png",
+        "idle_09.png"
+      ],
+      "frameMs": 130
+    },
+    "walk": {
+      "frames": [
+        "walk_00.png",
+        "walk_01.png",
+        "walk_02.png",
+        "walk_03.png",
+        "walk_04.png",
+        "walk_05.png",
+        "walk_06.png",
+        "walk_07.png",
+        "walk_08.png",
+        "walk_09.png",
+        "walk_10.png",
+        "walk_11.png",
+        "walk_12.png",
+        "walk_13.png",
+        "walk_14.png",
+        "walk_15.png",
+        "walk_16.png",
+        "walk_17.png",
+        "walk_18.png",
+        "walk_19.png",
+        "walk_20.png",
+        "walk_21.png",
+        "walk_22.png",
+        "walk_23.png",
+        "walk_24.png",
+        "walk_25.png",
+        "walk_26.png",
+        "walk_27.png",
+        "walk_28.png",
+        "walk_29.png",
+        "walk_30.png",
+        "walk_31.png"
+      ],
+      "frameMs": 80
+    },
+    "sleep": {
+      "frames": [
+        "sleep_00.png",
+        "sleep_01.png",
+        "sleep_02.png",
+        "sleep_03.png",
+        "sleep_04.png",
+        "sleep_05.png",
+        "sleep_06.png",
+        "sleep_07.png",
+        "sleep_08.png",
+        "sleep_09.png",
+        "sleep_10.png",
+        "sleep_11.png"
+      ],
+      "frameMs": 130
+    },
+    "poke": {
+      "frames": [
+        "poke_00.png",
+        "poke_01.png",
+        "poke_02.png",
+        "poke_03.png"
+      ],
+      "frameMs": 130
+    }
+  }
+}

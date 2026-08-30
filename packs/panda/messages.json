@@ -1,0 +1,16 @@
+{
+  "greet": ["(rolls in)"],
+  "idle": [
+    "Bamboo break in five minutes.",
+    "Nap first. Everything else later.",
+    "(munching imaginary bamboo)"
+  ],
+  "drag": ["Pandas don't fly!", "(indignant panda noises)"],
+  "pet": ["(happy panda noises)", "Acceptable."],
+  "poke": ["Rawr. Sort of."],
+  "land": ["(plops)"],
+  "dizzy": ["Bamboo... why..."],
+  "sleep": ["Do not disturb the bean."],
+  "wake": ["...five more minutes."],
+  "hop": ["(rolls)"]
+}

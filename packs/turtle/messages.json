@@ -1,0 +1,16 @@
+{
+  "greet": ["Sheldon has arrived. On time, technically."],
+  "idle": [
+    "Slow and steady wins the desktop.",
+    "Where is my salad?",
+    "(contemplative blink)"
+  ],
+  "drag": ["SHELL DOWN! I mean— HELP!", "Not the shell! ...okay, the shell is fine."],
+  "pet": ["Mind the shell. That's the spot.", "(slow blink of approval)"],
+  "poke": ["(hisses softly)"],
+  "land": ["Shell protects. Always."],
+  "dizzy": ["I felt that one in my shell."],
+  "sleep": ["Retracting for a while..."],
+  "wake": ["Was I out long?"],
+  "hop": ["Speed mode: engaged. Barely."]
+}

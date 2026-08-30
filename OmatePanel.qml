@@ -177,7 +177,6 @@ Panel {
 
           Repeater {
             model: root.petService ? root.petService.packList : []
-
             Rectangle {
               id: card
               required property var modelData
@@ -247,6 +246,17 @@ Panel {
               }
             }
           }
+        }
+
+        // Pointer to importing more characters (see the README).
+        Text {
+          width: parent.width
+          horizontalAlignment: Text.AlignHCenter
+          text: "bring your own — import shimeji & GIF pets, see the README"
+          color: Qt.alpha(root.foreground, 0.45)
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.caption
+          renderType: Text.NativeRendering
         }
 
         // --- behavior --------------------------------------------------------

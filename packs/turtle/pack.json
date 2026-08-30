@@ -1,0 +1,48 @@
+{
+  "name": "Sheldon",
+  "author": "enkeefe (via vscode-pets)",
+  "width": 115,
+  "height": 90,
+  "defaultScale": 3,
+  "anims": {
+    "idle": {
+      "frames": [
+        "idle_00.png",
+        "idle_01.png"
+      ],
+      "frameMs": 250
+    },
+    "walk": {
+      "frames": [
+        "walk_00.png",
+        "walk_01.png",
+        "walk_02.png",
+        "walk_03.png"
+      ],
+      "frameMs": 400
+    },
+    "sleep": {
+      "frames": [
+        "sleep_00.png",
+        "sleep_01.png",
+        "sleep_02.png",
+        "sleep_03.png",
+        "sleep_04.png",
+        "sleep_05.png",
+        "sleep_06.png",
+        "sleep_07.png",
+        "sleep_08.png"
+      ],
+      "frameMs": 700
+    },
+    "poke": {
+      "frames": [
+        "poke_00.png",
+        "poke_01.png",
+        "poke_02.png",
+        "poke_03.png"
+      ],
+      "frameMs": 200
+    }
+  }
+}

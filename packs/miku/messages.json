@@ -1,0 +1,58 @@
+{
+  "greet": [
+    "Hatsune Miku, on stage!",
+    "Miku desu! Did you miss me?",
+    "The desktop stage is ready!"
+  ],
+  "idle": [
+    "39!",
+    "Want a song? I know 39 of them.",
+    "The desktop is my stage.",
+    "*hums a melody*",
+    "world is mine~",
+    "stage in... 3, 2, 1...",
+    "have you heard my new track?",
+    "Miku! Miku! Miku!",
+    "your wallpaper is nice. mine is greener.",
+    "*twintails swish*",
+    "next stop: your taskbar!",
+    "this floor? stage-quality."
+  ],
+  "drag": [
+    "Wah! I'm flying!",
+    "Best concert view ever!",
+    "Whoa— not the twintails!"
+  ],
+  "pet": [
+    "hehe~",
+    "Miku likes that!",
+    "*happy hum*",
+    "encore! encore!"
+  ],
+  "poke": [
+    "Hey!",
+    "Boop?!",
+    "39!!"
+  ],
+  "land": [
+    "Landed like a pro!",
+    "Stage dive complete!"
+  ],
+  "dizzy": [
+    "The stage moved...",
+    "who turned off the music...?"
+  ],
+  "sleep": [
+    "Resting my voice...",
+    "zzz... next concert at 39..."
+  ],
+  "wake": [
+    "Miku is ready to sing!",
+    "Encore!"
+  ],
+  "hop": [
+    "warp port-port~!",
+    "*teleports behind you*",
+    "warp star!"
+  ]
+}

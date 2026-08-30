@@ -1,0 +1,16 @@
+{
+  "greet": ["Boo. Found me, did you?"],
+  "idle": [
+    "You can only see me if you believe.",
+    "Sowing seeds while you work.",
+    "Did you hear the camphor tree calling?"
+  ],
+  "drag": ["(happy rumble)", "To! To! To!"],
+  "pet": ["(contented rumble)", "Yes. The fur. Continue."],
+  "poke": ["GRWAAAH!"],
+  "land": ["(soft enormous thud)"],
+  "dizzy": ["The umbrella failed..."],
+  "sleep": ["zzz... acorns..."],
+  "wake": ["(yawns enormously)"],
+  "hop": ["Up into the trees!"]
+}

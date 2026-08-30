@@ -1,0 +1,38 @@
+{
+  "greet": [
+    "Hornet reporting for duty!"
+  ],
+  "idle": [
+    "Hornet is watching your window count.",
+    "quite the desktop you have here.",
+    "psst — pet Hornet?"
+  ],
+  "drag": [
+    "Whoa— careful!",
+    "Put me dooown!"
+  ],
+  "pet": [
+    "hey, that's nice.",
+    "more of that, please."
+  ],
+  "poke": [
+    "hey!",
+    "boop."
+  ],
+  "land": [
+    "stuck the landing."
+  ],
+  "dizzy": [
+    "...the floor attacked."
+  ],
+  "sleep": [
+    "nap time..."
+  ],
+  "wake": [
+    "I'm up, I'm up!"
+  ],
+  "hop": [
+    "warp!",
+    "poof!"
+  ]
+}

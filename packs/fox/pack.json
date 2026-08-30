@@ -1,0 +1,59 @@
+{
+  "name": "Foxy",
+  "author": "Elthen (via vscode-pets)",
+  "width": 92,
+  "height": 75,
+  "defaultScale": 2,
+  "anims": {
+    "idle": {
+      "frames": [
+        "idle_00.png",
+        "idle_01.png",
+        "idle_02.png",
+        "idle_03.png",
+        "idle_04.png"
+      ],
+      "frameMs": 120
+    },
+    "walk": {
+      "frames": [
+        "walk_00.png",
+        "walk_01.png",
+        "walk_02.png",
+        "walk_03.png",
+        "walk_04.png",
+        "walk_05.png",
+        "walk_06.png",
+        "walk_07.png"
+      ],
+      "frameMs": 120
+    },
+    "sleep": {
+      "frames": [
+        "sleep_00.png",
+        "sleep_01.png",
+        "sleep_02.png",
+        "sleep_03.png",
+        "sleep_04.png",
+        "sleep_05.png"
+      ],
+      "frameMs": 120
+    },
+    "poke": {
+      "frames": [
+        "poke_00.png",
+        "poke_01.png",
+        "poke_02.png",
+        "poke_03.png",
+        "poke_04.png",
+        "poke_05.png",
+        "poke_06.png",
+        "poke_07.png",
+        "poke_08.png",
+        "poke_09.png",
+        "poke_10.png"
+      ],
+      "frameMs": 120
+    }
+  }
+}

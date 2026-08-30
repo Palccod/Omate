@@ -57,6 +57,9 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   right, a **skin picker where every installed pack previews its own idle
   animation**, and live controls for roaming, volume, size, walkiness,
   home screen, and nap/chatter cadence.
+- **Twelve characters bundled** — Miku, Totoro, Hornet, Gojo, Rem,
+  Mitsuri, a fox, an akita, a panda, a turtle, a rubber duck, and Mochi
+  the cat; import your own with the built-in converters.
 - Click-through everywhere except the cat itself — your desktop stays
   fully usable.
 
@@ -115,10 +118,50 @@ For development, clone or link the repo into
 `omarchy-shell shell rescanPlugins`) and `omarchy restart shell` after
 editing files.
 
+## Characters
+
+Omate ships with **twelve characters**: Mochi the cat, Hatsune Miku,
+Totoro, Foxy, Akita, Panda, Sheldon, Quackers, and the shimeji crew —
+Hornet, Gojo, Rem, and Mitsuri. Where each one comes from and who drew it
+is documented in [THIRD_PARTY.md](THIRD_PARTY.md).
+
+Want a thirteenth? Bring your own — the converters take three formats.
+
+**MikuPet-style** (a directory with `character.json` + sprite strips):
+
+```sh
+python3 tools/import-spritesheet.py ~/Downloads/miku-char \
+  ~/.local/state/omarchy/omate-packs/mine "My Character"
+```
+
+**Shimeji-ee** (`img/shime*.png` + `conf/actions.xml` — the classic
+desktop-shimeji zips):
+
+```sh
+unzip ~/Downloads/some-shimeji.zip -d /tmp/pet
+python3 tools/import-shimeji.py /tmp/pet \
+  ~/.local/state/omarchy/omate-packs/pet "Pet Name"
+```
+
+**Animated-GIF pets** (one `<anim>.gif` per animation, like the
+[vscode-pets](https://github.com/tonybaloney/vscode-pets) media files;
+needs Pillow):
+
+```sh
+python3 tools/import-gifpet.py ~/Downloads/pet-gifs \
+  ~/.local/state/omarchy/omate-packs/pet2 "Pet Name" --flip
+```
+
+Imported packs live in `~/.local/state/omarchy/omate-packs/<name>/` (so
+your characters survive plugin updates) and shadow bundled packs of the
+same name. Each carries its own `messages.json` and `pack.json`. Good
+hunting grounds: [shimeji.org](https://shimeji.org/), the
+[DeviantArt shimeji tag](https://www.deviantart.com/tag/shimeji), and
+[MikuPet releases](https://github.com/CharlesWiiFlowers/MikuPet).
 
 Characters are fan art of copyrighted characters: fine for personal
-offline use, don't redistribute. Every imported pack keeps its author
-credit in its own `pack.json`.
+offline use, don't redistribute. Every pack keeps its author credit in
+its own `pack.json`.
 
 ## Command line (IPC)
 

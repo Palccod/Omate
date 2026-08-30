@@ -1,0 +1,67 @@
+{
+  "name": "Hornet",
+  "author": "Shimeji-ee community (Hollow Knight fan pack)",
+  "width": 128,
+  "height": 154,
+  "footY": 128,
+  "defaultScale": 1,
+  "anims": {
+    "idle": {
+      "frames": [
+        "idle_00.png",
+        "idle_01.png",
+        "idle_02.png",
+        "idle_03.png",
+        "idle_04.png",
+        "idle_05.png"
+      ],
+      "frameMs": 250
+    },
+    "walk": {
+      "frames": [
+        "walk_00.png",
+        "walk_01.png",
+        "walk_02.png",
+        "walk_03.png",
+        "walk_04.png",
+        "walk_05.png",
+        "walk_06.png",
+        "walk_07.png"
+      ],
+      "frameMs": 120
+    },
+    "drag": {
+      "frames": [
+        "drag_00.png",
+        "drag_01.png",
+        "drag_02.png",
+        "drag_03.png",
+        "drag_04.png",
+        "drag_05.png",
+        "drag_06.png",
+        "drag_07.png",
+        "drag_08.png",
+        "drag_09.png",
+        "drag_10.png",
+        "drag_11.png",
+        "drag_12.png"
+      ],
+      "frameMs": 200
+    },
+    "fall": {
+      "frames": [
+        "fall_00.png",
+        "fall_01.png",
+        "fall_02.png",
+        "fall_03.png"
+      ],
+      "frameMs": 120
+    },
+    "sleep": {
+      "frames": [
+        "sleep_00.png"
+      ],
+      "frameMs": 2000
+    }
+  }
+}
