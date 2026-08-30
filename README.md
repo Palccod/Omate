@@ -6,8 +6,7 @@ you ignore it, and drops by with messages. Pure QML on Quickshell — no AI,
 no network, no dependencies beyond the shell you already run.
 
 Inspired by [Mate-Engine](https://github.com/shinyflvre/Mate-Engine)'s
-interaction model, built on the plugin pattern of
-[omagotchi](https://github.com/SLcode777/omagotchi).
+interaction model.
 
 ![Omate's settings panel: skin picker with twelve character previews over
 the behavior controls, Miku window-sitting on the right](preview.png)
