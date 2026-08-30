@@ -55,6 +55,38 @@ Panel {
     return opts
   }
 
+  // Chase cadences. The value is the cooldown in seconds; "off" switches the
+  // whole feature off. Short chip labels so all five fit one row inside the
+  // card; the long-form name of the current setting sits beside the row label
+  // and the full sentence is on each chip's tooltip.
+  readonly property var chaseOptions: [
+    { value: "off",  label: "Off",
+      tooltip: "The pointer is left alone" },
+    { value: "10",   label: "10s",
+      tooltip: "Playful - a go at the pointer every 10 seconds" },
+    { value: "60",   label: "1 min",
+      tooltip: "Now and then - once a minute" },
+    { value: "300",  label: "5 min",
+      tooltip: "Occasional - once every five minutes" },
+    { value: "1800", label: "30 min",
+      tooltip: "Rare - twice an hour" }
+  ]
+  readonly property string chaseValue: ready && petService.cursorChase
+    ? String(petService.chaseCooldownSec) : "off"
+  // Named for the cadences the chips offer, but a cooldown set from the IPC
+  // (`setChaseCooldown 600`) is a legitimate value with no chip of its own, so
+  // it gets spelled out rather than silently leaving the row looking unset.
+  readonly property string chaseDescription: {
+    if (!ready || !petService.cursorChase) return "Off"
+    switch (petService.chaseCooldownSec) {
+      case 10: return "Playful"
+      case 60: return "Now and then"
+      case 300: return "Occasional"
+      case 1800: return "Rare"
+    }
+    return "Every " + petService.chaseCooldownSec + "s"
+  }
+
   // The mate's right-click menu opens the panel on the main screen's bar.
   Connections {
     target: root.petService
@@ -166,23 +198,40 @@ Panel {
         // --- skins ---------------------------------------------------------
 
         PanelSectionHeader {
+          id: skinsHeader
           text: "Skins"
           foreground: root.foreground
           fontFamily: root.fontFamily
         }
 
-        // The grid gains a row for every three characters, and the panel is
+        // The grid gains a row for every three characters, and the card is
         // capped at the screen height with nothing scrolling anywhere -- so past
         // a certain number of skins the Behavior controls below fell off the
-        // bottom and could not be reached at all. Worst on 1080p. The grid now
-        // takes at most a share of the panel and scrolls inside itself, so what
-        // sits below it stays put however many characters are installed.
+        // bottom and could not be reached at all. Worst on 1080p. The grid is
+        // therefore the one thing that gives: it takes exactly the room the
+        // rest of the card does not want and scrolls inside itself, so
+        // everything below it stays on screen however many characters are
+        // installed and whatever the display.
         Flickable {
           id: skinsScroller
           width: parent.width
-          readonly property real cap:
-            Math.max(Style.space(120),
-                     (panel.availableCardHeight > 0 ? panel.availableCardHeight : 900) * 0.45)
+          // Two limits, whichever bites first. `leftover` is the room the rest
+          // of the card does not want -- everything else in the column (five
+          // siblings, so four gaps), the panel's own padding and borders, and
+          // the slack contentHeight asks for below; respecting it is what keeps
+          // the Behavior controls on a 1080p screen. `share` then stops the
+          // grid from swelling to fill a large display just because it can: a
+          // settings card for a desktop pet has no business being 1400px tall.
+          readonly property real cap: {
+            if (panel.availableCardHeight <= 0) return Style.space(360)
+            var leftover = panel.availableCardHeight
+                         - (headerCard.height + skinsHeader.height
+                            + skinsFootnote.height + behaviorColumn.implicitHeight
+                            + contentColumn.spacing * 4
+                            + panel.verticalContentInset + Style.space(16))
+            var share = panel.availableCardHeight * 0.45
+            return Math.max(Style.space(120), Math.min(share, leftover))
+          }
           height: Math.min(skinsFlow.implicitHeight, cap)
           contentWidth: width
           contentHeight: skinsFlow.implicitHeight
@@ -285,6 +334,7 @@ Panel {
 
         // Pointer to importing more characters (see the README).
         Text {
+          id: skinsFootnote
           width: parent.width
           horizontalAlignment: Text.AlignHCenter
           text: "bring your own — import shimeji & GIF pets, see the README"
@@ -296,306 +346,326 @@ Panel {
 
         // --- behavior --------------------------------------------------------
 
-        PanelSectionHeader {
-          text: "Behavior"
-          foreground: root.foreground
-          fontFamily: root.fontFamily
-        }
-
-        // Roaming on/off.
-        Item {
+        // Everything below the grid, measured as one block: the grid's height
+        // cap is whatever room this leaves, so these controls are always fully
+        // on screen no matter how many characters are installed.
+        Column {
+          id: behaviorColumn
           width: parent.width
-          height: Style.space(30)
+          spacing: Style.space(12)
 
-          Text {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Roaming"
-            color: root.foreground
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            renderType: Text.NativeRendering
-          }
-          ToggleSwitch {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            checked: root.enabledMate && root.petService.roaming
-            enabled: root.ready
-            foreground: root.foreground
-            onToggled: if (root.ready) root.petService.setRoaming(!checked)
-          }
-        }
-
-        // Sound effects volume.
-        Item {
-          width: parent.width
-          height: Style.space(30)
-
-          Text {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Effects volume"
-            color: root.foreground
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            renderType: Text.NativeRendering
-          }
-
-          Row {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(8)
-
-            PanelSlider {
-              id: volumeSlider
-              bar: root.bar
-              width: Style.space(150)
-              anchors.verticalCenter: parent.verticalCenter
-              minimum: 0
-              maximum: 1
-              step: 0.05
-              value: root.ready ? root.petService.soundVolume : 0.5
-              enabled: root.ready
-              // Persist on release, and let it be heard right away.
-              onReleased: function(v) {
-                if (!root.ready) return
-                root.petService.updateSettings({ soundVolume: v })
-                Qt.callLater(function() { root.petService.playSound("pet") })
-              }
-              onRightClicked: if (root.ready) root.petService.setSoundVolume(
-                root.petService.soundVolume > 0 ? 0 : 0.5)
-            }
-            Text {
-              anchors.verticalCenter: parent.verticalCenter
-              width: Style.space(36)
-              horizontalAlignment: Text.AlignRight
-              text: Math.round((volumeSlider.dragging ? volumeSlider.liveValue
-                : volumeSlider.value) * 100) + "%"
-              color: Qt.alpha(root.foreground, 0.7)
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.bodySmall
-              renderType: Text.NativeRendering
-            }
-          }
-        }
-
-        // Sprite magnification.
-        Item {
-          width: parent.width
-          height: Style.space(30)
-
-          Text {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Size"
-            color: root.foreground
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            renderType: Text.NativeRendering
-          }
-
-          Row {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(8)
-
-            PanelSlider {
-              id: sizeSlider
-              bar: root.bar
-              width: Style.space(150)
-              anchors.verticalCenter: parent.verticalCenter
-              minimum: 1
-              maximum: 6
-              step: 1
-              value: root.ready ? root.petService.petScale : 3
-              enabled: root.ready
-              onReleased: function(v) {
-                if (root.ready) root.petService.updateSettings({ scale: Math.round(v) })
-              }
-            }
-            Text {
-              anchors.verticalCenter: parent.verticalCenter
-              width: Style.space(36)
-              horizontalAlignment: Text.AlignRight
-              text: "×" + (sizeSlider.dragging ? Math.round(sizeSlider.liveValue)
-                : sizeSlider.value)
-              color: Qt.alpha(root.foreground, 0.7)
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.bodySmall
-              renderType: Text.NativeRendering
-            }
-          }
-        }
-
-        // How adventurous the wandering is.
-        Item {
-          width: parent.width
-          height: Style.space(30)
-
-          Text {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Walkiness"
-            color: root.foreground
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            renderType: Text.NativeRendering
-          }
-
-          Row {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(8)
-
-            PanelSlider {
-              id: walkSlider
-              bar: root.bar
-              width: Style.space(150)
-              anchors.verticalCenter: parent.verticalCenter
-              minimum: 0
-              maximum: 1
-              step: 0.05
-              value: root.ready ? root.petService.walkiness : 0.6
-              enabled: root.ready
-              onReleased: function(v) {
-                if (root.ready) root.petService.updateSettings({ walkiness: v })
-              }
-            }
-            Text {
-              anchors.verticalCenter: parent.verticalCenter
-              width: Style.space(36)
-              horizontalAlignment: Text.AlignRight
-              text: Math.round((walkSlider.dragging ? walkSlider.liveValue
-                : walkSlider.value) * 100) + "%"
-              color: Qt.alpha(root.foreground, 0.7)
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.bodySmall
-              renderType: Text.NativeRendering
-            }
-          }
-        }
-
-        // Home screen.
-        Item {
-          width: parent.width
-          height: screenDropdown.implicitHeight
-
-          Text {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Screen"
-            color: root.foreground
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            renderType: Text.NativeRendering
-          }
-          Dropdown {
-            id: screenDropdown
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            width: Style.space(194)
-            showLabel: false
-            value: root.ready && typeof root.petService.settings.screen === "string"
-              ? root.petService.settings.screen : ""
-            options: root.screenOptions
+          PanelSectionHeader {
+            text: "Behavior"
             foreground: root.foreground
             fontFamily: root.fontFamily
-            enabled: root.ready
-            onChanged: function(v) {
-              if (root.ready) root.petService.applyScreenChoice(v)
+          }
+
+          // Roaming on/off.
+          Item {
+            width: parent.width
+            height: Style.space(30)
+
+            Text {
+              anchors.left: parent.left
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Roaming"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              renderType: Text.NativeRendering
+            }
+            ToggleSwitch {
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              checked: root.enabledMate && root.petService.roaming
+              enabled: root.ready
+              foreground: root.foreground
+              onToggled: if (root.ready) root.petService.setRoaming(!checked)
             }
           }
-        }
 
-        // Nap and chatter cadence.
-        Item {
-          width: parent.width
-          height: Math.max(napField.implicitHeight, chatField.implicitHeight)
+          // Sound effects volume.
+          Item {
+            width: parent.width
+            height: Style.space(30)
 
-          Text {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Naps / chatter"
-            color: root.foreground
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            renderType: Text.NativeRendering
-          }
-          Row {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(8)
-
-            NumberField {
-              id: napField
+            Text {
+              anchors.left: parent.left
               anchors.verticalCenter: parent.verticalCenter
-              value: root.ready ? Math.round(root.petService.settings.sleepMinutes) : 10
-              from: 0
-              to: 120
-              stepSize: 1
-              fontSize: Style.font.bodySmall
-              foreground: root.foreground
-              accent: Color.accent
-              fontFamily: root.fontFamily
-              enabled: root.ready
-              onModified: function(v) {
-                if (root.ready) root.petService.updateSettings({ sleepMinutes: v })
+              text: "Effects volume"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              renderType: Text.NativeRendering
+            }
+
+            Row {
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: Style.space(8)
+
+              PanelSlider {
+                id: volumeSlider
+                bar: root.bar
+                width: Style.space(150)
+                anchors.verticalCenter: parent.verticalCenter
+                minimum: 0
+                maximum: 1
+                step: 0.05
+                value: root.ready ? root.petService.soundVolume : 0.5
+                enabled: root.ready
+                // Persist on release, and let it be heard right away.
+                onReleased: function(v) {
+                  if (!root.ready) return
+                  root.petService.updateSettings({ soundVolume: v })
+                  Qt.callLater(function() { root.petService.playSound("pet") })
+                }
+                onRightClicked: if (root.ready) root.petService.setSoundVolume(
+                  root.petService.soundVolume > 0 ? 0 : 0.5)
+              }
+              Text {
+                anchors.verticalCenter: parent.verticalCenter
+                width: Style.space(36)
+                horizontalAlignment: Text.AlignRight
+                text: Math.round((volumeSlider.dragging ? volumeSlider.liveValue
+                  : volumeSlider.value) * 100) + "%"
+                color: Qt.alpha(root.foreground, 0.7)
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.bodySmall
+                renderType: Text.NativeRendering
               }
             }
-            NumberField {
-              id: chatField
+          }
+
+          // Sprite magnification.
+          Item {
+            width: parent.width
+            height: Style.space(30)
+
+            Text {
+              anchors.left: parent.left
               anchors.verticalCenter: parent.verticalCenter
-              value: root.ready ? Math.round(root.petService.settings.chatterMinutes) : 4
-              from: 1
-              to: 60
-              stepSize: 1
-              fontSize: Style.font.bodySmall
-              foreground: root.foreground
-              accent: Color.accent
-              fontFamily: root.fontFamily
-              enabled: root.ready
-              onModified: function(v) {
-                if (root.ready) root.petService.updateSettings({ chatterMinutes: v })
+              text: "Size"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              renderType: Text.NativeRendering
+            }
+
+            Row {
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: Style.space(8)
+
+              PanelSlider {
+                id: sizeSlider
+                bar: root.bar
+                width: Style.space(150)
+                anchors.verticalCenter: parent.verticalCenter
+                minimum: 1
+                maximum: 6
+                step: 1
+                value: root.ready ? root.petService.petScale : 3
+                enabled: root.ready
+                onReleased: function(v) {
+                  if (root.ready) root.petService.updateSettings({ scale: Math.round(v) })
+                }
+              }
+              Text {
+                anchors.verticalCenter: parent.verticalCenter
+                width: Style.space(36)
+                horizontalAlignment: Text.AlignRight
+                text: "×" + (sizeSlider.dragging ? Math.round(sizeSlider.liveValue)
+                  : sizeSlider.value)
+                color: Qt.alpha(root.foreground, 0.7)
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.bodySmall
+                renderType: Text.NativeRendering
               }
             }
           }
-        }
 
-        // Cursor chasing. One control for both the on/off and the cadence:
-        // the interesting choice is not "should it happen" but "how often",
-        // and "every ten seconds" vs "twice an hour" is the difference
-        // between a toy people keep and one they switch off on day two.
-        Item {
-          width: parent.width
-          height: chaseDropdown.implicitHeight
+          // How adventurous the wandering is.
+          Item {
+            width: parent.width
+            height: Style.space(30)
 
-          Text {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Chase cursor"
-            color: root.foreground
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            renderType: Text.NativeRendering
+            Text {
+              anchors.left: parent.left
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Walkiness"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              renderType: Text.NativeRendering
+            }
+
+            Row {
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: Style.space(8)
+
+              PanelSlider {
+                id: walkSlider
+                bar: root.bar
+                width: Style.space(150)
+                anchors.verticalCenter: parent.verticalCenter
+                minimum: 0
+                maximum: 1
+                step: 0.05
+                value: root.ready ? root.petService.walkiness : 0.6
+                enabled: root.ready
+                onReleased: function(v) {
+                  if (root.ready) root.petService.updateSettings({ walkiness: v })
+                }
+              }
+              Text {
+                anchors.verticalCenter: parent.verticalCenter
+                width: Style.space(36)
+                horizontalAlignment: Text.AlignRight
+                text: Math.round((walkSlider.dragging ? walkSlider.liveValue
+                  : walkSlider.value) * 100) + "%"
+                color: Qt.alpha(root.foreground, 0.7)
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.bodySmall
+                renderType: Text.NativeRendering
+              }
+            }
           }
-          Dropdown {
-            id: chaseDropdown
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            width: Style.space(194)
-            showLabel: false
-            value: root.ready && root.petService.cursorChase
-              ? String(root.petService.chaseCooldownSec) : "off"
-            options: [
-              { value: "off",  label: "Off" },
-              { value: "10",   label: "Playful — every 10s" },
-              { value: "60",   label: "Now and then — 1 min" },
-              { value: "300",  label: "Occasional — 5 min" },
-              { value: "1800", label: "Rare — 30 min" }
-            ]
+
+          // Home screen.
+          Item {
+            width: parent.width
+            height: screenDropdown.implicitHeight
+
+            Text {
+              anchors.left: parent.left
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Screen"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              renderType: Text.NativeRendering
+            }
+            Dropdown {
+              id: screenDropdown
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              width: Style.space(194)
+              showLabel: false
+              value: root.ready && typeof root.petService.settings.screen === "string"
+                ? root.petService.settings.screen : ""
+              options: root.screenOptions
+              foreground: root.foreground
+              fontFamily: root.fontFamily
+              enabled: root.ready
+              onChanged: function(v) {
+                if (root.ready) root.petService.applyScreenChoice(v)
+              }
+            }
+          }
+
+          // Nap and chatter cadence.
+          Item {
+            width: parent.width
+            height: Math.max(napField.implicitHeight, chatField.implicitHeight)
+
+            Text {
+              anchors.left: parent.left
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Naps / chatter"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              renderType: Text.NativeRendering
+            }
+            Row {
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: Style.space(8)
+
+              NumberField {
+                id: napField
+                anchors.verticalCenter: parent.verticalCenter
+                value: root.ready ? Math.round(root.petService.settings.sleepMinutes) : 10
+                from: 0
+                to: 120
+                stepSize: 1
+                fontSize: Style.font.bodySmall
+                foreground: root.foreground
+                accent: Color.accent
+                fontFamily: root.fontFamily
+                enabled: root.ready
+                onModified: function(v) {
+                  if (root.ready) root.petService.updateSettings({ sleepMinutes: v })
+                }
+              }
+              NumberField {
+                id: chatField
+                anchors.verticalCenter: parent.verticalCenter
+                value: root.ready ? Math.round(root.petService.settings.chatterMinutes) : 4
+                from: 1
+                to: 60
+                stepSize: 1
+                fontSize: Style.font.bodySmall
+                foreground: root.foreground
+                accent: Color.accent
+                fontFamily: root.fontFamily
+                enabled: root.ready
+                onModified: function(v) {
+                  if (root.ready) root.petService.updateSettings({ chatterMinutes: v })
+                }
+              }
+            }
+          }
+
+          // Cursor chasing. One control for both the on/off and the cadence:
+          // the interesting choice is not "should it happen" but "how often",
+          // and "every ten seconds" vs "twice an hour" is the difference
+          // between a toy people keep and one they switch off on day two.
+          //
+          // Chips rather than a dropdown. This is the last row in the panel and
+          // Dropdown's popup always opens downward from its trigger with no
+          // flip-up fallback, so on a 1080p screen the card is tall enough that
+          // the list ran off the bottom of the display: "Rare - 30 min" was
+          // drawn past the screen edge and could not be picked at all. Chips are
+          // laid out inside the card, so every cadence is reachable at any
+          // resolution, and switching the chase on becomes a deliberate click on
+          // a named cadence rather than a pick from a list that unfurls under
+          // the pointer.
+          Item {
+            width: parent.width
+            height: chaseLabel.implicitHeight
+
+            Text {
+              id: chaseLabel
+              anchors.left: parent.left
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Chase cursor"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              renderType: Text.NativeRendering
+            }
+            Text {
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              text: root.chaseDescription
+              color: Qt.alpha(root.foreground, 0.7)
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              renderType: Text.NativeRendering
+            }
+          }
+
+          ButtonGroup {
+            width: parent.width
+            options: root.chaseOptions
+            value: root.chaseValue
             foreground: root.foreground
+            accent: Color.accent
             fontFamily: root.fontFamily
-            enabled: root.ready
+            fontSize: Style.font.bodySmall
             onChanged: function(v) {
               if (!root.ready) return
               if (v === "off") { root.petService.setCursorChase(false); return }
