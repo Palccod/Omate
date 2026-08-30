@@ -1254,6 +1254,9 @@ PanelWindow {
     id: menu
 
     property bool open: false
+    // The point the menu was asked to open at, NOT where it ends up. Keeping
+    // the raw request here lets menuBox clamp it against its own real height
+    // as a binding -- see below for why that matters.
     property real x: 0
     property real y: 0
     // Rebuilt whenever the menu opens, so labels (Mute/Unmute, Nap/Wake…)
@@ -1274,8 +1277,14 @@ PanelWindow {
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },
         { label: "Hide Omate", action: () => petService && petService.updateSettings({ visible: false }) }
       ]
-      menu.x = Math.max(4, Math.min(root.width - menuBox.width - 4, x))
-      menu.y = Math.max(4, Math.min(root.height - menuBox.height - 4, y))
+      // Store the raw point and let menuBox do the clamping. Clamping here
+      // read menuBox.height one line after assigning `entries`, before the
+      // column had been laid out again -- so it used the PREVIOUS menu's
+      // height (or 0 on the very first open). The menu was then placed too
+      // low and its bottom entries ran off the screen, intermittently,
+      // depending on what the height happened to be last time.
+      menu.x = x
+      menu.y = y
       open = true
     }
     function close() { open = false }
@@ -1292,10 +1301,13 @@ PanelWindow {
   Item {
     id: menuBox
     parent: root.contentItem
-    x: menu.x
-    y: menu.y
     width: 120
     height: entriesColumn.height + 12
+    // Clamped as bindings, so they re-evaluate the moment `height` settles
+    // after the entry list changes. The mate lives on the floor, so a menu
+    // opened at the pointer would otherwise always hang off the bottom edge.
+    x: Math.max(4, Math.min(root.width - width - 4, menu.x))
+    y: Math.max(4, Math.min(root.height - height - 4, menu.y))
     visible: menu.open
 
     Rectangle {
