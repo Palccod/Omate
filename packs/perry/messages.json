@@ -47,5 +47,17 @@
     "This corner is mine now.",
     "Inspecting the perimeter.",
     "Corner duty."
+  ],
+  "chase": [
+    "That pointer is MINE.",
+    "Come here, little arrow.",
+    "*locks on*",
+    "Perry senses a target."
+  ],
+  "bite": [
+    "GOTCHA!",
+    "*chomp*",
+    "Nom. Your cursor is delicious.",
+    "Caught it!"
   ]
 }

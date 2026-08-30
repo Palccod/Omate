@@ -133,6 +133,10 @@ Item {
     soundVolume: 0.5,
     // Minutes of being ignored before a nap.
     sleepMinutes: 10,
+    // Chase and grab the mouse pointer. OFF by default and deliberately so:
+    // this is the one behaviour that reaches outside the mate's own window
+    // and moves something the user owns.
+    cursorChase: false,
     // Roughly one idle line every N minutes while awake.
     chatterMinutes: 4
   })
@@ -192,6 +196,7 @@ Item {
     loadedUserMessagesText !== "" ? loadedUserMessagesText : loadedRepoMessagesText
 
   readonly property bool roaming: settings.roamEnabled === true
+  readonly property bool cursorChase: settings.cursorChase === true
   // What the bar widget should show.
   readonly property string barAnim: sleeping ? drawableAnim("sleep", ["idle"]) : "idle"
   readonly property string moodLabel: sleeping ? "Omate — sleeping" : "Omate"
@@ -280,6 +285,10 @@ Item {
 
   function setRoaming(enabled) {
     updateSettings({ roamEnabled: enabled === true })
+  }
+
+  function setCursorChase(enabled) {
+    updateSettings({ cursorChase: enabled === true })
   }
 
   function setSoundVolume(volume) {
@@ -709,6 +718,8 @@ Item {
     // Teleport onto a random floating window (or leap if there is none).
     function hop(): void { mateWindow.hopToWindow() }
     function corner(): void { mateWindow.startCornerTrip() }
+    function setCursorChase(enabled: bool): void { root.setCursorChase(enabled) }
+    function toggleCursorChase(): void { root.setCursorChase(!root.cursorChase) }
     function status(): string {
       return (root.sleeping ? "sleeping" : "awake")
         + " pack=" + root.packName
@@ -717,6 +728,7 @@ Item {
         + " scale=" + root.petScale
         + " windows=" + (mateWindow ? mateWindow.platforms.length : -1)
         + " floor=" + (mateWindow ? Math.round(mateWindow.floorY) : -1)
+        + " chase=" + (root.cursorChase ? "on" : "off")
     }
   }
 
