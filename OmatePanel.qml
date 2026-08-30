@@ -171,11 +171,31 @@ Panel {
           fontFamily: root.fontFamily
         }
 
-        Flow {
+        // The grid gains a row for every three characters, and the panel is
+        // capped at the screen height with nothing scrolling anywhere -- so past
+        // a certain number of skins the Behavior controls below fell off the
+        // bottom and could not be reached at all. Worst on 1080p. The grid now
+        // takes at most a share of the panel and scrolls inside itself, so what
+        // sits below it stays put however many characters are installed.
+        Flickable {
+          id: skinsScroller
           width: parent.width
-          spacing: Style.space(8)
+          readonly property real cap:
+            Math.max(Style.space(120),
+                     (panel.availableCardHeight > 0 ? panel.availableCardHeight : 900) * 0.45)
+          height: Math.min(skinsFlow.implicitHeight, cap)
+          contentWidth: width
+          contentHeight: skinsFlow.implicitHeight
+          clip: true
+          boundsBehavior: Flickable.StopAtBounds
+          interactive: contentHeight > height
 
-          Repeater {
+          Flow {
+            id: skinsFlow
+            width: skinsScroller.width
+            spacing: Style.space(8)
+
+            Repeater {
             model: root.petService ? root.petService.packList : []
             Rectangle {
               id: card
@@ -242,9 +262,24 @@ Panel {
                   font.family: root.fontFamily
                   font.pixelSize: Style.font.caption
                   renderType: Text.NativeRendering
+                  }
                 }
               }
             }
+          }
+
+          // Only appears when there is more grid than room for it.
+          Rectangle {
+            anchors.right: parent.right
+            width: 3
+            radius: 1.5
+            visible: skinsScroller.interactive
+            color: Qt.alpha(root.foreground, 0.3)
+            height: Math.max(Style.space(24), skinsScroller.height
+                     * skinsScroller.height / Math.max(1, skinsScroller.contentHeight))
+            y: skinsScroller.contentY + (skinsScroller.height - height)
+               * (skinsScroller.contentY
+                  / Math.max(1, skinsScroller.contentHeight - skinsScroller.height))
           }
         }
 
