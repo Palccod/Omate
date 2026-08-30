@@ -211,7 +211,8 @@ Everything lives in plain files; edit and run `omarchy restart shell`.
   picks from (`greet`, `idle`, `drag`, `pet`, `poke`, `land`, `dizzy`,
   `sleep`, `wake`, `corner`, `chase`, `bite`).
 - **Settings** — `~/.local/state/omarchy/omate-settings.json`:
-  `visible`, `roamEnabled`, `cursorChase` (off by default), `scale` (1–6),
+  `visible`, `roamEnabled`, `cursorChase` (off by default),
+  `chaseCooldownSec` (5–3600, default 300), `scale` (1–6),
   `walkiness` (0–1), `screen`
   (Hyprland output name, empty = largest), `soundVolume`, `sleepMinutes`,
   `chatterMinutes`. Every one of these is editable live from the settings

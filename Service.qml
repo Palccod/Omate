@@ -137,11 +137,13 @@ Item {
     // this is the one behaviour that reaches outside the mate's own window
     // and moves something the user owns.
     cursorChase: false,
-    // Seconds of peace after each bite. The whole point of exposing this is
-    // that "every ten seconds" is delightful for an afternoon and unbearable
-    // for a working week -- without a dial, the second group just turns the
-    // feature off and never comes back.
-    chaseCooldownSec: 60,
+    // Seconds of peace after each bite. Five minutes by default: often
+    // enough that someone who switches chasing on sees it happen, rare
+    // enough that it never becomes the thing they notice all day. "Every ten
+    // seconds" is delightful for an afternoon and unbearable for a working
+    // week, and that second group does not go looking for the dial -- they
+    // turn the whole feature off and never come back.
+    chaseCooldownSec: 300,
     // Roughly one idle line every N minutes while awake.
     chatterMinutes: 4
   })
@@ -204,7 +206,7 @@ Item {
   readonly property bool cursorChase: settings.cursorChase === true
   readonly property int chaseCooldownSec: {
     var v = Number(settings.chaseCooldownSec)
-    return isFinite(v) ? Math.max(5, Math.min(3600, Math.round(v))) : 60
+    return isFinite(v) ? Math.max(5, Math.min(3600, Math.round(v))) : 300
   }
   // What the bar widget should show.
   readonly property string barAnim: sleeping ? drawableAnim("sleep", ["idle"]) : "idle"
@@ -303,7 +305,7 @@ Item {
   function setChaseCooldown(seconds) {
     var v = Number(seconds)
     updateSettings({ chaseCooldownSec:
-      isFinite(v) ? Math.max(5, Math.min(3600, Math.round(v))) : 60 })
+      isFinite(v) ? Math.max(5, Math.min(3600, Math.round(v))) : 300 })
   }
 
   function setSoundVolume(volume) {
