@@ -359,6 +359,7 @@ PanelWindow {
   }
 
   function startWalkTo(x, climb) {
+    if (asleep && petService) petService.wake(false)
     var bounds = currentSurfaceBounds()
     targetX = Math.max(bounds.x1, Math.min(bounds.x2 - spriteW, x))
     pendingClimb = climb || null
@@ -367,6 +368,7 @@ PanelWindow {
   }
 
   function walkTo(x) {
+    if (asleep && petService) petService.wake(false)
     targetX = clampX(x)
     facingLeft = targetX < petX
     action = "walk"
@@ -430,6 +432,14 @@ PanelWindow {
     repeat: true
     onTriggered: {
       var dt = interval / 1000
+      // Falling asleep mid-stride used to sleepwalk: the sleep pose played
+      // while the walk kept sliding to its target. Asleep means standing
+      // still — the sleep pose, or idle for packs without sleep art.
+      if (root.asleep && (root.action === "walk" || root.action === "climb")) {
+        root.pendingClimb = null
+        root.targetX = root.petX
+        root.action = "idle"
+      }
       if (root.action === "walk") {
         var step = root.walkSpeed * dt
         if (Math.abs(root.targetX - root.petX) <= step) {
