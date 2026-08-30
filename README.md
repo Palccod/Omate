@@ -19,6 +19,16 @@ the behavior controls, Miku window-sitting on the right](preview.png)
 Sitting works on any floating window — and she falls off when it closes.
 Sizes range from the 24px cat up to 250px Totoro, settable per pack.
 
+## Requirements
+
+- [Omarchy](https://omarchy.org) with its Quickshell shell (the default)
+- Hyprland (window tracking for window-sitting; the default)
+- PipeWire's `pw-play` for sound effects (stock on Omarchy; mute in the
+  panel)
+- Optional, only for the character converters in `tools/`: `python3`
+  (plus `pillow` for the GIF importer). The plugin itself never runs
+  Python.
+
 ## Features
 
 - **Crosses monitors**: drag her past a screen edge and the whole overlay
@@ -167,6 +177,22 @@ tools/                 Sprite & sound generators (pure Python stdlib)
 
 State (position, nap status) persists in
 `~/.local/state/omarchy/omate-state.json` and is restored on login.
+
+## Privacy & security
+
+- **No network access** — fully offline; nothing is ever downloaded or
+  phoned home
+- **No privileged behavior** — no sudo, pkexec, systemctl, or services
+- **File access** — reads and writes only its own state under
+  `~/.local/state/omarchy/`: `omate-settings.json`, `omate-state.json`,
+  and `omate-packs/` (characters you import yourself). Writes are atomic;
+  reads are size-capped
+- **Process execution** — exactly two things, always with fixed argument
+  arrays: `pw-play` for the bundled sound effects, and `head -c` for
+  bounded reads of its own state and pack files. Nothing is executed at
+  install time and nothing is downloaded
+- **No data collection** — no telemetry, no clipboard access, no
+  credentials
 
 ## Notes
 
