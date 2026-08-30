@@ -498,8 +498,23 @@ PanelWindow {
   function chaseAllowed() {
     if (!chaseEnabled || asleep || chaseResting || menu.open || support)
       return false
+    if (!hasBiteArt()) return false
     if (action === "idle" || action === "chase" || action === "pull") return true
     return action === "walk" && !pendingClimb && !pendingCorner
+  }
+
+  // The chomp is played with the existing `poked` pose, so a pack without one
+  // mimes the whole catch with its idle sprite: the pointer is hauled in and
+  // then nothing visibly happens. Better not to chase at all than to chase
+  // and have the payoff missing.
+  //
+  // hasAnim() is the right check here, unlike hasCornerArt() above: `poke` is
+  // an animation the engine already knows, so hasAnim resolves it correctly
+  // for legacy a/b packs (Mochi declares `poke` with no frame list) as well as
+  // for frame-list packs. `corner` is new and unknown to older packs, which is
+  // why that one has to inspect the declared frames directly.
+  function hasBiteArt() {
+    return petService ? petService.hasAnim("poke") : false
   }
 
   function warpCursor(x, y) {
@@ -568,8 +583,11 @@ PanelWindow {
   // Slow while merely watching, fast only while actually hauling.
   Timer {
     id: cursorPoll
+    // hasBiteArt() is in the running condition, not just in chaseAllowed(),
+    // so a pack that can never chase does not pay for a socket round-trip
+    // every tick.
     running: root.visible && root.chaseEnabled && !root.asleep
-      && !root.chaseResting
+      && !root.chaseResting && root.hasBiteArt()
     repeat: true
     // A single steady rate. Switching the interval mid-pull left the timer on
     // the slow tick, so the haul advanced in visible lurches; 90ms is smooth
@@ -1271,8 +1289,10 @@ PanelWindow {
         ...(root.hasCornerArt()
             ? [{ label: "Find a corner", action: () => root.startCornerTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
-        { label: root.chaseEnabled ? "Stop chasing" : "Chase cursor",
-          action: () => petService && petService.setCursorChase(!root.chaseEnabled) },
+        ...(root.hasBiteArt()
+            ? [{ label: root.chaseEnabled ? "Stop chasing" : "Chase cursor",
+                 action: () => petService && petService.setCursorChase(!root.chaseEnabled) }]
+            : []),
         { label: root.asleep ? "Wake up" : "Nap now", action: () => petService && (root.asleep ? petService.wake(true) : petService.doze()) },
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },
         { label: "Hide Omate", action: () => petService && petService.updateSettings({ visible: false }) }
