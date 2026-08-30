@@ -1,0 +1,66 @@
+{
+  "greet": [
+    "I'm up! Did you miss me?",
+    "Reporting for duty. And naps.",
+    "Good morning! The floor is warm today."
+  ],
+  "idle": [
+    "Nice wallpaper. Very you.",
+    "I sat in a kernel panic once. Warm.",
+    "The bar looks cozy today.",
+    "*tail flick*",
+    "somewhere, a pacman cache is growing...",
+    "I could chase that cursor. I won't. But I could.",
+    "have you run the updates? just asking.",
+    "this floor? immaculate.",
+    "psst... pet me.",
+    "compact windows, big dreams.",
+    "I dreamt of a red dot. It moved. I followed.",
+    "yawn... is it rice o'clock already?"
+  ],
+  "drag": [
+    "Whoa— put me down!",
+    "I can see my house from here!",
+    "Not by the scruff!",
+    "Airplane mode: activated.",
+    "best. view. ever."
+  ],
+  "pet": [
+    "purrrrrr",
+    "Right behind the ear. Yes.",
+    "more. more.",
+    "I accept your tribute.",
+    "*biscuits*"
+  ],
+  "poke": [
+    "boop.",
+    "hey! I felt that.",
+    "do it again. I dare you.",
+    "mew!"
+  ],
+  "land": [
+    "oof.",
+    "stuck the landing!",
+    "the floor came out of nowhere.",
+    "I'm okay! Probably."
+  ],
+  "dizzy": [
+    "...the floor attacked.",
+    "who put gravity there?",
+    "stars... pretty..."
+  ],
+  "sleep": [
+    "nap time...",
+    "zzz... don't update without me."
+  ],
+  "wake": [
+    "I'm awake! I'm awake.",
+    "five more minutes— okay, okay."
+  ],
+  "hop": [
+    "warp!",
+    "poof!",
+    "yeet.",
+    "beam me up!"
+  ]
+}

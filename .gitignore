@@ -1,0 +1,4 @@
+# Editor/session artifacts
+.zcode/
+__pycache__/
+*.pyc

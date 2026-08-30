@@ -1,0 +1,13 @@
+{
+  "name": "Mochi",
+  "author": "palccod",
+  "spriteSize": 24,
+  "anims": {
+    "idle": { "frameMs": 600 },
+    "walk": { "frameMs": 200 },
+    "sleep": { "frameMs": 1100 },
+    "drag": { "frameMs": 260 },
+    "fall": { "frameMs": 200 },
+    "poke": { "frameMs": 250 }
+  }
+}

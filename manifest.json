@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "palccod.omate",
+  "name": "Omate",
+  "version": "0.2.0",
+  "author": "palccod",
+  "license": "MIT",
+  "description": "A lightweight desktop mate for Omarchy: a little cat that roams your screen, rides along when you drag it, purrs when you pet it, and drops by with messages. No AI, no network — just a companion.",
+  "keywords": ["pet", "mate", "companion", "cat", "fun"],
+  "kinds": ["service", "bar-widget"],
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Omate",
+    "description": "Your desktop mate, living in the bar. Click to say hi.",
+    "category": "Fun",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
