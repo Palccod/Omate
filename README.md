@@ -65,17 +65,18 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
 
 ## Install
 
-The default Omarchy way — install straight from git:
+One command — no build steps, no extra setup:
 
 ```bash
 omarchy plugin add https://github.com/Palccod/Omate.git --enable
 ```
 
-That clones the plugin into `~/.config/omarchy/plugins/palccod.omate/`,
-enables it, and the shell picks it up: a bar button appears in the right
-section and the mate walks in on your desktop. Left click opens the
-settings panel (skins, behavior, the power switch), middle click gives
-the bar sprite a quick pet.
+That's the whole setup: a bar button appears in the right section, the
+mate walks in on your desktop, and all twelve characters are bundled —
+left click opens her settings, middle click pets the bar sprite. Future
+updates bring new packs and fixes through the same update command; her
+position, settings, and any characters you imported yourself live
+outside the plugin folder and survive updates.
 
 ## Enable / disable
 
@@ -107,25 +108,16 @@ Your mate's memory lives outside the plugin folder — remove these too if
 you want a clean break:
 
 ```bash
-rm -rf ~/.local/state/omarchy/omate-packs/   # imported characters
+rm -rf ~/.local/state/omarchy/omate-packs/   # characters you imported
 rm ~/.local/state/omarchy/omate-settings.json
 rm ~/.local/state/omarchy/omate-state.json
 ```
 
-For development, clone or link the repo into
-`~/.config/omarchy/plugins/palccod.omate/` yourself, then run
-`omarchy plugin enable palccod.omate` (or
-`omarchy-shell shell rescanPlugins`) and `omarchy restart shell` after
-editing files.
-
 ## Characters
 
-Omate ships with **twelve characters**: Mochi the cat, Hatsune Miku,
-Totoro, Foxy, Akita, Panda, Sheldon, Quackers, and the shimeji crew —
-Hornet, Gojo, Rem, and Mitsuri. Where each one comes from and who drew it
-is documented in [THIRD_PARTY.md](THIRD_PARTY.md).
-
-Want a thirteenth? Bring your own — the converters take three formats.
+Everything works out of the box: the twelve bundled characters need no
+setup at all. This section is only for adding a **thirteenth** of your
+own — the converters take three formats, all offline.
 
 **MikuPet-style** (a directory with `character.json` + sprite strips):
 
@@ -161,7 +153,8 @@ hunting grounds: [shimeji.org](https://shimeji.org/), the
 
 Characters are fan art of copyrighted characters: fine for personal
 offline use, don't redistribute. Every pack keeps its author credit in
-its own `pack.json`.
+its own `pack.json`; the twelve bundled ones are inventoried in
+[THIRD_PARTY.md](THIRD_PARTY.md).
 
 ## Command line (IPC)
 
@@ -242,3 +235,12 @@ State (position, nap status) persists in
   below fullscreen apps (a fullscreen app covers it — same as the bar).
 - Like every Omarchy shell plugin it runs inside the main shell instance;
   restart the shell after changing files.
+
+## Development
+
+Contributors only — users never need this. Clone or link the repo into
+`~/.config/omarchy/plugins/palccod.omate/`, then run
+`omarchy plugin enable palccod.omate` (or
+`omarchy-shell shell rescanPlugins`) and `omarchy restart shell` after
+editing files. Lint with `qmllint -I /usr/share/omarchy/shell *.qml`,
+validate with `omarchy plugin validate .`
