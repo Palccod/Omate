@@ -14,7 +14,7 @@
   },
   "barWidget": {
     "displayName": "Omate",
-    "description": "Your desktop mate, living in the bar. Click to say hi.",
+    "description": "Your desktop mate: settings and skins in the bar, roaming companion on the desktop.",
     "category": "Fun",
     "allowMultiple": false,
     "defaultSection": "right"

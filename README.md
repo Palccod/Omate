@@ -53,22 +53,58 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
 
 ## Install
 
-```sh
-omarchy plugin add <this-repo-url> --enable
+The default Omarchy way — install straight from git:
+
+```bash
+omarchy plugin add https://github.com/Palccod/Omate.git --enable
 ```
 
-Or from a local checkout:
+That clones the plugin into `~/.config/omarchy/plugins/palccod.omate/`,
+enables it, and the shell picks it up: a bar button appears in the right
+section and the mate walks in on your desktop. Left click opens the
+settings panel (skins, behavior, the power switch), middle click gives
+the bar sprite a quick pet.
 
-```sh
-cp -r /path/to/Omate ~/.config/omarchy/plugins/palccod.omate
-omarchy-shell shell rescanPlugins
-omarchy-shell shell setPluginEnabled palccod.omate true
-omarchy restart shell
+## Enable / disable
+
+```bash
+omarchy plugin enable palccod.omate     # bar widget + roaming mate return
+omarchy plugin disable palccod.omate    # both disappear; files stay put
+omarchy plugin list                     # see what's installed and enabled
 ```
 
-A bar button appears in the right section: left click opens the settings
-panel (skins, behavior, the power switch), middle click gives the bar
-sprite a quick pet.
+The mate's own power switch in the settings panel only hides her —
+disabling the plugin unloads the service itself.
+
+## Update
+
+```bash
+omarchy plugin update palccod.omate
+```
+
+If the shell somehow keeps running old code after an update,
+`omarchy restart shell`.
+
+## Uninstall
+
+```bash
+omarchy plugin remove palccod.omate     # disables + deletes the plugin
+```
+
+Your mate's memory lives outside the plugin folder — remove these too if
+you want a clean break:
+
+```bash
+rm -rf ~/.local/state/omarchy/omate-packs/   # imported characters
+rm ~/.local/state/omarchy/omate-settings.json
+rm ~/.local/state/omarchy/omate-state.json
+```
+
+For development, clone or link the repo into
+`~/.config/omarchy/plugins/palccod.omate/` yourself, then run
+`omarchy plugin enable palccod.omate` (or
+`omarchy-shell shell rescanPlugins`) and `omarchy restart shell` after
+editing files.
 
 
 Characters are fan art of copyrighted characters: fine for personal
