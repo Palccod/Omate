@@ -708,6 +708,7 @@ Item {
     function packs(): string { return root.knownPacks }
     // Teleport onto a random floating window (or leap if there is none).
     function hop(): void { mateWindow.hopToWindow() }
+    function corner(): void { mateWindow.startCornerTrip() }
     function status(): string {
       return (root.sleeping ? "sleeping" : "awake")
         + " pack=" + root.packName
