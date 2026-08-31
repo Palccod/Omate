@@ -46,6 +46,10 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   Petting a sleeping cat keeps it asleep.
 - **Poke it**: a quick tap gets a mew and a startled face.
 - **Sleeps** after 10 idle minutes (configurable), wakes when grabbed.
+- **Corner trips**: a pack that ships a `corner` animation will occasionally
+  wander to the nearest edge of whatever it is standing on, turn around and
+  play that pose before carrying on. Packs without that art never do it, so
+  none of the bundled characters are affected.
 - **Chase the cursor** (off by default): switch it on and the mate stalks
   your mouse pointer, hauls it in when it strays close, bites it, and hands
   it straight back to where it picked it up. It can never keep the pointer —
@@ -60,7 +64,8 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   send it.
 - **Sounds**: tiny synthesized blips (grab, purr, poke, thud, zzz, wake).
 - **Menu**: right-click the cat for settings / window-hop / walk / nap /
-  mute / hide, plus "Stop chasing" while a chase is armed.
+  mute / hide (plus "Find a corner" for packs with `corner` art, and
+  "Stop chasing" while a chase is armed).
 - **Settings panel**: click the bar button (or the cat's "Settings…" menu
   entry) for a popup card styled like the plugin manager's rows — an
   animated sprite in the header, an enable/disable power switch in the top
@@ -190,6 +195,8 @@ omarchy-shell omate setScreen DP-1  # home output; "" = largest
 omarchy-shell omate gotoScreen DP-1 # one-off trip: drop in from the top
 omarchy-shell omate setPack miku   # or: setPack default
 omarchy-shell omate packs          # list installed character packs
+omarchy-shell omate corner         # wander to the nearest corner (packs
+                                   # with "corner" art only)
 omarchy-shell omate setCursorChase true   # chase the mouse pointer
 omarchy-shell omate toggleCursorChase
 omarchy-shell omate setChaseCooldown 300  # seconds between chases, 5-3600
@@ -205,7 +212,7 @@ Everything lives in plain files; edit and run `omarchy restart shell`.
 
 - **Messages** — `packs/default/messages.json`: pools of lines the cat
   picks from (`greet`, `idle`, `drag`, `pet`, `poke`, `land`, `dizzy`,
-  `sleep`, `wake`, `chase`, `bite`).
+  `sleep`, `wake`, `corner`, `chase`, `bite`).
 - **Settings** — `~/.local/state/omarchy/omate-settings.json`:
   `visible`, `roamEnabled`, `cursorChase` (off by default),
   `chaseCooldownSec` (5–3600, default 300), `scale` (1–6),

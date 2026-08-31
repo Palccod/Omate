@@ -734,6 +734,7 @@ Item {
     function packs(): string { return root.knownPacks }
     // Teleport onto a random floating window (or leap if there is none).
     function hop(): void { mateWindow.hopToWindow() }
+    function corner(): void { mateWindow.startCornerTrip() }
     function setCursorChase(enabled: bool): void { root.setCursorChase(enabled) }
     function toggleCursorChase(): void { root.setCursorChase(!root.cursorChase) }
     // Seconds between chases, 5-3600.

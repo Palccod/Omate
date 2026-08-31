@@ -171,6 +171,8 @@ PanelWindow {
   property var support: null
   // Chosen climb target {wallX, platform} while walking to a wall.
   property var pendingClimb: null
+  // Set while walking to a corner; consumed on arrival.
+  property bool pendingCorner: false
 
   function rebuildPlatforms() {
     if (!hyprMonitor) { platforms = []; validateSupport(); return }
@@ -260,7 +262,7 @@ PanelWindow {
   property real petY: 0            // the mate's feet line
   property bool facingLeft: false
   property string action: "idle"   // idle | walk | climb | drag | fall | stunned
-                                   //        | chase | pull
+                                   //        | corner | chase | pull
   property real targetX: 0
   property real targetY: 0
   // Throw velocity from the last drag samples.
@@ -291,6 +293,7 @@ PanelWindow {
     case "sit": return "sit"
     case "lie": return "lie"
     case "fall": return "fall"
+    case "corner": return "corner"
     // Stalking and hauling both read as walking; the chomp itself reuses
     // the existing `poked` pose, which is already the startled/bite art.
     case "chase": return "walk"
@@ -314,6 +317,7 @@ PanelWindow {
     case "sit": return petService.drawableAnim("sit", ["idle"])
     case "lie": return petService.drawableAnim("lie", ["sit", "idle"])
     case "land": return petService.drawableAnim("land", ["fall", "idle"])
+    case "corner": return petService.drawableAnim("corner", ["idle"])
     default: return petService.drawableAnim(rawAnim, ["idle"])
     }
   }
@@ -370,6 +374,39 @@ PanelWindow {
     pendingClimb = null
     if (action !== "fall") fallStartY = petY
     action = "fall"
+  }
+
+  // Whether this pack actually ships corner-trip frames. Deliberately NOT
+  // petService.hasAnim("corner"): that answers true for any name on legacy
+  // a/b packs, which would make Mochi mime the whole routine with its idle
+  // sprite. Every bundled character is unaffected because none of them
+  // declares a "corner" animation.
+  function hasCornerArt() {
+    var pack = petService ? petService.pack : null
+    var a = pack && pack.anims ? pack.anims["corner"] : null
+    return !!(a && a.frames && a.frames.length > 0)
+  }
+
+  // Idle, on the floor, awake, and drawable: the conditions for the brain to
+  // pick a corner trip of its own accord.
+  function canVisitCorner() {
+    if (!petService || support || asleep || action !== "idle") return false
+    return hasCornerArt()
+  }
+
+  // Trot to whichever end of the current surface is nearer, then go.
+  // Reachable from the brain roll, the menu and IPC, so it guards itself
+  // rather than trusting the caller.
+  function startCornerTrip() {
+    if (!hasCornerArt()) return
+    if (action === "drag" || action === "fall" || action === "climb"
+        || action === "stunned" || action === "corner") return
+    if (petService) petService.wake(false)
+    var bounds = currentSurfaceBounds()
+    var leftX = bounds.x1
+    var rightX = bounds.x2 - spriteW
+    pendingCorner = true
+    startWalkTo((petX - leftX) <= (rightX - petX) ? leftX : rightX, null)
   }
 
   // --- cursor chase ------------------------------------------------------
@@ -709,6 +746,13 @@ PanelWindow {
   }
 
   Timer {
+    id: cornerTimer
+    // Long enough to play a short frame set through twice.
+    interval: 2600
+    onTriggered: if (root.action === "corner") root.action = "idle"
+  }
+
+  Timer {
     id: stunTimer
     interval: 1200
     onTriggered: if (root.action === "stunned") root.action = "idle"
@@ -759,6 +803,7 @@ PanelWindow {
         root.endChase(false)
       if (root.asleep && (root.action === "walk" || root.action === "climb")) {
         root.pendingClimb = null
+        root.pendingCorner = false
         root.targetX = root.petX
         root.action = "idle"
       }
@@ -769,6 +814,16 @@ PanelWindow {
           if (root.pendingClimb) {
             root.targetY = root.pendingClimb.platform.y
             root.action = "climb"
+          } else if (root.pendingCorner) {
+            root.pendingCorner = false
+            // The pose plays rearward, so turn away from whichever edge we
+            // just walked to and put the pet's back to the wall.
+            var mid = (root.currentSurfaceBounds().x1
+                       + root.currentSurfaceBounds().x2) / 2
+            root.facingLeft = root.petX > mid
+            root.action = "corner"
+            cornerTimer.restart()
+            if (root.petService) root.petService.sayFrom("corner")
           } else {
             root.action = "idle"
           }
@@ -848,7 +903,9 @@ PanelWindow {
       var roll = Math.random()
       var climbs = root.climbCandidates()
 
-      if (roll < 0.22 && climbs.length > 0) {
+      if (roll < 0.07 && root.canVisitCorner()) {
+        root.startCornerTrip()
+      } else if (roll < 0.22 && climbs.length > 0) {
         var pick = climbs[Math.floor(Math.random() * climbs.length)]
         root.startWalkTo(pick.wallX, pick)
       } else if (roll < 0.34 && root.support) {
@@ -1006,6 +1063,7 @@ PanelWindow {
           root.action = "drag"
           root.support = null
           root.pendingClimb = null
+          root.pendingCorner = false
           root.endChase(true)
           root.vx = 0
           root.vy = 0
@@ -1222,6 +1280,9 @@ PanelWindow {
     id: menu
 
     property bool open: false
+    // The point the menu was asked to open at, NOT where it ends up. Keeping
+    // the raw request here lets menuBox clamp it against its own real height
+    // as a binding -- see below for why that matters.
     property real x: 0
     property real y: 0
     // Rebuilt whenever the menu opens, so labels (Mute/Unmute, Nap/Wake…)
@@ -1233,6 +1294,8 @@ PanelWindow {
       entries = [
         { label: "Settings…", action: () => petService && petService.panelRequested() },
         { label: "Window hop", action: () => root.hopToWindow() },
+        ...(root.hasCornerArt()
+            ? [{ label: "Find a corner", action: () => root.startCornerTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
         // Only ever the *off* switch. Chasing is the one behaviour that
         // reaches out and moves something the user owns, so arming it stays in
@@ -1249,8 +1312,14 @@ PanelWindow {
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },
         { label: "Hide Omate", action: () => petService && petService.updateSettings({ visible: false }) }
       ]
-      menu.x = Math.max(4, Math.min(root.width - menuBox.width - 4, x))
-      menu.y = Math.max(4, Math.min(root.height - menuBox.height - 4, y))
+      // Store the raw point and let menuBox do the clamping. Clamping here
+      // read menuBox.height one line after assigning `entries`, before the
+      // column had been laid out again -- so it used the PREVIOUS menu's
+      // height (or 0 on the very first open). The menu was then placed too
+      // low and its bottom entries ran off the screen, intermittently,
+      // depending on what the height happened to be last time.
+      menu.x = x
+      menu.y = y
       open = true
     }
     function close() { open = false }
@@ -1267,10 +1336,13 @@ PanelWindow {
   Item {
     id: menuBox
     parent: root.contentItem
-    x: menu.x
-    y: menu.y
     width: 120
     height: entriesColumn.height + 12
+    // Clamped as bindings, so they re-evaluate the moment `height` settles
+    // after the entry list changes. The mate lives on the floor, so a menu
+    // opened at the pointer would otherwise always hang off the bottom edge.
+    x: Math.max(4, Math.min(root.width - width - 4, menu.x))
+    y: Math.max(4, Math.min(root.height - height - 4, menu.y))
     visible: menu.open
 
     Rectangle {
