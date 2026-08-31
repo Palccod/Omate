@@ -12,5 +12,19 @@
   "dizzy": ["Shake it off..."],
   "sleep": ["(dreaming of treats)"],
   "wake": ["Treat?!"],
-  "hop": ["BOING!"]
+  "hop": ["BOING!"],
+  "chase": [
+    "That pointer is mine.",
+    "Come here, little arrow.",
+    "*locks on*",
+    "Hold still...",
+    "Target acquired."
+  ],
+  "bite": [
+    "Gotcha!",
+    "Caught it!",
+    "Mine now.",
+    "*chomp*",
+    "Got you. ...fine, you can have it back."
+  ]
 }

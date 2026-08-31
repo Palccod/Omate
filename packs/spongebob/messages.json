@@ -46,5 +46,19 @@
   "hop": [
     "Sea bear attack! Wait, that's just a window.",
     "To the Krusty Krab!"
+  ],
+  "chase": [
+    "That pointer is mine.",
+    "Come here, little arrow.",
+    "*locks on*",
+    "Hold still...",
+    "Target acquired."
+  ],
+  "bite": [
+    "Gotcha!",
+    "Caught it!",
+    "Mine now.",
+    "*chomp*",
+    "Got you. ...fine, you can have it back."
   ]
 }

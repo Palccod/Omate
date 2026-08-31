@@ -55,6 +55,38 @@ Panel {
     return opts
   }
 
+  // Chase cadences. The value is the cooldown in seconds; "off" switches the
+  // whole feature off. Short chip labels so all five fit one row inside the
+  // card; the long-form name of the current setting sits beside the row label
+  // and the full sentence is on each chip's tooltip.
+  readonly property var chaseOptions: [
+    { value: "off",  label: "Off",
+      tooltip: "The pointer is left alone" },
+    { value: "10",   label: "10s",
+      tooltip: "Playful - a go at the pointer every 10 seconds" },
+    { value: "60",   label: "1 min",
+      tooltip: "Now and then - once a minute" },
+    { value: "300",  label: "5 min",
+      tooltip: "Occasional - once every five minutes" },
+    { value: "1800", label: "30 min",
+      tooltip: "Rare - twice an hour" }
+  ]
+  readonly property string chaseValue: ready && petService.cursorChase
+    ? String(petService.chaseCooldownSec) : "off"
+  // Named for the cadences the chips offer, but a cooldown set from the IPC
+  // (`setChaseCooldown 600`) is a legitimate value with no chip of its own, so
+  // it gets spelled out rather than silently leaving the row looking unset.
+  readonly property string chaseDescription: {
+    if (!ready || !petService.cursorChase) return "Off"
+    switch (petService.chaseCooldownSec) {
+      case 10: return "Playful"
+      case 60: return "Now and then"
+      case 300: return "Occasional"
+      case 1800: return "Rare"
+    }
+    return "Every " + petService.chaseCooldownSec + "s"
+  }
+
   // The mate's right-click menu opens the panel on the main screen's bar.
   Connections {
     target: root.petService
@@ -562,6 +594,61 @@ Panel {
                 if (root.ready) root.petService.updateSettings({ chatterMinutes: v })
               }
             }
+          }
+        }
+
+        // Cursor chasing. One control for both the on/off and the cadence:
+        // the interesting choice is not "should it happen" but "how often",
+        // and "every ten seconds" vs "twice an hour" is the difference
+        // between a toy people keep and one they switch off on day two.
+        //
+        // Chips rather than a dropdown. This is the last row in the panel and
+        // Dropdown's popup always opens downward from its trigger with no
+        // flip-up fallback, so on a 1080p screen the card is tall enough that
+        // the list ran off the bottom of the display: "Rare - 30 min" was
+        // drawn past the screen edge and could not be picked at all. Chips are
+        // laid out inside the card, so every cadence is reachable at any
+        // resolution, and switching the chase on becomes a deliberate click on
+        // a named cadence rather than a pick from a list that unfurls under
+        // the pointer.
+        Item {
+          width: parent.width
+          height: chaseLabel.implicitHeight
+
+          Text {
+            id: chaseLabel
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            text: "Chase cursor"
+            color: root.foreground
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.bodySmall
+            renderType: Text.NativeRendering
+          }
+          Text {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            text: root.chaseDescription
+            color: Qt.alpha(root.foreground, 0.7)
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            renderType: Text.NativeRendering
+          }
+        }
+
+        ButtonGroup {
+          width: parent.width
+          options: root.chaseOptions
+          value: root.chaseValue
+          foreground: root.foreground
+          accent: Color.accent
+          fontFamily: root.fontFamily
+          fontSize: Style.font.bodySmall
+          onChanged: function(v) {
+            if (!root.ready) return
+            if (v === "off") { root.petService.setCursorChase(false); return }
+            root.petService.setChaseCooldown(Number(v))
+            root.petService.setCursorChase(true)
           }
         }
       }

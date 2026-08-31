@@ -12,5 +12,19 @@
   "dizzy": ["Bamboo... why..."],
   "sleep": ["Do not disturb the bean."],
   "wake": ["...five more minutes."],
-  "hop": ["(rolls)"]
+  "hop": ["(rolls)"],
+  "chase": [
+    "That pointer is mine.",
+    "Come here, little arrow.",
+    "*locks on*",
+    "Hold still...",
+    "Target acquired."
+  ],
+  "bite": [
+    "Gotcha!",
+    "Caught it!",
+    "Mine now.",
+    "*chomp*",
+    "Got you. ...fine, you can have it back."
+  ]
 }

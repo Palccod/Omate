@@ -12,5 +12,19 @@
   "dizzy": ["The ground moved..."],
   "sleep": ["(curled up tight)"],
   "wake": ["Squirrel?!"],
-  "hop": ["Pounce!"]
+  "hop": ["Pounce!"],
+  "chase": [
+    "That pointer is mine.",
+    "Come here, little arrow.",
+    "*locks on*",
+    "Hold still...",
+    "Target acquired."
+  ],
+  "bite": [
+    "Gotcha!",
+    "Caught it!",
+    "Mine now.",
+    "*chomp*",
+    "Got you. ...fine, you can have it back."
+  ]
 }

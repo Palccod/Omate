@@ -12,5 +12,19 @@
   "dizzy": ["I felt that one in my shell."],
   "sleep": ["Retracting for a while..."],
   "wake": ["Was I out long?"],
-  "hop": ["Speed mode: engaged. Barely."]
+  "hop": ["Speed mode: engaged. Barely."],
+  "chase": [
+    "That pointer is mine.",
+    "Come here, little arrow.",
+    "*locks on*",
+    "Hold still...",
+    "Target acquired."
+  ],
+  "bite": [
+    "Gotcha!",
+    "Caught it!",
+    "Mine now.",
+    "*chomp*",
+    "Got you. ...fine, you can have it back."
+  ]
 }

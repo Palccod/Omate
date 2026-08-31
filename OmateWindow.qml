@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import Quickshell.Hyprland
 
 // The mate's world: a transparent full-screen overlay it wanders along the
@@ -260,7 +261,8 @@ PanelWindow {
   property real petX: 0
   property real petY: 0            // the mate's feet line
   property bool facingLeft: false
-  property string action: "idle"   // idle | walk | climb | drag | fall | stunned | corner
+  property string action: "idle"   // idle | walk | climb | drag | fall | stunned
+                                   //        | corner | chase | pull
   property real targetX: 0
   property real targetY: 0
   // Throw velocity from the last drag samples.
@@ -292,6 +294,10 @@ PanelWindow {
     case "lie": return "lie"
     case "fall": return "fall"
     case "corner": return "corner"
+    // Stalking and hauling both read as walking; the chomp itself reuses
+    // the existing `poked` pose, which is already the startled/bite art.
+    case "chase": return "walk"
+    case "pull": return "walk"
     // Grounded as a result of the fall: the impact pose (frozen, since the
     // mate is dazed until the stun wears off).
     case "stunned": return "land"
@@ -403,6 +409,289 @@ PanelWindow {
     startWalkTo((petX - leftX) <= (rightX - petX) ? leftX : rightX, null)
   }
 
+  // --- cursor chase ------------------------------------------------------
+  //
+  // Reads the pointer over Hyprland's IPC socket and, when it strays close
+  // enough, drags it to the mate's mouth and bites it.
+  //
+  // Two rules shape the whole thing. It is OFF unless the user turns it on,
+  // because it is the only behaviour that moves something outside the mate's
+  // own window. And it can never trap the pointer: `maxPullMs` is a hard
+  // ceiling on any single pull, the pointer is flung clear afterwards, and
+  // every pull is followed by a cooldown, so the user always wins a tug of
+  // war by simply out-lasting it.
+
+  readonly property bool chaseEnabled: petService ? petService.cursorChase : false
+  property int cursorX: -99999      // pointer, in Hyprland's global coords
+  property int cursorY: -99999
+  property string cursorBuf: ""
+  // Hyprland 0.5x takes `hl.dsp.cursor.move({x = , y = })`; older releases
+  // take `movecursor X Y`. Probed once, with a no-op warp to where the
+  // pointer already is.
+  property bool cursorLegacy: false
+  property bool cursorProbed: false
+  property int pullElapsed: 0
+  property bool chaseResting: false
+  // Where the pointer was when the haul started, so it can be handed back.
+  property int pullOriginX: 0
+  property int pullOriginY: 0
+  property int chaseElapsed: 0
+
+  // The reach is sprite-relative, so a bigger character has a slightly longer
+  // one -- but CLAMPED, because unclamped it made the same setting mean wildly
+  // different things. Akita (348px sprite) noticed the pointer from ~1560px
+  // away, three quarters of a 2048px screen, while Mochi (72px) barely noticed
+  // it at 324px: near-constant harassment for one character and near-inert for
+  // another. The band keeps every pack inside roughly 2x of each other.
+  function clampRadius(v, lo, hi) {
+    return Math.round(Math.max(lo, Math.min(hi, v)))
+  }
+
+  // Starts a chase. Generous, because the pointer spends most of its life
+  // nowhere near the floor the mate walks on -- but never more than a fraction
+  // of the display, so a small screen does not become one big trigger zone.
+  readonly property int noticeRadius: clampRadius(spriteW * 4.5, 380,
+    Math.max(380, Math.min(720, width * 0.45)))
+  // Abandons one. Deliberately far larger than noticeRadius: with a single
+  // threshold the mate sets off, the pointer drifts a little, and it gives up
+  // mid-approach -- it would spend all its time starting chases and none
+  // finishing them.
+  readonly property int giveUpRadius: Math.round(noticeRadius * 1.8)
+  // Start hauling from well out. Tuned up from 1.7 body-lengths after watching
+  // it: the mate would trot all the way over and only then tug the last ~80px,
+  // so the haul was invisible and it just looked like a walk. Held below
+  // noticeRadius so it can never out-reach the thing that starts the chase.
+  readonly property int pullRadius: Math.min(
+    clampRadius(spriteW * 3.0, 260, 520), Math.round(noticeRadius * 0.7))
+  readonly property int biteRadius: clampRadius(spriteW * 0.5, 40, 110)
+  // Strong enough to close a long haul before maxPullMs runs out. At 0.15 a
+  // pull from across the screen timed out every time, which left the pointer
+  // stranded halfway -- the exact "it ended up somewhere I never put it"
+  // problem the hand-back is meant to avoid.
+  readonly property real pullStrength: 0.25
+  readonly property int maxPullMs: 4000
+  // A chase that never gets anywhere is dropped, so the mate cannot end up
+  // trailing the pointer around forever.
+  readonly property int maxChaseMs: 14000
+
+  // Where the teeth are, in global coords.
+  readonly property real mouthGX: (hyprMonitor ? hyprMonitor.x : 0)
+    + petX + (facingLeft ? spriteW * 0.24 : spriteW * 0.76)
+  readonly property real mouthGY: (hyprMonitor ? hyprMonitor.y : 0)
+    + petY - visH * 0.45
+
+  function cursorDistance() {
+    if (cursorX < -9999) return Number.POSITIVE_INFINITY
+    var dx = cursorX - mouthGX
+    var dy = cursorY - mouthGY
+    return Math.sqrt(dx * dx + dy * dy)
+  }
+
+  // Chasing is for an awake mate standing on the floor. Riding a window is
+  // left alone: hauling the pointer from up there would need the fall logic
+  // to agree, and the joke is not worth the edge cases.
+  //
+  // A plain wander IS interruptible -- a mate that only noticed the pointer
+  // while standing perfectly still would almost never notice it at all, since
+  // wandering is its default state. A walk that is on its way somewhere
+  // specific (a climb approach) is left to finish.
+  function chaseAllowed() {
+    if (!chaseEnabled || asleep || chaseResting || menu.open || support)
+      return false
+    if (!hasBiteArt()) return false
+    if (action === "idle" || action === "chase" || action === "pull") return true
+    return action === "walk" && !pendingClimb
+  }
+
+  // The chomp is played with the existing `poked` pose, so a pack without one
+  // mimes the whole catch with its idle sprite: the pointer is hauled in and
+  // then nothing visibly happens. Better not to chase at all than to chase
+  // and have the payoff missing.
+  //
+  // hasAnim() is the right check: `poke` is an animation the engine already
+  // knows, so it resolves correctly for legacy a/b packs (Mochi declares
+  // `poke` with no frame list) as well as for frame-list packs.
+  function hasBiteArt() {
+    return petService ? petService.hasAnim("poke") : false
+  }
+
+  function warpCursor(x, y) {
+    var gx = Math.round(x), gy = Math.round(y)
+    Hyprland.dispatch(cursorLegacy
+      ? ("movecursor " + gx + " " + gy)
+      : ("hl.dsp.cursor.move({x = " + gx + ", y = " + gy + "})"))
+  }
+
+  function endChase(rest) {
+    if (action === "chase" || action === "pull") action = "idle"
+    pullElapsed = 0
+    chaseElapsed = 0
+    if (rest) { chaseResting = true; chaseRestTimer.restart() }
+  }
+
+  function biteCursor() {
+    poked = true
+    pokeTimer.restart()
+    if (petService) {
+      petService.playSound("poke")
+      petService.sayFrom("bite")
+    }
+    // Hold it in its teeth for a beat before handing it back, so the chomp
+    // is actually visible. Returning it instantly reads as a glitch: the
+    // pointer snaps home before the bite pose has even drawn.
+    biteHoldTimer.restart()
+    endChase(true)
+  }
+
+  Timer {
+    id: biteHoldTimer
+    // Shorter than pokeTimer's 550ms, so the pointer is back before the bite
+    // pose finishes and the mate is never left chewing on nothing.
+    interval: 420
+    onTriggered: root.warpCursor(root.pullOriginX, root.pullOriginY)
+  }
+
+  Timer {
+    id: chaseRestTimer
+    interval: (petService ? petService.chaseCooldownSec : 60) * 1000
+    onTriggered: root.chaseResting = false
+  }
+
+  Socket {
+    id: cursorSocket
+    path: Quickshell.env("XDG_RUNTIME_DIR") + "/hypr/"
+      + Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE") + "/.socket.sock"
+    parser: SplitParser {
+      splitMarker: "\n"
+      onRead: function (line) {
+        // The plain `cursorpos` reply has no trailing newline, so SplitParser
+        // would never fire; `j/cursorpos` is newline-terminated JSON.
+        root.cursorBuf += line
+        if (root.cursorBuf.indexOf("}") < 0) return
+        try {
+          var p = JSON.parse(root.cursorBuf)
+          if (isFinite(p.x) && isFinite(p.y)) { root.cursorX = p.x; root.cursorY = p.y }
+        } catch (e) { /* a partial or malformed reply: just skip this tick */ }
+        root.cursorBuf = ""
+      }
+    }
+  }
+
+  // Hyprland closes the socket after every reply, so each poll reconnects.
+  // Slow while merely watching, fast only while actually hauling.
+  Timer {
+    id: cursorPoll
+    // hasBiteArt() is in the running condition, not just in chaseAllowed(),
+    // so a pack that can never chase does not pay for a socket round-trip
+    // every tick.
+    running: root.visible && root.chaseEnabled && !root.asleep
+      && !root.chaseResting && root.hasBiteArt()
+    repeat: true
+    // Two rates, and the split matters more than it looks. This timer runs
+    // for as long as the feature is armed, so the watching rate is what the
+    // feature actually costs when nothing is happening -- which is nearly
+    // always. Noticing that the pointer has come near is a cheap question
+    // that does not need asking eleven times a second; a quarter-second is
+    // imperceptible for that. Once a chase is on, smoothness is the whole
+    // point, and 90ms is what makes the haul read as a pull rather than a
+    // series of jumps.
+    //
+    // Keyed on the chase, not on the pull: switching only when the pull began
+    // left the approach on the slow tick and made the haul lurch. Both the
+    // approach and the haul run at the fast rate, so `chaseElapsed` and
+    // `pullElapsed` always accumulate the interval they were measured at.
+    interval: (root.action === "chase" || root.action === "pull") ? 90 : 260
+    onTriggered: {
+      root.cursorBuf = ""
+      cursorSocket.connected = true
+      cursorSocket.write("j/cursorpos")
+      cursorSocket.flush()
+      root.tickChase()
+    }
+  }
+
+  function tickChase() {
+    if (!chaseAllowed()) { endChase(false); return }
+    if (cursorX < -9999) return
+    // Only bother with a pointer on this mate's own output.
+    if (hyprMonitor) {
+      var lx = cursorX - hyprMonitor.x, ly = cursorY - hyprMonitor.y
+      if (lx < 0 || ly < 0 || lx > width || ly > height) { endChase(false); return }
+    }
+    if (!cursorProbed) probeCursorSyntax()
+
+    var d = cursorDistance()
+
+    if (action === "pull") {
+      pullElapsed += cursorPoll.interval
+      if (d < biteRadius) { biteCursor(); return }
+      // Hard ceiling, and a bail-out if the user has dragged it well clear.
+      // Two different ways to stop, and they deserve different endings.
+      // If the user dragged the pointer clear, they are holding it: let go
+      // where it is, and do not yank it back. But a plain timeout is the
+      // mate's failure, not theirs, so put the pointer back where it was
+      // picked up rather than abandoning it halfway across the screen.
+      if (d > noticeRadius * 1.6) { endChase(true); return }
+      if (pullElapsed > maxPullMs) {
+        warpCursor(pullOriginX, pullOriginY)
+        endChase(true)
+        return
+      }
+      warpCursor(cursorX + (mouthGX - cursorX) * pullStrength,
+                 cursorY + (mouthGY - cursorY) * pullStrength)
+      return
+    }
+
+    if (d < pullRadius) {
+      action = "pull"
+      pullElapsed = 0
+      pullOriginX = cursorX
+      pullOriginY = cursorY
+      if (petService) petService.sayFrom("chase")
+      return
+    }
+
+    // Hysteresis: it takes noticeRadius to start caring, but giveUpRadius to
+    // stop, so a pointer that drifts while the mate is walking over does not
+    // call the whole thing off.
+    var chasing = action === "chase"
+    if (d < noticeRadius || (chasing && d < giveUpRadius)) {
+      if (chasing) {
+        chaseElapsed += cursorPoll.interval
+        if (chaseElapsed > maxChaseMs) { endChase(true); return }
+      } else {
+        chaseElapsed = 0
+      }
+      action = "chase"
+      facingLeft = cursorX < mouthGX
+      targetX = clampX(cursorX - (hyprMonitor ? hyprMonitor.x : 0) - spriteW / 2)
+      return
+    }
+
+    if (chasing) endChase(false)
+  }
+
+  // One no-op warp to the pointer's current position tells us whether this
+  // Hyprland speaks the new dispatch syntax, without moving anything.
+  function probeCursorSyntax() {
+    cursorProbed = true
+    probeSocket.connected = true
+    probeSocket.write("dispatch hl.dsp.cursor.move({x = " + cursorX
+                      + ", y = " + cursorY + "})")
+    probeSocket.flush()
+  }
+
+  Socket {
+    id: probeSocket
+    path: cursorSocket.path
+    parser: SplitParser {
+      splitMarker: "\n"
+      onRead: function (reply) {
+        if (reply.indexOf("ok") !== 0) root.cursorLegacy = true
+      }
+    }
+  }
+
   function startWalkTo(x, climb) {
     if (asleep && petService) petService.wake(false)
     var bounds = currentSurfaceBounds()
@@ -510,6 +799,8 @@ PanelWindow {
       // Falling asleep mid-stride used to sleepwalk: the sleep pose played
       // while the walk kept sliding to its target. Asleep means standing
       // still — the sleep pose, or idle for packs without sleep art.
+      if (root.asleep && (root.action === "chase" || root.action === "pull"))
+        root.endChase(false)
       if (root.asleep && (root.action === "walk" || root.action === "climb")) {
         root.pendingClimb = null
         root.pendingCorner = false
@@ -540,6 +831,12 @@ PanelWindow {
         } else {
           root.petX += root.petX < root.targetX ? step : -step
         }
+      } else if (root.action === "chase") {
+        // Same stepping as a walk, but the target keeps moving and arriving
+        // is not the end of anything.
+        var cstep = root.walkSpeed * dt
+        if (Math.abs(root.targetX - root.petX) > cstep)
+          root.petX += root.petX < root.targetX ? cstep : -cstep
       } else if (root.action === "climb") {
         var rise = root.climbSpeed * dt
         if (root.petY - root.targetY <= rise) {
@@ -767,6 +1064,7 @@ PanelWindow {
           root.support = null
           root.pendingClimb = null
           root.pendingCorner = false
+          root.endChase(true)
           root.vx = 0
           root.vy = 0
           if (petService) petService.grabStart()
@@ -999,6 +1297,17 @@ PanelWindow {
         ...(root.hasCornerArt()
             ? [{ label: "Find a corner", action: () => root.startCornerTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
+        // Only ever the *off* switch. Chasing is the one behaviour that
+        // reaches out and moves something the user owns, so arming it stays in
+        // the settings panel, next to the cadence and the sentence explaining
+        // what it does -- a right-click menu sat between "Walk over" and "Nap
+        // now" is too easy to arm by accident, and someone who does that has
+        // no idea why their pointer started moving on its own. Turning it off
+        // has no such cost, so that stays one click away from the mate itself.
+        ...(root.chaseEnabled
+            ? [{ label: "Stop chasing",
+                 action: () => petService && petService.setCursorChase(false) }]
+            : []),
         { label: root.asleep ? "Wake up" : "Nap now", action: () => petService && (root.asleep ? petService.wake(true) : petService.doze()) },
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },
         { label: "Hide Omate", action: () => petService && petService.updateSettings({ visible: false }) }

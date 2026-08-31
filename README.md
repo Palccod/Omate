@@ -50,17 +50,28 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   wander to the nearest edge of whatever it is standing on, turn around and
   play that pose before carrying on. Packs without that art never do it, so
   none of the bundled characters are affected.
+- **Chase the cursor** (off by default): switch it on and the mate stalks
+  your mouse pointer, hauls it in when it strays close, bites it, and hands
+  it straight back to where it picked it up. It can never keep the pointer —
+  every pull is capped and always ends by returning it — so you win a tug of
+  war just by out-lasting it. Switching it *on* lives only in the settings
+  panel, next to the cadence — every ten seconds through twice an hour — so
+  it cannot be armed by a stray click; the right-click menu only ever stops
+  it. The chomp is played with the pack's `poke` pose, so a character that
+  ships no `poke` art is never offered the chase at all — the pointer would be
+  hauled in and nothing would visibly happen.
 - **Speech bubbles**: idle chatter, event reactions, and any message you
   send it.
 - **Sounds**: tiny synthesized blips (grab, purr, poke, thud, zzz, wake).
 - **Menu**: right-click the cat for settings / window-hop / walk / nap /
-  mute / hide (plus "Find a corner" for packs with `corner` art).
+  mute / hide (plus "Find a corner" for packs with `corner` art, and
+  "Stop chasing" while a chase is armed).
 - **Settings panel**: click the bar button (or the cat's "Settings…" menu
   entry) for a popup card styled like the plugin manager's rows — an
   animated sprite in the header, an enable/disable power switch in the top
   right, a **skin picker where every installed pack previews its own idle
   animation**, and live controls for roaming, volume, size, walkiness,
-  home screen, and nap/chatter cadence.
+  home screen, nap/chatter cadence, and the cursor chase.
 - **Eighteen characters bundled** — Pikachu, Miku, Totoro, SpongeBob,
   Spider-Man, Deadpool, Luffy, Dieter the cat, Hornet, Gojo, Rem,
   Mitsuri, a fox, an akita, a panda, a turtle, a rubber duck, and Mochi
@@ -186,6 +197,9 @@ omarchy-shell omate setPack miku   # or: setPack default
 omarchy-shell omate packs          # list installed character packs
 omarchy-shell omate corner         # wander to the nearest corner (packs
                                    # with "corner" art only)
+omarchy-shell omate setCursorChase true   # chase the mouse pointer
+omarchy-shell omate toggleCursorChase
+omarchy-shell omate setChaseCooldown 300  # seconds between chases, 5-3600
 omarchy-shell omate hop            # teleport onto a random floating window
                                    # (or leap for joy if none are around)
 omarchy-shell omate status
@@ -198,9 +212,11 @@ Everything lives in plain files; edit and run `omarchy restart shell`.
 
 - **Messages** — `packs/default/messages.json`: pools of lines the cat
   picks from (`greet`, `idle`, `drag`, `pet`, `poke`, `land`, `dizzy`,
-  `sleep`, `wake`, `corner`).
+  `sleep`, `wake`, `corner`, `chase`, `bite`).
 - **Settings** — `~/.local/state/omarchy/omate-settings.json`:
-  `visible`, `roamEnabled`, `scale` (1–6), `walkiness` (0–1), `screen`
+  `visible`, `roamEnabled`, `cursorChase` (off by default),
+  `chaseCooldownSec` (5–3600, default 300), `scale` (1–6),
+  `walkiness` (0–1), `screen`
   (Hyprland output name, empty = largest), `soundVolume`, `sleepMinutes`,
   `chatterMinutes`. Every one of these is editable live from the settings
   panel; the file is just where they persist.
@@ -233,6 +249,12 @@ State (position, nap status) persists in
 - **No network access** — fully offline; nothing is ever downloaded or
   phoned home
 - **No privileged behavior** — no sudo, pkexec, systemctl, or services
+- **Pointer control** — only if you turn on cursor chasing, which is off by
+  default. It reads the pointer position from Hyprland's IPC socket and, while
+  actively hauling, moves the pointer through Hyprland's own dispatcher. Each
+  pull is capped in duration, always ends by releasing the pointer clear of
+  the mate, and is followed by a cooldown; nothing about it can hold the
+  pointer against you. Turn it off and none of that code runs.
 - **File access** — reads and writes only its own state under
   `~/.local/state/omarchy/`: `omate-settings.json`, `omate-state.json`,
   and `omate-packs/` (characters you import yourself). Writes are atomic;

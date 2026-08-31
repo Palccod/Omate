@@ -133,6 +133,17 @@ Item {
     soundVolume: 0.5,
     // Minutes of being ignored before a nap.
     sleepMinutes: 10,
+    // Chase and grab the mouse pointer. OFF by default and deliberately so:
+    // this is the one behaviour that reaches outside the mate's own window
+    // and moves something the user owns.
+    cursorChase: false,
+    // Seconds of peace after each bite. Five minutes by default: often
+    // enough that someone who switches chasing on sees it happen, rare
+    // enough that it never becomes the thing they notice all day. "Every ten
+    // seconds" is delightful for an afternoon and unbearable for a working
+    // week, and that second group does not go looking for the dial -- they
+    // turn the whole feature off and never come back.
+    chaseCooldownSec: 300,
     // Roughly one idle line every N minutes while awake.
     chatterMinutes: 4
   })
@@ -192,6 +203,11 @@ Item {
     loadedUserMessagesText !== "" ? loadedUserMessagesText : loadedRepoMessagesText
 
   readonly property bool roaming: settings.roamEnabled === true
+  readonly property bool cursorChase: settings.cursorChase === true
+  readonly property int chaseCooldownSec: {
+    var v = Number(settings.chaseCooldownSec)
+    return isFinite(v) ? Math.max(5, Math.min(3600, Math.round(v))) : 300
+  }
   // What the bar widget should show.
   readonly property string barAnim: sleeping ? drawableAnim("sleep", ["idle"]) : "idle"
   readonly property string moodLabel: sleeping ? "Omate — sleeping" : "Omate"
@@ -280,6 +296,16 @@ Item {
 
   function setRoaming(enabled) {
     updateSettings({ roamEnabled: enabled === true })
+  }
+
+  function setCursorChase(enabled) {
+    updateSettings({ cursorChase: enabled === true })
+  }
+
+  function setChaseCooldown(seconds) {
+    var v = Number(seconds)
+    updateSettings({ chaseCooldownSec:
+      isFinite(v) ? Math.max(5, Math.min(3600, Math.round(v))) : 300 })
   }
 
   function setSoundVolume(volume) {
@@ -709,6 +735,10 @@ Item {
     // Teleport onto a random floating window (or leap if there is none).
     function hop(): void { mateWindow.hopToWindow() }
     function corner(): void { mateWindow.startCornerTrip() }
+    function setCursorChase(enabled: bool): void { root.setCursorChase(enabled) }
+    function toggleCursorChase(): void { root.setCursorChase(!root.cursorChase) }
+    // Seconds between chases, 5-3600.
+    function setChaseCooldown(seconds: int): void { root.setChaseCooldown(seconds) }
     function status(): string {
       return (root.sleeping ? "sleeping" : "awake")
         + " pack=" + root.packName
@@ -717,6 +747,7 @@ Item {
         + " scale=" + root.petScale
         + " windows=" + (mateWindow ? mateWindow.platforms.length : -1)
         + " floor=" + (mateWindow ? Math.round(mateWindow.floorY) : -1)
+        + " chase=" + (root.cursorChase ? "on/" + root.chaseCooldownSec + "s" : "off")
     }
   }
 
