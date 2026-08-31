@@ -1,0 +1,63 @@
+{
+  "greet": [
+    "Perry reporting for duty. *snort*"
+  ],
+  "idle": [
+    "*snort*",
+    "(wrinkles intensify)",
+    "Perry has been thinking. About food.",
+    "Is it snack o'clock?",
+    "*snoooort*"
+  ],
+  "drag": [
+    "Hrrmph!",
+    "Unhand the Perry.",
+    "I am not a balloon."
+  ],
+  "pet": [
+    "*happy pug noises*",
+    "(leans entirely on you)",
+    "More. Of that."
+  ],
+  "poke": [
+    "Bork!",
+    "!!"
+  ],
+  "land": [
+    "Oof. Stuck it.",
+    "The floor and Perry are friends."
+  ],
+  "dizzy": [
+    "...too much spin.",
+    "The room is doing a thing."
+  ],
+  "sleep": [
+    "zzz *snort* zzz",
+    "(dreaming of a bone)"
+  ],
+  "wake": [
+    "Was there food?",
+    "I'm up! Snack?"
+  ],
+  "hop": [
+    "BOING!"
+  ],
+  "corner": [
+    "Perry was here.",
+    "This corner is mine now.",
+    "Inspecting the perimeter.",
+    "Corner duty."
+  ],
+  "chase": [
+    "That pointer is MINE.",
+    "Come here, little arrow.",
+    "*locks on*",
+    "Perry senses a target."
+  ],
+  "bite": [
+    "GOTCHA!",
+    "*chomp*",
+    "Nom. Your cursor is delicious.",
+    "Caught it!"
+  ]
+}

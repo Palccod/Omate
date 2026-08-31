@@ -1,0 +1,45 @@
+{
+  "name": "Perry the Pug",
+  "author": "angelv (generated art)",
+  "width": 168,
+  "height": 160,
+  "defaultScale": 1,
+  "anims": {
+    "idle": {
+      "frames": [
+        "idle_00.png"
+      ],
+      "frameMs": 600
+    },
+    "walk": {
+      "frames": [
+        "walk_00.png",
+        "walk_01.png",
+        "walk_02.png",
+        "walk_03.png"
+      ],
+      "frameMs": 240
+    },
+    "sleep": {
+      "frames": [
+        "sleep_00.png"
+      ],
+      "frameMs": 800
+    },
+    "poke": {
+      "frames": [
+        "poke_00.png"
+      ],
+      "frameMs": 250
+    },
+    "corner": {
+      "frames": [
+        "corner_00.png",
+        "corner_01.png",
+        "corner_02.png",
+        "corner_03.png"
+      ],
+      "frameMs": 320
+    }
+  }
+}
