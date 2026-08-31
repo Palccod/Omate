@@ -12,5 +12,19 @@
   "dizzy": ["(dizzy quack)"],
   "sleep": ["Floating offline..."],
   "wake": ["Quack! Ready for duty."],
-  "hop": ["Takeoff!"]
+  "hop": ["Takeoff!"],
+  "chase": [
+    "That pointer is mine.",
+    "Come here, little arrow.",
+    "*locks on*",
+    "Hold still...",
+    "Target acquired."
+  ],
+  "bite": [
+    "Gotcha!",
+    "Caught it!",
+    "Mine now.",
+    "*chomp*",
+    "Got you. ...fine, you can have it back."
+  ]
 }
