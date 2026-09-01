@@ -608,6 +608,15 @@ PanelWindow {
       cursorSocket.flush()
       root.tickChase()
     }
+    // Each tick acts on the PREVIOUS reply, which is normally one interval
+    // old and imperceptible. But this timer stops for the whole rest period,
+    // so on re-arm that reply is a cooldown old and still says the pointer is
+    // in the mate's mouth, where it was last bitten. Acting on it starts a
+    // pull whose origin is that stale point, and the hand-back then drops the
+    // pointer there instead of where it was really picked up. Forget the
+    // position on re-arm and let the first tick fall through the sentinel
+    // guard in tickChase; the next one has a real answer.
+    onRunningChanged: if (running) { root.cursorX = -99999; root.cursorY = -99999 }
   }
 
   function tickChase() {
