@@ -287,6 +287,10 @@ Item {
   // --- actions (shared by the IPC surface, panel and menu) ----------------------
 
   function setMateVisible(visible) {
+    // Coming back from hidden restarts the nap clock. Time spent away is not
+    // time spent ignored -- with the old stamp kept, a mate brought back
+    // after a while dozes, with sound, on the very next tick.
+    if (visible === true && settings.visible !== true) noteInteraction()
     updateSettings({ visible: visible === true })
   }
 
@@ -369,13 +373,17 @@ Item {
 
   // --- timers --------------------------------------------------------------------
 
-  // Nap check: ignored for long enough? Lights out.
+  // Nap check: ignored for long enough? Lights out. A mate that has been put
+  // away is not being ignored, it is away -- napping while hidden played the
+  // sleep sound out of an empty screen. Same guard the chatter timer below
+  // already uses.
   Timer {
     interval: 15000
     running: root.initialized
     repeat: true
     onTriggered: {
-      if (root.sleeping || root.lastInteractionMs <= 0) return
+      if (root.sleeping || root.settings.visible !== true) return
+      if (root.lastInteractionMs <= 0) return
       var minutes = Number(root.settings.sleepMinutes)
       if (!isFinite(minutes) || minutes <= 0) return
       if (Date.now() - root.lastInteractionMs >= minutes * 60000) root.doze()
