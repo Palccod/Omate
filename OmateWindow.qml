@@ -1225,6 +1225,11 @@ PanelWindow {
         width: Math.min(implicitWidth, 170)
         wrapMode: Text.Wrap
         text: root.bubbleText
+        // Bubble text comes from IPC and from pack messages.json — both
+        // outside this file's control. Plain text only: AutoText would
+        // render rich text, and a crafted <img> could make the "offline"
+        // mate fetch from the network.
+        textFormat: Text.PlainText
         color: "#f8f2e5"
         // Modest and capped: huge packs must not inflate the bubble.
         font.pixelSize: Math.min(13, Math.max(11, Math.round(root.spriteH * 0.08)))

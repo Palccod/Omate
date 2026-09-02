@@ -259,6 +259,10 @@ Item {
 
   function say(text) {
     if (typeof text !== "string" || text === "") return
+    // IPC text is unbounded at the source; the bubble wraps and grows with
+    // the text, so cap it here rather than let one long say() cover the
+    // screen.
+    if (text.length > 300) text = text.substring(0, 300)
     sayRequested(text)
   }
 
@@ -478,8 +482,7 @@ Item {
 
     // The pack readers started before settings existed (and thus read the
     // default pack); if the saved pack differs, read again with the real name.
-    var savedPack = typeof settings.pack === "string" && settings.pack !== ""
-      ? settings.pack : defaultPack
+    var savedPack = validPackName(settings.pack) ? settings.pack : defaultPack
     if (savedPack !== packName) reloadPack()
 
     applyPackIfReady()
@@ -496,9 +499,19 @@ Item {
     if (s >= 1 && s <= 6) updateSettings({ scale: Math.round(s) })
   }
 
+  // Pack names are directory names under packs/ or omate-packs/. setPack
+  // arrives over IPC and settings.pack is read back from a JSON file, so
+  // neither is trusted here: reject anything that could climb out of the
+  // pack roots before it reaches a path.
+  function validPackName(name) {
+    return typeof name === "string" && name !== ""
+      && /^[A-Za-z0-9][A-Za-z0-9 _.-]*$/.test(name)
+      && name.indexOf("..") < 0
+  }
+
   // Switch character pack — the settings panel and the IPC share this path.
   function selectPack(name) {
-    if (typeof name !== "string" || name === "") return
+    if (!validPackName(name)) return
     pendingDefaultScale = true
     updateSettings({ pack: name })
     reloadPack()
@@ -517,8 +530,7 @@ Item {
   // exit later and apply the old pack's text under the new pack's name.
   // tryLoadPack defers the launch until every reader is idle.
   function reloadPack() {
-    packName = typeof settings.pack === "string" && settings.pack !== ""
-      ? settings.pack : defaultPack
+    packName = validPackName(settings.pack) ? settings.pack : defaultPack
     tryLoadPack()
   }
 
@@ -567,8 +579,33 @@ Item {
       try {
         var parsedPack = JSON.parse(effectivePackText)
         if (parsedPack && (Number(parsedPack.spriteSize) > 0
-                           || Number(parsedPack.width) > 0))
+                           || Number(parsedPack.width) > 0)) {
+          // pack.json is third-party input. Clamp the canvas geometry and
+          // drop frame names that are not plain file names, so nothing in
+          // the file can steer an image load outside the sprite directory
+          // or blow up sprite sizing.
+          var packW = Number(parsedPack.width)
+          if (packW > 0) parsedPack.width = Math.max(8, Math.min(2048, Math.round(packW)))
+          var packH = Number(parsedPack.height)
+          if (packH > 0) parsedPack.height = Math.max(8, Math.min(2048, Math.round(packH)))
+          var packAnims = parsedPack.anims
+          if (packAnims) {
+            for (var animKey in packAnims) {
+              var frameList = packAnims[animKey] && packAnims[animKey].frames
+              if (!Array.isArray(frameList)) continue
+              var cleanFrames = []
+              for (var fi = 0; fi < frameList.length && cleanFrames.length < 64; fi++) {
+                var frame = frameList[fi]
+                if (typeof frame === "string"
+                    && /^[A-Za-z0-9][A-Za-z0-9 _.-]*$/.test(frame)
+                    && frame.indexOf("..") < 0 && frame.indexOf("/") < 0)
+                  cleanFrames.push(frame)
+              }
+              packAnims[animKey].frames = cleanFrames
+            }
+          }
           pack = parsedPack
+        }
       } catch (error) {
         console.warn("omate: pack '" + packName + "' unreadable, keeping current")
       }

@@ -171,6 +171,9 @@ Panel {
             }
             Text {
               text: root.statusLabel
+              // statusLabel echoes the pack name, which setPack lets a
+              // caller choose; render it literally.
+              textFormat: Text.PlainText
               color: root.statusColor
               font.family: root.fontFamily
               font.pixelSize: Style.font.caption
@@ -287,6 +290,9 @@ Panel {
                       horizontalAlignment: Text.AlignHCenter
                       elide: Text.ElideRight
                       text: card.modelData.title
+                      // Pack titles come from third-party pack.json files;
+                      // render literally, never as rich text.
+                      textFormat: Text.PlainText
                       color: card.selected ? Color.accent
                                            : Qt.alpha(root.foreground, 0.75)
                       font.family: root.fontFamily
