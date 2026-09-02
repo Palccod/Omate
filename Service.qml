@@ -578,6 +578,36 @@ Item {
     return typeof path === "string" && path.indexOf("/" + packName + "/") !== -1
   }
 
+  // pack.json is third-party input. Clamp the canvas geometry and drop
+  // frame names that are not plain file names, so nothing in the file can
+  // steer an image load outside the sprite directory or blow up sprite
+  // sizing. Applied everywhere a parsed pack.json is adopted: the selected
+  // pack (applyPackIfReady) and the panel's preview list (packLister).
+  function sanitizePackJson(parsedPack) {
+    if (!parsedPack || typeof parsedPack !== "object") return parsedPack
+    var packW = Number(parsedPack.width)
+    if (packW > 0) parsedPack.width = Math.max(8, Math.min(2048, Math.round(packW)))
+    var packH = Number(parsedPack.height)
+    if (packH > 0) parsedPack.height = Math.max(8, Math.min(2048, Math.round(packH)))
+    var packAnims = parsedPack.anims
+    if (packAnims) {
+      for (var animKey in packAnims) {
+        var frameList = packAnims[animKey] && packAnims[animKey].frames
+        if (!Array.isArray(frameList)) continue
+        var cleanFrames = []
+        for (var fi = 0; fi < frameList.length && cleanFrames.length < 64; fi++) {
+          var frame = frameList[fi]
+          if (typeof frame === "string"
+              && /^[A-Za-z0-9][A-Za-z0-9 _.-]*$/.test(frame)
+              && frame.indexOf("..") < 0 && frame.indexOf("/") < 0)
+            cleanFrames.push(frame)
+        }
+        packAnims[animKey].frames = cleanFrames
+      }
+    }
+    return parsedPack
+  }
+
   // Called by every pack/messages reader as it lands; applies whichever
   // copies exist — but only once the whole launch is in (see
   // packReadsPending). During startup this feeds initializeIfReady instead.
@@ -587,33 +617,8 @@ Item {
       try {
         var parsedPack = JSON.parse(effectivePackText)
         if (parsedPack && (Number(parsedPack.spriteSize) > 0
-                           || Number(parsedPack.width) > 0)) {
-          // pack.json is third-party input. Clamp the canvas geometry and
-          // drop frame names that are not plain file names, so nothing in
-          // the file can steer an image load outside the sprite directory
-          // or blow up sprite sizing.
-          var packW = Number(parsedPack.width)
-          if (packW > 0) parsedPack.width = Math.max(8, Math.min(2048, Math.round(packW)))
-          var packH = Number(parsedPack.height)
-          if (packH > 0) parsedPack.height = Math.max(8, Math.min(2048, Math.round(packH)))
-          var packAnims = parsedPack.anims
-          if (packAnims) {
-            for (var animKey in packAnims) {
-              var frameList = packAnims[animKey] && packAnims[animKey].frames
-              if (!Array.isArray(frameList)) continue
-              var cleanFrames = []
-              for (var fi = 0; fi < frameList.length && cleanFrames.length < 64; fi++) {
-                var frame = frameList[fi]
-                if (typeof frame === "string"
-                    && /^[A-Za-z0-9][A-Za-z0-9 _.-]*$/.test(frame)
-                    && frame.indexOf("..") < 0 && frame.indexOf("/") < 0)
-                  cleanFrames.push(frame)
-              }
-              packAnims[animKey].frames = cleanFrames
-            }
-          }
-          pack = parsedPack
-        }
+                           || Number(parsedPack.width) > 0))
+          pack = sanitizePackJson(parsedPack)
       } catch (error) {
         console.warn("omate: pack '" + packName + "' unreadable, keeping current")
       }
@@ -838,7 +843,7 @@ Item {
         if (name === "" || seen[name]) continue
         seen[name] = true
         var packData = null
-        try { packData = JSON.parse(records[r].json) } catch (error) { packData = null }
+        try { packData = sanitizePackJson(JSON.parse(records[r].json)) } catch (error) { packData = null }
         var dir
         if (records[r].path.indexOf(root.userPacksDir + "/") === 0)
           dir = "file://" + records[r].path + "sprites/"
