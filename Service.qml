@@ -50,7 +50,7 @@ Item {
   })
   // messages.json from the selected pack: what the mate says. Same deal —
   // the file is the user-editable copy of these defaults.
-  property var messages: ({
+  readonly property var defaultMessages: ({
     greet: ["I'm up! Did you miss me?"],
     idle: ["psst... pet me.", "*tail flick*", "this floor? immaculate."],
     drag: ["Whoa— put me down!"],
@@ -60,8 +60,43 @@ Item {
     dizzy: ["...the floor attacked."],
     sleep: ["nap time..."],
     wake: ["I'm awake! I'm awake."],
-    hop: ["warp!", "poof!", "yeet."]
+    hop: ["warp!", "poof!", "yeet."],
+    // Time-of-day lines: one is said the first time the mate is awake and
+    // out during each stretch of the day (see timeBucket()). Lines carrying
+    // {name} are only ever picked when the user has set a name. A pack's
+    // messages.json overrides any of these pools by declaring the same key.
+    morning: [
+      "Good morning!",
+      "Good morning, {name}!",
+      "*stretches* Morning already?",
+      "Rise and shine, {name}!"
+    ],
+    lunch: [
+      "Lunchtime! Have you eaten?",
+      "Food o'clock, {name}. Go eat!",
+      "*stares at your lunch*",
+      "Don't skip lunch, {name}."
+    ],
+    afternoon: [
+      "Go touch some grass, {name}.",
+      "I would touch grass, but I'm a pixel.",
+      "Afternoon already? Time flies.",
+      "Stretch your legs, {name}!"
+    ],
+    evening: [
+      "Good evening, {name}.",
+      "Evening already?",
+      "The sunset is nice today.",
+      "Almost dinner time, {name}."
+    ],
+    night: [
+      "Good night, {name}...",
+      "It's late. Sleep soon, {name}?",
+      "zzz... good night.",
+      "Screens off soon, {name}. Promise?"
+    ]
   })
+  property var messages: defaultMessages
 
   // Sprite URL prefix for the selected pack (PetSprite prepends frame
   // names). Absolute for user packs, plugin-relative for repo packs.
@@ -130,6 +165,12 @@ Item {
     // Which output to live on, as Hyprland names it (e.g. "DP-1").
     // Empty picks the largest screen.
     screen: "",
+    // Pin the mate to the screen named above: no autonomous screen trips,
+    // no drag crossings, no fling throws. Toggled from the right-click menu.
+    screenLocked: false,
+    // What the mate calls you, used in some time-of-day lines ({name}).
+    // Letters and digits only, at most 20 characters; sanitized on read.
+    userName: "",
     soundVolume: 0.5,
     // Minutes of being ignored before a nap.
     sleepMinutes: 10,
@@ -159,6 +200,13 @@ Item {
   readonly property real walkiness: {
     var v = Number(settings.walkiness)
     return isFinite(v) ? Math.max(0, Math.min(1, v)) : 0.6
+  }
+  // The user's name as the mate may say it. Sanitized here rather than only
+  // at the settings field, so a hand-edited settings file cannot smuggle in
+  // punctuation or a 200-character "name" that stretches the bubble.
+  readonly property string displayName: {
+    var v = typeof settings.userName === "string" ? settings.userName : ""
+    return v.replace(/[^A-Za-z0-9]/g, "").substring(0, 20)
   }
 
   // --- persistent pet facts ----------------------------------------------------
@@ -203,6 +251,7 @@ Item {
     loadedUserMessagesText !== "" ? loadedUserMessagesText : loadedRepoMessagesText
 
   readonly property bool roaming: settings.roamEnabled === true
+  readonly property bool screenLocked: settings.screenLocked === true
   readonly property bool cursorChase: settings.cursorChase === true
   readonly property int chaseCooldownSec: {
     var v = Number(settings.chaseCooldownSec)
@@ -254,11 +303,21 @@ Item {
   function pick(pool) {
     var list = messages[pool]
     if (!list || list.length === 0) return ""
+    if (displayName === "") {
+      // Lines written around a name are only usable when there is one.
+      var plain = []
+      for (var i = 0; i < list.length; i++)
+        if (typeof list[i] === "string" && list[i].indexOf("{name}") < 0)
+          plain.push(list[i])
+      list = plain
+    }
+    if (list.length === 0) return ""
     return list[Math.floor(Math.random() * list.length)]
   }
 
   function say(text) {
     if (typeof text !== "string" || text === "") return
+    if (displayName !== "") text = text.replace(/\{name\}/g, displayName)
     // IPC text is unbounded at the source; the bubble wraps and grows with
     // the text, so cap it here rather than let one long say() cover the
     // screen.
@@ -365,6 +424,7 @@ Item {
     flushPet()
   }
 
+
   // Position bookkeeping from the roaming window; flushed on a delay so a
   // walk across the screen doesn't cause a write per frame.
   property bool positionDirty: false
@@ -420,6 +480,37 @@ Item {
       interval = root.chatterInterval()
       if (root.sleeping || root.settings.visible !== true) return
       if (Math.random() < 0.75) root.sayFrom("idle")
+    }
+  }
+
+  // Time-of-day greetings: morning / lunch / afternoon / evening / night.
+  // One line per stretch of the day, said the first tick the mate is awake
+  // and out during that stretch. Ticks that land on a sleeping or hidden
+  // mate record nothing, so the line still comes when it wakes — within the
+  // same stretch. A stretch that passes entirely is simply never said: the
+  // bucket is computed fresh each tick, so no stale "good morning" ever
+  // fires at three in the afternoon. Local clock, checked in-process; the
+  // timer costs nothing between ticks.
+  function timeBucket() {
+    var h = new Date().getHours()
+    if (h >= 5 && h < 12) return "morning"
+    if (h >= 12 && h < 15) return "lunch"
+    if (h >= 15 && h < 18) return "afternoon"
+    if (h >= 18 && h < 21) return "evening"
+    return "night"
+  }
+  property string lastTimeBucket: ""
+
+  Timer {
+    interval: 120000
+    running: root.initialized
+    repeat: true
+    onTriggered: {
+      if (root.sleeping || root.settings.visible !== true) return
+      var bucket = root.timeBucket()
+      if (bucket === root.lastTimeBucket) return
+      root.lastTimeBucket = bucket
+      root.sayFrom(bucket)
     }
   }
 
@@ -532,6 +623,18 @@ Item {
     updateSettings({ screen: screen })
   }
 
+  // Pin the mate where it is right now: remember this output as home and
+  // stop every autonomous way of leaving it. Right-click menu + IPC.
+  function lockToScreen(screen) {
+    var patch = { screenLocked: true }
+    if (typeof screen === "string" && screen !== "") patch.screen = screen
+    updateSettings(patch)
+  }
+
+  function setScreenLocked(locked) {
+    updateSettings({ screenLocked: locked === true })
+  }
+
   // Re-read the selected pack's files (also the entry point after setPack).
   // The four readers are single Process objects, so a pack switch while a
   // read is still in flight must NOT relaunch over it — the old run would
@@ -626,7 +729,11 @@ Item {
     if (effectiveMessagesText !== "") {
       try {
         var parsedMessages = JSON.parse(effectiveMessagesText)
-        if (parsedMessages) messages = parsedMessages
+        // Pack messages sit on top of the embedded defaults, not over them:
+        // a pack that ships no time-of-day pools (or no hop, or no dizzy)
+        // still falls back to the defaults instead of going quiet for that
+        // pool, and a pack that does ship them overrides.
+        if (parsedMessages) messages = Object.assign({}, defaultMessages, parsedMessages)
       } catch (error) {
         console.warn("omate: messages for '" + packName + "' unreadable, keeping current")
       }
@@ -729,7 +836,10 @@ Item {
     }
   }
 
-  Component.onCompleted: reloadPack()
+  Component.onCompleted: {
+    reloadPack()
+    packLister.running = true
+  }
 
   // Write-only views: preload off, text() is never called, so the shell
   // never maps these files itself.
@@ -775,6 +885,11 @@ Item {
     // Move the mate to another output, as Hyprland names it; empty = largest.
     // Changes the home screen persistently and clears any runtime hop.
     function setScreen(screen: string): void { root.applyScreenChoice(screen) }
+    // Pin the mate to its current screen / release it again.
+    function lockScreen(): void {
+      root.lockToScreen(mateWindow && mateWindow.screen ? mateWindow.screen.name : "")
+    }
+    function unlockScreen(): void { root.setScreenLocked(false) }
     // Immediate one-off trip: drop in from the top of the named output.
     function gotoScreen(screen: string): bool {
       return mateWindow ? mateWindow.gotoScreen(screen) : false
@@ -798,6 +913,7 @@ Item {
         + " windows=" + (mateWindow ? mateWindow.platforms.length : -1)
         + " floor=" + (mateWindow ? Math.round(mateWindow.floorY) : -1)
         + " chase=" + (root.cursorChase ? "on/" + root.chaseCooldownSec + "s" : "off")
+        + " lock=" + (root.screenLocked ? "on" : "off")
     }
   }
 
@@ -867,12 +983,12 @@ Item {
       root.knownPacks = names.length > 0 ? names.join(",") : defaultPack
     }
   }
-  Timer {
-    interval: 2000
-    running: true
-    repeat: true
-    onTriggered: packLister.running = true
-  }
+  // Refreshed lazily, not on a timer: the list only feeds the settings
+  // panel's skin picker, so it is scanned once at startup and again
+  // whenever the panel is asked for. A periodic rescan here forked a
+  // shell and re-read every pack.json every couple of seconds for the
+  // whole session — visible as system-wide stutter.
+  onPanelRequested: packLister.running = true
 
   // --- the mate itself -------------------------------------------------------------
 

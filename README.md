@@ -60,18 +60,28 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   it. The chomp is played with the pack's `poke` pose, so a character that
   ships no `poke` art is never offered the chase at all — the pointer would be
   hauled in and nothing would visibly happen.
+- **Time of day**: once per stretch of the day the mate has something
+  fitting to say — a good-morning line, a lunch nudge, a "go touch some
+  grass" in the afternoon, a good night late. Set your name in the settings
+  panel (letters and digits, up to 20 characters) and some of those lines
+  will use it.
 - **Speech bubbles**: idle chatter, event reactions, and any message you
   send it.
+- **Multi-screen**: with more than one monitor the mate occasionally takes
+  a trip to another output on its own (drops in from the top), dragging it
+  past a screen edge carries it over to the next screen, and a strong fling
+  along an edge throws it across. "Lock to this screen" in the menu pins it
+  where it is and stops all of that until unlocked.
 - **Sounds**: tiny synthesized blips (grab, purr, poke, thud, zzz, wake).
-- **Menu**: right-click the cat for settings / window-hop / walk / nap /
-  mute / hide (plus "Find a corner" for packs with `corner` art, and
-  "Stop chasing" while a chase is armed).
+- **Menu**: right-click the cat for settings / walk / nap /
+  screen lock / mute / hide (plus "Find a corner" for packs with `corner`
+  art, and "Stop chasing" while a chase is armed).
 - **Settings panel**: click the bar button (or the cat's "Settings…" menu
   entry) for a popup card styled like the plugin manager's rows — an
   animated sprite in the header, an enable/disable power switch in the top
   right, a **skin picker where every installed pack previews its own idle
   animation**, and live controls for roaming, volume, size, walkiness,
-  home screen, nap/chatter cadence, and the cursor chase.
+  home screen, your name, nap/chatter cadence, and the cursor chase.
 - **Eighteen characters bundled** — Pikachu, Miku, Totoro, SpongeBob,
   Spider-Man, Deadpool, Luffy, Dieter the cat, Hornet, Gojo, Rem,
   Mitsuri, a fox, an akita, a panda, a turtle, a rubber duck, and Mochi
@@ -193,6 +203,8 @@ omarchy-shell omate setVolume 0.3
 omarchy-shell omate setScale 4    # 1-6
 omarchy-shell omate setScreen DP-1  # home output; "" = largest
 omarchy-shell omate gotoScreen DP-1 # one-off trip: drop in from the top
+omarchy-shell omate lockScreen      # pin the mate to its current screen
+omarchy-shell omate unlockScreen    # free it to roam and follow drags again
 omarchy-shell omate setPack miku   # or: setPack default
 omarchy-shell omate packs          # list installed character packs
 omarchy-shell omate corner         # wander to the nearest corner (packs
@@ -212,12 +224,20 @@ Everything lives in plain files; edit and run `omarchy restart shell`.
 
 - **Messages** — `packs/default/messages.json`: pools of lines the cat
   picks from (`greet`, `idle`, `drag`, `pet`, `poke`, `land`, `dizzy`,
-  `sleep`, `wake`, `corner`, `chase`, `bite`).
+  `sleep`, `wake`, `corner`, `chase`, `bite`, and the time-of-day pools
+  `morning`, `lunch`, `afternoon`, `evening`, `night`). Any line can carry
+  the placeholder `{name}` — it is replaced with the name set in the
+  settings panel, and lines that use it are only picked when a name is set.
+  Every pack's `messages.json` sits on top of built-in defaults, so a pack
+  that omits a pool (say, `night`) still falls back to the built-in lines.
 - **Settings** — `~/.local/state/omarchy/omate-settings.json`:
   `visible`, `roamEnabled`, `cursorChase` (off by default),
   `chaseCooldownSec` (5–3600, default 300), `scale` (1–6),
   `walkiness` (0–1), `screen`
-  (Hyprland output name, empty = largest), `soundVolume`, `sleepMinutes`,
+  (Hyprland output name, empty = largest), `screenLocked` (pins the mate
+  to `screen`), `userName` (what the mate calls you; letters and digits,
+  20 characters max), `soundVolume`,
+  `sleepMinutes`,
   `chatterMinutes`. Every one of these is editable live from the settings
   panel; the file is just where they persist.
 - **Sprites** — 24×24 PNGs in `packs/default/sprites/`, generated from

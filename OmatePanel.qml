@@ -549,6 +549,44 @@ Panel {
           }
         }
 
+        // What the mate calls you in some time-of-day lines. The field
+        // enforces letters-and-digits, 20 characters at most; Service
+        // re-sanitizes on read, so a hand-edited settings file cannot
+        // smuggle anything longer or stranger through.
+        Item {
+          width: parent.width
+          height: Math.max(nameLabel.implicitHeight, nameField.implicitHeight)
+
+          Text {
+            id: nameLabel
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            text: "Your name"
+            color: root.foreground
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.bodySmall
+            renderType: Text.NativeRendering
+          }
+          TextField {
+            id: nameField
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            width: Style.space(150)
+            verticalPadding: 2
+            enabled: root.ready
+            placeholderText: "optional"
+            maximumLength: 20
+            validator: RegularExpressionValidator { regularExpression: /[A-Za-z0-9]*/ }
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.bodySmall
+            foreground: root.foreground
+            text: root.ready ? String(root.petService.settings.userName || "") : ""
+            onEditingFinished: {
+              if (root.ready) root.petService.updateSettings({ userName: text.trim() })
+            }
+          }
+        }
+
         // Nap and chatter cadence.
         Item {
           width: parent.width

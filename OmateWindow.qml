@@ -340,6 +340,25 @@ PanelWindow {
     return best
   }
 
+  // The screen whose bounds contain this global point, if any. Deskmate's
+  // trick: crossings are decided by where the pointer actually IS in the
+  // global layout, not by which direction a neighbor happens to sit — so
+  // any monitor arrangement (side by side, stacked, mixed sizes) crosses
+  // correctly.
+  function screenAt(x, y) {
+    var screens = Quickshell.screens
+    for (var i = 0; i < screens.length; i++) {
+      var s = screens[i]
+      if (x >= s.x && x < s.x + s.width && y >= s.y && y < s.y + s.height)
+        return s
+    }
+    return null
+  }
+
+  // Locked to one screen: no drag crossings, no fling throws, and the
+  // brain never picks another output. Set from the right-click menu.
+  readonly property bool screenLocked: petService ? petService.screenLocked : false
+
   // Move the whole overlay to another output, keeping the mate at the given
   // local position. The layer surface itself migrates; if the compositor
   // drops the pointer grab while doing so, the drag's onCanceled turns the
@@ -392,6 +411,14 @@ PanelWindow {
   function canVisitCorner() {
     if (!petService || support || asleep || action !== "idle") return false
     return hasCornerArt()
+  }
+
+  // Whether the brain may send the mate to another output on its own:
+  // more than one screen, not locked to one, and nothing in progress.
+  function canRoamScreens() {
+    if (!petService || root.screenLocked) return false
+    if (support || asleep || action !== "idle") return false
+    return Quickshell.screens.length > 1
   }
 
   // Trot to whichever end of the current surface is nearer, then go.
@@ -912,7 +939,18 @@ PanelWindow {
       var roll = Math.random()
       var climbs = root.climbCandidates()
 
-      if (roll < 0.07 && root.canVisitCorner()) {
+      // Free roaming between outputs: occasionally take a trip to another
+      // screen (drop in from above, same as gotoScreen). Rare — about once
+      // every few minutes — and never when the mate is locked to a screen.
+      if (roll < 0.04 && root.canRoamScreens()) {
+        var others = []
+        var allScreens = Quickshell.screens
+        for (var si = 0; si < allScreens.length; si++)
+          if (!root.screen || allScreens[si].name !== root.screen.name)
+            others.push(allScreens[si])
+        if (others.length > 0)
+          root.gotoScreen(others[Math.floor(Math.random() * others.length)].name)
+      } else if (roll < 0.11 && root.canVisitCorner()) {
         root.startCornerTrip()
       } else if (roll < 0.22 && climbs.length > 0) {
         var pick = climbs[Math.floor(Math.random() * climbs.length)]
@@ -1051,16 +1089,22 @@ PanelWindow {
       onPositionChanged: function(mouse) {
         if (!pressed || !leftPress) return
         var p = mapToItem(root.contentItem, mouse.x, mouse.y)
-        // Crossing to a neighboring output: the cursor well past this
-        // window's edge is the cue. Compositors that clamp motion to the
-        // surface will never see this; the fling path below still works.
-        if (dragging && (p.x > root.width + 80 || p.x < -80)) {
-          var dirRight = p.x > root.width
-          var other = root.neighborScreen(dirRight)
-          if (other) {
+        // Crossing to another output, Deskmate-style: the cue is the pointer
+        // being somewhere else in the global layout — a little past this
+        // window's edge and inside another screen's bounds. Works for any
+        // monitor arrangement, and the mate lands exactly under the pointer
+        // on the far side. Compositors that clamp motion to the surface will
+        // never see this; the fling path below still works.
+        if (dragging && !root.screenLocked
+            && (p.x > root.width + 12 || p.x < -12
+                || p.y > root.height + 12 || p.y < -12)) {
+          var hover = root.screenAt(
+            (root.screen ? root.screen.x : 0) + p.x,
+            (root.screen ? root.screen.y : 0) + p.y)
+          if (hover && hover.name !== root.screen.name) {
             var gX = (root.screen ? root.screen.x : 0) + (p.x - grabDx)
             var gY = (root.screen ? root.screen.y : 0) + (p.y - grabDy + root.visH)
-            root.migrateTo(other, gX - other.x, gY - other.y)
+            root.migrateTo(hover, gX - hover.x, gY - hover.y)
           }
           return
         }
@@ -1094,7 +1138,7 @@ PanelWindow {
           // A strong fling along the screen edge throws her across to the
           // neighboring output.
           var other = null
-          if (root.vx > 350 && root.petX > root.width - root.spriteW * 2)
+          if (!root.screenLocked && root.vx > 350 && root.petX > root.width - root.spriteW * 2)
             other = root.neighborScreen(true)
           else if (root.vx < -350 && root.petX < root.spriteW * 2)
             other = root.neighborScreen(false)
@@ -1302,12 +1346,14 @@ PanelWindow {
     // Rebuilt whenever the menu opens, so labels (Mute/Unmute, Nap/Wake…)
     // are current. Plain array model — no typed ListModel roles needed.
     property var entries: []
+    // Box width, fitted to the widest label on open (floor 120 keeps the
+    // short menus from looking cramped).
+    property int width: 120
 
     function openAt(x, y) {
       var muted = petService && petService.soundVolume <= 0
       entries = [
         { label: "Settings…", action: () => petService && petService.panelRequested() },
-        { label: "Window hop", action: () => root.hopToWindow() },
         ...(root.hasCornerArt()
             ? [{ label: "Find a corner", action: () => root.startCornerTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
@@ -1323,9 +1369,25 @@ PanelWindow {
                  action: () => petService && petService.setCursorChase(false) }]
             : []),
         { label: root.asleep ? "Wake up" : "Nap now", action: () => petService && (root.asleep ? petService.wake(true) : petService.doze()) },
+        // Locking pins the mate to the screen it is on right now (and makes
+        // that output the saved home); unlocking leaves the screen but lets
+        // the mate roam and follow drags across again.
+        { label: root.screenLocked ? "Unlock from screen" : "Lock to this screen",
+          action: () => petService && (root.screenLocked
+            ? petService.setScreenLocked(false)
+            : petService.lockToScreen(root.screen ? root.screen.name : "")) },
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },
         { label: "Hide Omate", action: () => petService && petService.updateSettings({ visible: false }) }
       ]
+      // Fit the box to the widest label, so long entries like "Lock to
+      // this screen" never spill past the border. 14px left inset (6 column
+      // margin + 8 label margin), 6px right, 4px slack.
+      var widest = 0
+      for (var i = 0; i < entries.length; i++) {
+        menuMetrics.text = entries[i].label
+        widest = Math.max(widest, menuMetrics.advanceWidth)
+      }
+      menu.width = Math.max(120, Math.min(260, Math.ceil(widest) + 24))
       // Store the raw point and let menuBox do the clamping. Clamping here
       // read menuBox.height one line after assigning `entries`, before the
       // column had been laid out again -- so it used the PREVIOUS menu's
@@ -1339,6 +1401,13 @@ PanelWindow {
     function close() { open = false }
   }
 
+  // Measures menu labels so the box can fit its widest entry. Same pixel
+  // size as the entry Texts below.
+  TextMetrics {
+    id: menuMetrics
+    font.pixelSize: 12
+  }
+
   // The menu makes the whole window grab input (see mask), so this backdrop
   // eats the click that dismisses it.
   MouseArea {
@@ -1350,7 +1419,7 @@ PanelWindow {
   Item {
     id: menuBox
     parent: root.contentItem
-    width: 120
+    width: menu.width
     height: entriesColumn.height + 12
     // Clamped as bindings, so they re-evaluate the moment `height` settles
     // after the entry list changes. The mate lives on the floor, so a menu

@@ -76,5 +76,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
+  ],
+  "morning": [
+    "Good morning!",
+    "Good morning, {name}!",
+    "*stretches* Morning already?",
+    "Rise and shine, {name}!"
+  ],
+  "lunch": [
+    "Lunchtime! Have you eaten?",
+    "Food o'clock, {name}. Go eat!",
+    "*stares at your lunch*",
+    "Don't skip lunch, {name}."
+  ],
+  "afternoon": [
+    "Go touch some grass, {name}.",
+    "I would touch grass, but I'm a pixel.",
+    "Afternoon already? Time flies.",
+    "Stretch your legs, {name}!"
+  ],
+  "evening": [
+    "Good evening, {name}.",
+    "Evening already?",
+    "The sunset is nice today.",
+    "Almost dinner time, {name}."
+  ],
+  "night": [
+    "Good night, {name}...",
+    "It's late. Sleep soon, {name}?",
+    "zzz... good night.",
+    "Screens off soon, {name}. Promise?"
   ]
 }
