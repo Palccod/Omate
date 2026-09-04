@@ -25,13 +25,24 @@ Item {
   readonly property string stateDir: stateHome + "/omarchy"
   readonly property string settingsPath: stateDir + "/omate-settings.json"
   readonly property string petPath: stateDir + "/omate-state.json"
+  readonly property string remindersPath: stateDir + "/omate-reminders.json"
   // Extra character packs (e.g. anime sprites imported with
   // tools/import-spritesheet.py) live outside the repo so third-party art
   // never lands in git.
   readonly property string userPacksDir: stateDir + "/omate-packs"
 
   readonly property string repoPacksRoot: "packs/"
-  readonly property string defaultPack: "default"
+  // First-run pack and the fallback for anything unresolvable. Was "default"
+  // (Mochi), which shipped its last version and is gone; the old name maps
+  // to this pack in resolvePack() so pre-removal settings files keep working.
+  readonly property string defaultPack: "totoro"
+  // The retired Mochi pack's directory name. Anyone still pointing at it
+  // gets the fallback pack instead of a mate with no sprites.
+  readonly property string retiredPack: "default"
+
+  function resolvePack(name) {
+    return validPackName(name) && name !== retiredPack ? name : defaultPack
+  }
 
   // --- pack ------------------------------------------------------------------
 
@@ -94,7 +105,17 @@ Item {
       "It's late. Sleep soon, {name}?",
       "zzz... good night.",
       "Screens off soon, {name}. Promise?"
-    ]
+    ],
+    // Said when a reminder comes due: {task} becomes the reminder's name,
+    // {name} the user's.
+    reminder: [
+      "*taps paw* {task}, {name}!",
+      "Reminder: {task}!",
+      "Hey {name} — {task}!",
+      "Don't forget: {task}!"
+    ],
+    // Daily alarms announce from this pool instead of "reminder" above.
+    alarm: ["Alarm: {task}!"]
   })
   property var messages: defaultMessages
 
@@ -231,6 +252,7 @@ Item {
   property bool petFileLoaded: false
   property string loadedSettingsText: ""
   property string loadedPetText: ""
+  property string loadedRemindersText: ""
   // pack.json/messages.json of the selected pack, from the user pack dir
   // and the repo pack dir. The user copy wins whenever it exists.
   property string loadedUserPackText: ""
@@ -514,6 +536,220 @@ Item {
     }
   }
 
+  // --- reminders -----------------------------------------------------------------
+  // Named timers and daily alarms the mate speaks when they come due: one
+  // shot ("Take a break", 25 minutes) or a daily alarm ("Standup", 09:30,
+  // which reschedules itself for tomorrow every time it fires), each with
+  // snooze. Kept in their own state file so the list survives restarts but
+  // a corrupt one can never take the settings or the pet down with it.
+  //
+  // A reminder object:
+  //   id             stable number, Date.now() at creation
+  //   name           what the mate says ({task} in reminder lines)
+  //   dueMs          next fire, epoch ms (always current for daily alarms)
+  //   hour / minute  alarm time-of-day, only meaningful when daily
+  //   daily          fires every day at hour:minute
+  //   repeatMinutes  when > 0 on a non-daily reminder, refires on an interval
+  //   enabled        paused reminders keep their dueMs but never fire
+  //   lastFiredMs    epoch ms of the last fire; must stay < dueMs to fire
+
+  property var reminders: []
+  readonly property int reminderLimit: 24
+
+  function sanitizeReminderName(v) {
+    var s = typeof v === "string" ? v.replace(/[^A-Za-z0-9 _-]/g, "").trim() : ""
+    if (s === "") s = "Reminder"
+    return s.substring(0, 30)
+  }
+
+  // Next occurrence of hour:minute — later today if that is still ahead,
+  // otherwise tomorrow.
+  function nextDailyDue(hour, minute) {
+    var d = new Date()
+    d.setHours(hour, minute, 0, 0)
+    if (d.getTime() <= Date.now()) d.setDate(d.getDate() + 1)
+    return d.getTime()
+  }
+
+  function addReminder(r) {
+    var list = reminders.slice()
+    if (list.length >= reminderLimit) list.shift()
+    list.push(r)
+    reminders = list
+    flushRemindersSoon()
+    return r
+  }
+
+  // One-shot timer due in `minutes`. IPC surface too (omate remind 25 name).
+  function addReminderTimer(name, minutes) {
+    var m = Math.round(Number(minutes))
+    if (!isFinite(m) || m < 1) m = 1
+    if (m > 60 * 24 * 7) m = 60 * 24 * 7
+    return addReminder({
+      id: Date.now(),
+      name: sanitizeReminderName(name),
+      dueMs: Date.now() + m * 60000,
+      hour: 0, minute: 0,
+      daily: false, repeatMinutes: 0,
+      enabled: true, lastFiredMs: 0
+    })
+  }
+
+  // A daily alarm at hour:minute.
+  function addDailyAlarm(name, hour, minute) {
+    var h = Math.round(Number(hour))
+    var m = Math.round(Number(minute))
+    if (!isFinite(h)) h = 0
+    if (!isFinite(m)) m = 0
+    h = Math.max(0, Math.min(23, h))
+    m = Math.max(0, Math.min(59, m))
+    return addReminder({
+      id: Date.now(),
+      name: sanitizeReminderName(name),
+      dueMs: nextDailyDue(h, m),
+      hour: h, minute: m,
+      daily: true, repeatMinutes: 0,
+      enabled: true, lastFiredMs: 0
+    })
+  }
+
+  function removeReminder(id) {
+    var list = []
+    for (var i = 0; i < reminders.length; i++)
+      if (reminders[i].id !== id) list.push(reminders[i])
+    reminders = list
+    flushRemindersSoon()
+  }
+
+  function setReminderEnabled(id, on) {
+    for (var i = 0; i < reminders.length; i++)
+      if (reminders[i].id === id) reminders[i].enabled = on === true
+    // In-place edits do not notify; hand views a fresh array object.
+    reminders = reminders.slice()
+    flushRemindersSoon()
+  }
+
+  // Push a reminder's next due out. Snooze ADDS to the remaining time, not
+  // replaces it: snoozing something due in 10 minutes by an hour makes it
+  // due in 1h10m. Time already spent counts, so a reminder that already
+  // rang (or is overdue) snoozes from now. That includes a daily alarm,
+  // whose due was rescheduled to tomorrow the moment it fired — the snooze
+  // pulls that fire back to now + minutes, and the daily rescheduling puts
+  // the fire after it back on track for the day after. Snoozing a daily
+  // alarm that has NOT fired yet adds onto its tomorrow slot.
+  function snoozeReminder(id, minutes) {
+    var m = Math.round(Number(minutes))
+    if (!isFinite(m) || m < 1) m = 10
+    for (var i = 0; i < reminders.length; i++)
+      if (reminders[i].id === id) {
+        var base = (reminders[i].lastFiredMs > 0
+                    || reminders[i].dueMs <= Date.now())
+          ? Date.now() : reminders[i].dueMs
+        reminders[i].dueMs = base + m * 60000
+        reminders[i].lastFiredMs = 0
+      }
+    // In-place edits do not notify; hand views a fresh array object so the
+    // row's due label actually flips from "rang HH:mm" to "in 10m".
+    reminders = reminders.slice()
+    flushRemindersSoon()
+  }
+
+  function announceReminder(r) {
+    playSound("wake")
+    // Daily alarms announce as alarms; one-shot timers stay reminders.
+    var text = pick(r.daily ? "alarm" : "reminder")
+    if (text === "") text = r.daily ? "Alarm: {task}!" : "Reminder: {task}!"
+    say(text.replace(/\{task\}/g, r.name))
+  }
+
+  // Cheap in-process scan; no forks, no IPC.
+  function checkReminders() {
+    var now = Date.now()
+    var fired = false
+    for (var i = 0; i < reminders.length; i++) {
+      var r = reminders[i]
+      if (!r.enabled || r.dueMs > now || r.lastFiredMs >= r.dueMs) continue
+      r.lastFiredMs = now
+      if (r.daily) r.dueMs = nextDailyDue(r.hour, r.minute)
+      else if (r.repeatMinutes > 0) r.dueMs = now + r.repeatMinutes * 60000
+      announceReminder(r)
+      fired = true
+    }
+    if (fired) {
+      // In-place edits do not notify; hand views a fresh array object.
+      reminders = reminders.slice()
+      flushRemindersSoon()
+    }
+  }
+
+  Timer {
+    interval: 15000
+    running: root.initialized
+    repeat: true
+    onTriggered: root.checkReminders()
+  }
+
+  function flushRemindersSoon() {
+    if (!remindersFlushTimer.running) remindersFlushTimer.restart()
+  }
+
+  Timer {
+    id: remindersFlushTimer
+    interval: 1500
+    onTriggered: if (root.initialized) root.flushReminders()
+  }
+
+  function flushReminders() {
+    remindersFile.setText(JSON.stringify({ reminders: reminders }, null, 2) + "\n")
+  }
+
+  // Parsed the loaded file into the live list. Also reconciles alarms that
+  // came due while the machine was off or asleep: a daily alarm overdue by
+  // a couple of minutes rings now, one overdue by hours quietly moves to
+  // tomorrow; a one-shot overdue by more than an hour is marked fired so
+  // yesterday's "Take a break" does not ambush the login.
+  function applyReminders() {
+    var list = []
+    if (loadedRemindersText !== "") {
+      try {
+        var parsed = JSON.parse(loadedRemindersText)
+        if (Array.isArray(parsed)) list = parsed
+        else if (parsed && Array.isArray(parsed.reminders)) list = parsed.reminders
+      } catch (error) {
+        console.warn("omate: reminders file unreadable, starting empty")
+      }
+    }
+    var now = Date.now()
+    var clean = []
+    for (var i = 0; i < list.length && clean.length < reminderLimit; i++) {
+      var r = list[i]
+      if (!r || typeof r !== "object") continue
+      var item = {
+        id: Number(r.id) > 0 ? Number(r.id) : now + clean.length,
+        name: sanitizeReminderName(r.name),
+        dueMs: Number(r.dueMs) > 0 ? Number(r.dueMs) : 0,
+        hour: Number(r.hour) >= 0 ? Math.round(Number(r.hour)) : 0,
+        minute: Number(r.minute) >= 0 ? Math.round(Number(r.minute)) : 0,
+        daily: r.daily === true,
+        repeatMinutes: Number(r.repeatMinutes) > 0 ? Math.round(Number(r.repeatMinutes)) : 0,
+        enabled: r.enabled !== false,
+        lastFiredMs: Number(r.lastFiredMs) > 0 ? Number(r.lastFiredMs) : 0
+      }
+      if (item.dueMs <= 0) {
+        if (!item.daily) continue
+        item.dueMs = nextDailyDue(item.hour, item.minute)
+      }
+      if (item.daily && item.enabled && item.dueMs <= now
+          && now - item.dueMs > 120000)
+        item.dueMs = nextDailyDue(item.hour, item.minute)
+      if (!item.daily && item.enabled && item.dueMs <= now
+          && item.lastFiredMs < item.dueMs && now - item.dueMs > 3600000)
+        item.lastFiredMs = item.dueMs
+      clean.push(item)
+    }
+    reminders = clean
+  }
+
   // --- persistence -------------------------------------------------------------
 
   function flushPet() {
@@ -581,7 +817,7 @@ Item {
 
     // The pack readers started before settings existed (and thus read the
     // default pack); if the saved pack differs, read again with the real name.
-    var savedPack = validPackName(settings.pack) ? settings.pack : defaultPack
+    var savedPack = resolvePack(settings.pack)
     if (savedPack !== packName) reloadPack()
 
     applyPackIfReady()
@@ -641,7 +877,7 @@ Item {
   // exit later and apply the old pack's text under the new pack's name.
   // tryLoadPack defers the launch until every reader is idle.
   function reloadPack() {
-    packName = validPackName(settings.pack) ? settings.pack : defaultPack
+    packName = resolvePack(settings.pack)
     tryLoadPack()
   }
 
@@ -789,6 +1025,17 @@ Item {
   }
 
   Process {
+    id: remindersReader
+    command: ["head", "-c", String(root.maxStateBytes), root.remindersPath]
+    running: true
+    stdout: StdioCollector { id: remindersOut }
+    onExited: function(exitCode) {
+      root.loadedRemindersText = root.boundedText(remindersOut, exitCode)
+      root.applyReminders()
+    }
+  }
+
+  Process {
     id: userPackReader
     stdout: StdioCollector { id: userPackOut }
     onExited: function(exitCode) {
@@ -861,6 +1108,15 @@ Item {
     printErrors: false
   }
 
+  FileView {
+    id: remindersFile
+    path: root.remindersPath
+    preload: false
+    watchChanges: false
+    atomicWrites: true
+    printErrors: false
+  }
+
   // --- IPC -----------------------------------------------------------------------
 
   // Drive the mate from anywhere:
@@ -873,6 +1129,10 @@ Item {
     function poke(): void { root.pokeThePet() }
     function wake(): void { root.wake(true) }
     function doze(): void { root.doze() }
+    // One-shot reminder: omate remind 25 "Take a break" (minutes, name).
+    function remind(minutes: int, name: string): void {
+      root.addReminderTimer(name, minutes)
+    }
     function toggleRoam(): void { root.setRoaming(!root.roaming) }
     function setRoam(enabled: bool): void { root.setRoaming(enabled) }
     function show(): void { root.setMateVisible(true) }

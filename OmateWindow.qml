@@ -397,8 +397,8 @@ PanelWindow {
 
   // Whether this pack actually ships corner-trip frames. Deliberately NOT
   // petService.hasAnim("corner"): that answers true for any name on legacy
-  // a/b packs, which would make Mochi mime the whole routine with its idle
-  // sprite. Every bundled character is unaffected because none of them
+  // a/b packs, which would make such a pack mime the whole routine with its
+  // idle sprite. Every bundled character is unaffected because none of them
   // declares a "corner" animation.
   function hasCornerArt() {
     var pack = petService ? petService.pack : null
@@ -467,9 +467,10 @@ PanelWindow {
   // The reach is sprite-relative, so a bigger character has a slightly longer
   // one -- but CLAMPED, because unclamped it made the same setting mean wildly
   // different things. Akita (348px sprite) noticed the pointer from ~1560px
-  // away, three quarters of a 2048px screen, while Mochi (72px) barely noticed
-  // it at 324px: near-constant harassment for one character and near-inert for
-  // another. The band keeps every pack inside roughly 2x of each other.
+  // away, three quarters of a 2048px screen, while a 72px sprite barely
+  // noticed it at 324px: near-constant harassment for one character and
+  // near-inert for another. The band keeps every pack inside roughly 2x of
+  // each other.
   function clampRadius(v, lo, hi) {
     return Math.round(Math.max(lo, Math.min(hi, v)))
   }
@@ -536,7 +537,7 @@ PanelWindow {
   // and have the payoff missing.
   //
   // hasAnim() is the right check: `poke` is an animation the engine already
-  // knows, so it resolves correctly for legacy a/b packs (Mochi declares
+  // knows, so it resolves correctly for legacy a/b packs (which declare
   // `poke` with no frame list) as well as for frame-list packs.
   function hasBiteArt() {
     return petService ? petService.hasAnim("poke") : false
@@ -1352,8 +1353,9 @@ PanelWindow {
 
     function openAt(x, y) {
       var muted = petService && petService.soundVolume <= 0
-      entries = [
+      showEntries([
         { label: "Settings…", action: () => petService && petService.panelRequested() },
+        { label: "Reminders…", keepOpen: true, action: () => openReminders() },
         ...(root.hasCornerArt()
             ? [{ label: "Find a corner", action: () => root.startCornerTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
@@ -1378,16 +1380,7 @@ PanelWindow {
             : petService.lockToScreen(root.screen ? root.screen.name : "")) },
         { label: muted ? "Unmute" : "Mute", action: () => petService && petService.setSoundVolume(petService.soundVolume > 0 ? 0 : 0.5) },
         { label: "Hide Omate", action: () => petService && petService.updateSettings({ visible: false }) }
-      ]
-      // Fit the box to the widest label, so long entries like "Lock to
-      // this screen" never spill past the border. 14px left inset (6 column
-      // margin + 8 label margin), 6px right, 4px slack.
-      var widest = 0
-      for (var i = 0; i < entries.length; i++) {
-        menuMetrics.text = entries[i].label
-        widest = Math.max(widest, menuMetrics.advanceWidth)
-      }
-      menu.width = Math.max(120, Math.min(260, Math.ceil(widest) + 24))
+      ])
       // Store the raw point and let menuBox do the clamping. Clamping here
       // read menuBox.height one line after assigning `entries`, before the
       // column had been laid out again -- so it used the PREVIOUS menu's
@@ -1398,6 +1391,98 @@ PanelWindow {
       menu.y = y
       open = true
     }
+
+    // Swap to a submenu in place: refit the width, replace the entries, and
+    // keep the box where it is (menuBox's clamps are bindings, so they
+    // re-evaluate against the new height on their own). Submenu entries set
+    // keepOpen so a click navigates instead of dismissing.
+    function showEntries(list) {
+      // Fit the box to the widest label, so long entries like "Lock to
+      // this screen" never spill past the border. 14px left inset (6 column
+      // margin + 8 label margin), 6px right, 4px slack.
+      var widest = 0
+      for (var i = 0; i < list.length; i++) {
+        menuMetrics.text = list[i].label
+        widest = Math.max(widest, menuMetrics.advanceWidth)
+      }
+      width = Math.max(120, Math.min(260, Math.ceil(widest) + 24))
+      entries = list
+    }
+
+    function openMainMenu() { openAt(x, y) }
+
+    // "in 12m" / "in 2h 5m" for a future timestamp.
+    function fmtIn(ms) {
+      var mins = Math.max(0, Math.round((ms - Date.now()) / 60000))
+      if (mins < 1) return "now"
+      if (mins < 60) return "in " + mins + "m"
+      var h = Math.floor(mins / 60)
+      var m = mins % 60
+      return m === 0 ? "in " + h + "h" : "in " + h + "h " + m + "m"
+    }
+
+    // Clock labels are 12-hour by design ("2:39 PM"), matching the panel.
+    function clockLabel(d) {
+      return Qt.formatTime(d, "h:mm AP")
+    }
+
+    function reminderDueLabel(r) {
+      if (!r.enabled) return "paused"
+      if (r.dueMs <= Date.now())
+        return "rang " + clockLabel(new Date(r.lastFiredMs || r.dueMs))
+      if (r.daily) return "daily " + clockLabel(new Date(r.dueMs))
+      return fmtIn(r.dueMs)
+    }
+
+    // The reminders submenu: back, the panel (typing a name needs a real
+    // keyboard focus, which the overlay menu cannot take), the two quick
+    // break timers, then up to eight reminders; each opens a per-reminder
+    // page with the snooze / pause / delete settings.
+    function openReminders() {
+      var rs = petService ? (petService.reminders || []) : []
+      var list = [
+        { label: "← Back", keepOpen: true, action: () => openMainMenu() },
+        { label: "New reminder…", action: () => petService && petService.panelRequested() },
+        { label: "Break in 25 min", action: () => {
+            if (!petService) return
+            petService.addReminderTimer("Take a break", 25)
+            petService.say("Okay — break in 25!")
+          } },
+        { label: "Stretch in 10 min", action: () => {
+            if (!petService) return
+            petService.addReminderTimer("Stretch", 10)
+            petService.say("Okay — stretch in 10!")
+          } }
+      ]
+      rs.slice(0, 8).forEach(function(r) {
+        list.push({ label: r.name + " · " + reminderDueLabel(r),
+                    keepOpen: true, action: () => openReminder(r.id) })
+      })
+      if (rs.length > 8)
+        list.push({ label: "… see the rest in the panel",
+                    action: () => petService && petService.panelRequested() })
+      showEntries(list)
+    }
+
+    // Per-reminder page: snooze, pause/resume, delete. `r` is snapshotted
+    // for labels; the actions re-resolve by id so they stay correct even
+    // though this menu stays open across them.
+    function openReminder(id) {
+      var r = null
+      var rs = petService ? (petService.reminders || []) : []
+      for (var i = 0; i < rs.length; i++)
+        if (rs[i].id === id) r = rs[i]
+      if (!r) { openReminders(); return }
+      showEntries([
+        { label: "← " + r.name, keepOpen: true, action: () => openReminders() },
+        { label: "Snooze 10 min", action: () => petService && petService.snoozeReminder(id, 10) },
+        { label: "Snooze 1 hour", action: () => petService && petService.snoozeReminder(id, 60) },
+        { label: r.enabled ? "Pause" : "Resume",
+          action: () => petService && petService.setReminderEnabled(id, !r.enabled) },
+        { label: "Delete", action: () => petService && petService.removeReminder(id) }
+      ])
+    }
+
     function close() { open = false }
   }
 
@@ -1467,7 +1552,9 @@ PanelWindow {
               hoverEnabled: true
               cursorShape: Qt.PointingHandCursor
               onClicked: {
-                menu.close()
+                // keepOpen entries are submenu navigation: they swap the
+                // entries in place instead of dismissing the box.
+                if (!modelData.keepOpen) menu.close()
                 modelData.action()
               }
             }

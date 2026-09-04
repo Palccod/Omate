@@ -8,12 +8,16 @@ no network, no dependencies beyond the shell you already run.
 Inspired by [Mate-Engine](https://github.com/shinyflvre/Mate-Engine)'s
 interaction model.
 
-![Omate's settings panel: skin picker with twelve character previews over
-the behavior controls, Miku window-sitting on the right](preview.png)
+![Omate's settings panel: the Reminders entry over a skin picker with live
+character previews and the behavior controls](preview.png)
 
 | Settings panel | Sitting on floating windows | Natural sizes |
 |---|---|---|
-| ![The settings panel: skin picker, power switch, behavior controls](settings.png) | ![Miku sitting on a floating terminal](on-window.png) | ![Miku at 1x size on the desktop floor](custom-size.png) |
+| ![The settings panel: Reminders row, skin picker, power switch, behavior controls](settings.png) | ![Miku sitting on a floating terminal](on-window.png) | ![Miku at 1x size on the desktop floor](custom-size.png) |
+
+| Reminders page — timers and daily alarms | Right-click reminders menu |
+|---|---|
+| ![The Reminders page: one-shot timer and 12-hour daily alarm forms over the list](reminders.png) | ![The mate's right-click Reminders submenu with quick break timers](mate-reminder.png) |
 
 Sitting works on any floating window — and she falls off when it closes.
 Sizes range from the 24px cat up to 250px Totoro, settable per pack.
@@ -65,6 +69,15 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   grass" in the afternoon, a good night late. Set your name in the settings
   panel (letters and digits, up to 20 characters) and some of those lines
   will use it.
+- **Reminders and alarms**: right-click the mate → "Reminders…" for quick
+  break timers ("Break in 25 min") and to snooze, pause, or delete what's
+  armed; the panel's Reminders page adds named one-shot timers and daily
+  alarms (name + time, with a snooze button and a delete per row). When a
+  reminder comes due the mate wakes, plays a sound, and speaks it:
+  "*taps paw* Take a break, Palccod!". Daily alarms reschedule themselves
+  for the next day; snoozing pushes one out by 10 minutes or an hour. The
+  list survives restarts (`~/.local/state/omarchy/omate-reminders.json`),
+  and `omarchy-shell omate remind 25 "Take a break"` sets one from the CLI.
 - **Speech bubbles**: idle chatter, event reactions, and any message you
   send it.
 - **Multi-screen**: with more than one monitor the mate occasionally takes
@@ -73,19 +86,21 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   along an edge throws it across. "Lock to this screen" in the menu pins it
   where it is and stops all of that until unlocked.
 - **Sounds**: tiny synthesized blips (grab, purr, poke, thud, zzz, wake).
-- **Menu**: right-click the cat for settings / walk / nap /
+- **Menu**: right-click the cat for settings / reminders / walk / nap /
   screen lock / mute / hide (plus "Find a corner" for packs with `corner`
   art, and "Stop chasing" while a chase is armed).
 - **Settings panel**: click the bar button (or the cat's "Settings…" menu
   entry) for a popup card styled like the plugin manager's rows — an
   animated sprite in the header, an enable/disable power switch in the top
   right, a **skin picker where every installed pack previews its own idle
-  animation**, and live controls for roaming, volume, size, walkiness,
-  home screen, your name, nap/chatter cadence, and the cursor chase.
+  animation**, live controls for roaming, volume, size, walkiness,
+  home screen, your name, nap/chatter cadence, and the cursor chase — plus
+  a Reminders page (open it from the "Reminders" row) with one-shot timers,
+  daily alarms, and snooze.
 - **Eighteen characters bundled** — Pikachu, Miku, Totoro, SpongeBob,
   Spider-Man, Deadpool, Luffy, Dieter the cat, Hornet, Gojo, Rem,
-  Mitsuri, a fox, an akita, a panda, a turtle, a rubber duck, and Mochi
-  the cat; import your own with the built-in converters.
+  Mitsuri, a fox, an akita, a panda, a turtle, a rubber duck, and Perry
+  the Pug; import your own with the built-in converters.
 - **Full behavior set where the art allows it** — besides walking,
   roaming and napping, characters with the right frames sit down, lie
   down, and hit a ground-impact pose after a fall (sleep uses the lying
@@ -212,6 +227,7 @@ omarchy-shell omate corner         # wander to the nearest corner (packs
 omarchy-shell omate setCursorChase true   # chase the mouse pointer
 omarchy-shell omate toggleCursorChase
 omarchy-shell omate setChaseCooldown 300  # seconds between chases, 5-3600
+omarchy-shell omate remind 25 "Take a break"  # one-shot reminder, minutes
 omarchy-shell omate hop            # teleport onto a random floating window
                                    # (or leap for joy if none are around)
 omarchy-shell omate status
@@ -225,7 +241,9 @@ Everything lives in plain files; edit and run `omarchy restart shell`.
 - **Messages** — `packs/default/messages.json`: pools of lines the cat
   picks from (`greet`, `idle`, `drag`, `pet`, `poke`, `land`, `dizzy`,
   `sleep`, `wake`, `corner`, `chase`, `bite`, and the time-of-day pools
-  `morning`, `lunch`, `afternoon`, `evening`, `night`). Any line can carry
+  `morning`, `lunch`, `afternoon`, `evening`, `night`, plus `reminder` for
+  when a reminder comes due — it uses `{task}` for the reminder's name).
+  Any line can carry
   the placeholder `{name}` — it is replaced with the name set in the
   settings panel, and lines that use it are only picked when a name is set.
   Every pack's `messages.json` sits on top of built-in defaults, so a pack
@@ -277,7 +295,8 @@ State (position, nap status) persists in
   pointer against you. Turn it off and none of that code runs.
 - **File access** — reads and writes only its own state under
   `~/.local/state/omarchy/`: `omate-settings.json`, `omate-state.json`,
-  and `omate-packs/` (characters you import yourself). Writes are atomic;
+  `omate-reminders.json` (your reminder list), and `omate-packs/`
+  (characters you import yourself). Writes are atomic;
   reads are size-capped
 - **Process execution** — exactly two things, always with fixed argument
   arrays: `pw-play` for the bundled sound effects, and `head -c` for

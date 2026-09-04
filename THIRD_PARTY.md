@@ -16,8 +16,8 @@ redistribute than every pack listed below, not less free — but it is a
 different footing from art an author owns and licenses, and worth knowing
 before the pack is shipped.
 
-The other eighteen packs: the default cat is self-generated, and the
-seventeen remaining are third-party fan art converted with this plugin's
+The other eighteen packs are third-party fan art converted with this
+plugin's
 `tools/import-*.py` converters, with author credit kept in each pack's
 `pack.json`. All character names belong to their respective owners; the
 packs are included as non-commercial fan art for personal use, and a
@@ -46,6 +46,5 @@ rights holder may request removal at any time.
 - **Luffy** (One Piece) — classic shimeji pack by **AniRize**
   (AniRize.TK / vk.com/AniRize), as credited in the pack's own README.
 
-Everything else in the repository (default cat sprites, sounds, code) is
-original and self-generated — see `tools/gen-sprites.py` and
-`tools/gen-sounds.py`.
+Everything else in the repository (sounds, code) is original and
+self-generated — see `tools/gen-sounds.py`.
