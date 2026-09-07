@@ -1,6 +1,5 @@
-pragma ComponentBehavior: Bound
-
 import QtQuick
+import QtQuick.Controls
 import Quickshell
 import qs.Commons
 import qs.Ui
@@ -13,22 +12,8 @@ import qs.Ui
 Panel {
   id: root
   moduleName: "palccod.omate"
-
-  // One panel instance exists per bar; only the largest screen's instance
-  // claims the IPC target, so `omarchy-shell palccod.omate toggle` acts on a
-  // predictable panel.
-  readonly property var panelScreen: anchorItem && anchorItem.QsWindow.window
-    ? anchorItem.QsWindow.window.screen : null
-  readonly property var mainScreen: {
-    var best = null
-    var screens = Quickshell.screens
-    for (var i = 0; i < screens.length; i++) {
-      if (!best || screens[i].width * screens[i].height > best.width * best.height)
-        best = screens[i]
-    }
-    return best
-  }
-  ipcTarget: panelScreen && panelScreen === mainScreen ? moduleName : ""
+  ipcTarget: ""
+  manageIpc: false
 
   property var anchorItem: null
   property var hostWidget: null
@@ -51,6 +36,12 @@ Panel {
   // top instead of wherever the last visit ended.
   property bool remindersPageOpen: false
   onOpenedChanged: if (!opened) remindersPageOpen = false
+
+  // Explicit lifecycle so the inherited panelController is used correctly
+  // in the derived component scope (mirrors clock panel pattern).
+  function open() { root.controller.show() }
+  function close() { root.controller.hide() }
+  function toggle() { root.opened ? root.close() : root.open() }
 
   // Live add-form numbers. NumberField's own `value` keeps its initial
   // binding when the user edits the inner SpinBox — only `modified` carries
@@ -158,6 +149,13 @@ Panel {
     }
   }
 
+  // Scroll helper for the Flickable (mirrors Sandman's approach).
+  function scrollPanel(delta) {
+    panelFlick.contentY = Math.max(0, Math.min(
+      panelFlick.contentY + delta,
+      Math.max(0, panelFlick.contentHeight - panelFlick.height)))
+  }
+
   KeyboardPanel {
     id: panel
     anchorItem: root.anchorItem
@@ -166,26 +164,48 @@ Panel {
     open: root.opened
     focusTarget: keyCatcher
     padding: Style.space(14)
-    contentWidth: panel.fittedContentWidth(Style.space(380))
-    // Seeds the initial card height from the open page; see cardHeightSync
-    // below for why this binding alone cannot be trusted to keep it true.
+    // Use fixed pixel width so the panel doesn't scale with font size.
+    // Style.space(380) scales via fontScale, causing overflow on HiDPI/larger fonts.
+    contentWidth: panel.fittedContentWidth(380)
+    // Cap the panel height to available screen space; the internal Flickable
+    // (panelFlick) handles scrolling when content exceeds this height.
     contentHeight: panel.fittedContentHeight(
       headerCard.height + Style.space(12)
       + (root.remindersPageOpen ? remindersPage.implicitHeight : mainPage.implicitHeight)
-      + Style.space(16))
+      + Style.space(16), usableCardCap())
 
     PanelKeyCatcher {
       id: keyCatcher
       anchors.fill: parent
       onCloseRequested: root.close()
       onTabRequested: function(direction) { root.switchPanel(direction) }
+      onMoveRequested: function(dx, dy) {
+        if (dy !== 0) root.scrollPanel(dy * Style.space(56))
+      }
 
-      Column {
-        id: contentColumn
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        spacing: Style.space(12)
+      Flickable {
+        id: panelFlick
+        anchors.fill: parent
+        contentWidth: width
+        contentHeight: contentColumn.implicitHeight
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
+        interactive: contentHeight > height
+        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+
+        WheelHandler {
+          onWheel: function(event) {
+            if (event.angleDelta.y === 0) return
+            root.scrollPanel(event.angleDelta.y > 0 ? -Style.space(56) : Style.space(56))
+            event.accepted = true
+          }
+        }
+
+        Column {
+          id: contentColumn
+          width: panelFlick.width
+          spacing: Style.space(12)
 
         // --- header ------------------------------------------------------
 
@@ -1107,6 +1127,7 @@ Panel {
             }
           }
         }
+      }
       }
     }
   }

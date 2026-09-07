@@ -52,12 +52,37 @@ Item {
   // pack.json of the selected pack. Embedded defaults keep the pet alive
   // even if every pack file is missing or corrupt. Two sprite formats are
   // supported: legacy a/b frame pairs sized `spriteSize`, and frame lists
-  // sized `width` x `height` (imported packs).
+  // sized `width` x `height` (imported packs). The embedded default matches
+  // the totoro pack so sprites render before async pack.json loads.
   property var pack: ({
-    spriteSize: 24,
-    anims: { idle: { frameMs: 600 }, walk: { frameMs: 200 },
-      sleep: { frameMs: 1100 }, drag: { frameMs: 260 },
-      fall: { frameMs: 200 }, poke: { frameMs: 250 } }
+    width: 250,
+    height: 250,
+    defaultScale: 1,
+    anims: {
+      idle: {
+        frames: [
+          "idle_00.png", "idle_01.png", "idle_02.png", "idle_03.png",
+          "idle_04.png", "idle_05.png", "idle_06.png", "idle_07.png",
+          "idle_08.png", "idle_09.png", "idle_10.png", "idle_11.png",
+          "idle_12.png", "idle_13.png", "idle_14.png", "idle_15.png",
+          "idle_16.png", "idle_17.png", "idle_18.png", "idle_19.png",
+          "idle_20.png", "idle_21.png", "idle_22.png", "idle_23.png",
+          "idle_24.png", "idle_25.png", "idle_26.png", "idle_27.png",
+          "idle_28.png", "idle_29.png", "idle_30.png", "idle_31.png",
+          "idle_32.png", "idle_33.png", "idle_34.png", "idle_35.png",
+          "idle_36.png", "idle_37.png", "idle_38.png", "idle_39.png",
+          "idle_40.png", "idle_41.png", "idle_42.png", "idle_43.png",
+          "idle_44.png", "idle_45.png", "idle_46.png", "idle_47.png",
+          "idle_48.png", "idle_49.png", "idle_50.png", "idle_51.png",
+          "idle_52.png", "idle_53.png", "idle_54.png", "idle_55.png"
+        ],
+        frameMs: 100
+      },
+      walk: { frames: ["walk_00.png", "walk_01.png"], frameMs: 400 },
+      sleep: { frames: ["sleep_00.png", "sleep_01.png", "sleep_02.png", "sleep_03.png"], frameMs: 250 },
+      fall: { frames: ["fall_00.png"], frameMs: 400 },
+      climb: { frames: ["climb_00.png", "climb_01.png", "climb_02.png", "climb_03.png", "climb_04.png", "climb_05.png", "climb_06.png"], frameMs: 350 }
+    }
   })
   // messages.json from the selected pack: what the mate says. Same deal —
   // the file is the user-editable copy of these defaults.
@@ -130,9 +155,9 @@ Item {
   // single assignment when a pack lands. Deliberately NOT a binding over
   // `pack`: a binding re-evaluates the moment pack changes, while spriteDir
   // still holds the previous pack's directory — a frame list under the
-  // wrong directory. anims null renders legacy a/b sprites until the first
-  // real pack lands.
-  property var skin: ({ dir: repoPacksRoot + defaultPack + "/sprites/", anims: null })
+  // wrong directory. anims from embedded pack renders frame-list sprites
+  // immediately until the real pack.json lands.
+  property var skin: ({ dir: repoPacksRoot + defaultPack + "/sprites/", anims: pack.anims })
   // Frame-list packs (imported anime sprites) list exactly the animations
   // they ship; legacy packs name a/b files by convention.
   readonly property bool packUsesFrameLists: Number(pack.width) > 0
