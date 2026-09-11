@@ -34,5 +34,35 @@
   "hop": [
     "warp!",
     "poof!"
-  ]
+  ],
+
+    "rpsChallenge": [
+      "wanna play rock-paper-scissors?? I'm so excited — yes or no?!",
+      "eep! A game? Yes or no, please?!"
+    ],
+    "rpsAccepted": [
+      "yay!! Okay okay, pick one!"
+    ],
+    "rpsAsk": [
+      "rock, paper or scissors? No take-backs!"
+    ],
+    "rpsDeclined": [
+      "oh... okay! Maybe later then!",
+      "that's fine! I'll just have another cake!"
+    ],
+    "rpsWin": [
+      "I did it!! Oh — was that too loud?",
+      "my love-beam throw works!",
+      "wah, I won! Cake for dinner!"
+    ],
+    "rpsLose": [
+      "my hair got in the way, it's SO long!",
+      "I was thinking about cake, I'm sorry!!",
+      "you're amazing, {name}!! Truly!",
+      "congratulations!! Let's play again!",
+      "...okay, okay. You won fair and square. Eek!"
+    ],
+    "rpsDraw": [
+      "the same?! That's like... fate!"
+    ]
 }

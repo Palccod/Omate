@@ -34,5 +34,35 @@
   "hop": [
     "warp!",
     "poof!"
-  ]
+  ],
+
+    "rpsChallenge": [
+      "rock-paper-scissors? Don't worry, I'll go easy. Maybe. Yes or no?",
+      "bored of being the strongest. Entertain me — yes or no?"
+    ],
+    "rpsAccepted": [
+      "bold. Pick your throw."
+    ],
+    "rpsAsk": [
+      "rock, paper or scissors? Take your time — it won't help."
+    ],
+    "rpsDeclined": [
+      "smart. You'd have lost.",
+      "no? And here I was being generous."
+    ],
+    "rpsWin": [
+      "nah, I'd win. And I did.",
+      "the strongest, remember?",
+      "was that your best? Yikes."
+    ],
+    "rpsLose": [
+      "domain expansion... didn't activate. Glitch.",
+      "I was holding back Infinity. Obviously.",
+      "huh. You're interesting, {name}.",
+      "okay, that one was clean. Respect.",
+      "...I admit nothing. Rematch. Now."
+    ],
+    "rpsDraw": [
+      "a tie? Even fate can't decide."
+    ]
 }

@@ -63,6 +63,11 @@ PanelWindow {
   // the drag midair.
   mask: Region {
     item: menu.open || grab.pressed ? root.contentItem : petHitbox
+    // While a rock-paper-scissors game waits on the bubble, its buttons
+    // must catch clicks: union the bubble into the input mask. Null item
+    // whenever nothing is clickable (a held result needs no input), so
+    // the desktop stays click-through.
+    Region { item: rps.interactive ? bubble : null }
   }
 
   readonly property int petScale: petService ? petService.petScale : 3
@@ -1077,6 +1082,8 @@ PanelWindow {
           return
         }
         leftPress = true
+        // A click on the mate dismisses a held rock-paper-scissors result.
+        rps.dismiss()
         var p = mapToItem(root.contentItem, mouse.x, mouse.y)
         pressX = p.x
         pressY = p.y
@@ -1230,6 +1237,155 @@ PanelWindow {
     }
   }
 
+  // --- rock-paper-scissors -------------------------------------------------------
+  //
+  // The mate sometimes challenges the user out of the blue: the ask rides
+  // the speech bubble, with Yes/No buttons on it — bubbles are the whole
+  // interface. From the right-click menu (or `omate rps`) the yes/no step
+  // is skipped and the throw buttons come up straight away. Either way the
+  // mate answers randomly and announces only the outcome. The flavor comes
+  // from the pack's rps* message pools, so every character excuses, gloats
+  // and concedes in its own voice; the built-in defaults already mix mostly
+  // excuses with rare admissions for packs that ship none.
+  QtObject {
+    id: rps
+
+    // none → asking (Yes/No on the bubble) → choosing (throw buttons) →
+    // result (the outcome, held on screen until the mate is clicked — the
+    // normal hide timer would swipe it away before it is read). Resolving
+    // a throw moves to result; dismissing drops back to none.
+    property string state: "none"
+    property string prompt: ""
+    readonly property bool active: state !== "none"
+    // Buttons and input only exist while a game waits on the user; the
+    // result is just a held bubble.
+    readonly property bool interactive: state === "asking" || state === "choosing"
+    readonly property string throwNames: ["rock", "paper", "scissors"]
+
+    // A line for a pool, {name} resolved. The bubble shows these directly,
+    // bypassing Service.say, so the placeholder is handled here; the
+    // fallback keeps a mate with no pools (and no defaults) from ever
+    // showing an empty bubble.
+    function line(pool, fallback) {
+      var text = petService ? petService.pick(pool) : ""
+      if (text === "") text = fallback
+      return text.replace(/\{name\}/g, petService ? petService.displayName : "")
+    }
+
+    function sayLine(pool, fallback) {
+      if (petService) petService.say(line(pool, fallback))
+    }
+
+    // A spontaneous challenge. Guarded like the brain's rolls — asleep,
+    // busy or menued mates don't ask — because the timer can fire while a
+    // grab or a walk is in flight.
+    function maybeChallenge() {
+      if (active || root.asleep || menu.open || root.action !== "idle") return
+      state = "asking"
+      prompt = line("rpsChallenge", "wanna play rock-paper-scissors?")
+      rpsAskTimer.restart()
+    }
+
+    function answer(yes) {
+      if (state !== "asking") return
+      rpsAskTimer.stop()
+      if (yes) {
+        startChoosing(line("rpsAccepted", "alright! Rock, paper or scissors?"))
+      } else {
+        state = "none"
+        sayLine("rpsDeclined", "okay... some other time then.")
+      }
+    }
+
+    // Straight to the throws: the menu and IPC path skips the yes/no.
+    function startFromMenu() {
+      if (state === "choosing") return
+      rpsAskTimer.stop()
+      startChoosing(line("rpsAsk", "rock, paper or scissors?"))
+    }
+
+    function startChoosing(text) {
+      state = "choosing"
+      prompt = text
+      rpsChooseTimer.restart()
+    }
+
+    // 0 rock, 1 paper, 2 scissors. The mate picks at random; (user -
+    // mate) mod 3 is 1 when the user's throw beats the mate's and 2 when
+    // the mate's beats theirs — a classic trick, and the byThrow phrases
+    // read in the winner's voice.
+    function play(userThrow) {
+      if (state !== "choosing") return
+      rpsChooseTimer.stop()
+      // The result is held on the bubble instead of said: it stays up
+      // until the mate is clicked (or the fallback timer expires),
+      // because a fade that short buries the outcome before it is read.
+      prompt = (() => {
+        var mateThrow = Math.floor(Math.random() * 3)
+        var beat = (userThrow - mateThrow + 3) % 3
+        var byThrow = ["Rock breaks scissors", "Paper covers rock", "Scissors cuts paper"]
+        if (beat === 0)
+          return "Both " + throwNames[userThrow] + "! "
+            + line("rpsDraw", "a tie. Suspicious.")
+        if (beat === 1)
+          return "You: " + throwNames[userThrow] + " — me: " + throwNames[mateThrow]
+            + ". " + byThrow[userThrow] + ". " + line("rpsLose", "lucky. Rematch!")
+        return "You: " + throwNames[userThrow] + " — me: " + throwNames[mateThrow]
+          + ". " + byThrow[mateThrow] + "! " + line("rpsWin", "I win!")
+      })()
+      state = "result"
+      rpsResultTimer.restart()
+    }
+
+    // Clicking the mate clears a held result (and pokes as usual — the
+    // press dismisses before the poke's own line is said, so both land).
+    function dismiss() {
+      if (state !== "result") return
+      rpsResultTimer.stop()
+      state = "none"
+    }
+
+    // Unanswered asks and throws just expire: the bubble drops and the
+    // mate carries on. No nagging.
+    function expire() {
+      if (state === "asking" || state === "choosing" || state === "result")
+        state = "none"
+    }
+  }
+
+  Timer {
+    id: rpsAskTimer
+    interval: 20000
+    onTriggered: rps.expire()
+  }
+
+  Timer {
+    id: rpsChooseTimer
+    interval: 30000
+    onTriggered: rps.expire()
+  }
+
+  // Held results are click-to-dismiss; this is only the safety net, in
+  // case the mate is never touched again.
+  Timer {
+    id: rpsResultTimer
+    interval: 90000
+    onTriggered: rps.dismiss()
+  }
+
+  // A spontaneous challenge every so often — rarer than the idle chatter,
+  // and only three ticks in five actually fire, so it stays a treat.
+  Timer {
+    id: rpsChallengeTimer
+    interval: (8 + Math.floor(Math.random() * 8)) * 60000
+    running: root.visible
+    repeat: true
+    onTriggered: {
+      interval = (8 + Math.floor(Math.random() * 8)) * 60000
+      if (Math.random() < 0.6) rps.maybeChallenge()
+    }
+  }
+
   // --- speech bubble -----------------------------------------------------------------
 
   property string bubbleText: ""
@@ -1249,6 +1405,9 @@ PanelWindow {
     function onPetted() {
       if (root.visible) heart.pop()
     }
+    function onRpsRequested() {
+      if (root.visible) rps.startFromMenu()
+    }
   }
 
   Timer {
@@ -1258,9 +1417,15 @@ PanelWindow {
 
   Item {
     id: bubble
-    visible: root.bubbleVisible && root.action !== "drag"
-    width: Math.min(bubbleLabel.implicitWidth, 170) + 14
+    // While a game waits on the user the bubble carries the prompt and
+    // the answer buttons; a held result shows its text alone until the
+    // mate is clicked. Both outlive the normal hide timer.
+    readonly property bool interactive: rps.interactive
+    visible: (root.bubbleVisible || rps.active) && root.action !== "drag"
+    width: Math.max(Math.min(bubbleLabel.implicitWidth, 170),
+                    interactive ? 176 : 0) + 14
     height: bubbleLabel.implicitHeight + 10
+      + (interactive ? buttonsStrip.height + 6 : 0)
     x: Math.max(4, Math.min(root.width - width - 4,
       root.petX + root.spriteW / 2 - width / 2))
     y: Math.max(2, root.petY - root.spriteH - height - 8)
@@ -1275,10 +1440,12 @@ PanelWindow {
 
       Text {
         id: bubbleLabel
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: 5
         width: Math.min(implicitWidth, 170)
         wrapMode: Text.Wrap
-        text: root.bubbleText
+        text: rps.active ? rps.prompt : root.bubbleText
         // Bubble text comes from IPC and from pack messages.json — both
         // outside this file's control. Plain text only: AutoText would
         // render rich text, and a crafted <img> could make the "offline"
@@ -1288,6 +1455,65 @@ PanelWindow {
         // Modest and capped: huge packs must not inflate the bubble.
         font.pixelSize: Math.min(13, Math.max(11, Math.round(root.spriteH * 0.08)))
         font.family: "sans-serif"
+      }
+
+      // Yes/No while asking, the three throws while choosing — equal
+      // shares of the strip, so the row always fills the bubble.
+      Item {
+        id: buttonsStrip
+        visible: bubble.interactive
+        readonly property int count: rps.state === "asking" ? 2 : 3
+        anchors {
+          top: bubbleLabel.bottom
+          topMargin: 6
+          left: parent.left
+          right: parent.right
+          margins: 7
+        }
+        height: 22
+
+        Row {
+          anchors.fill: parent
+          spacing: 4
+
+          Repeater {
+            model: rps.state === "asking"
+              ? [{ label: "Yes", act: function() { rps.answer(true) } },
+                 { label: "No", act: function() { rps.answer(false) } }]
+              : [{ label: "Rock", act: function() { rps.play(0) } },
+                 { label: "Paper", act: function() { rps.play(1) } },
+                 { label: "Scissors", act: function() { rps.play(2) } }]
+
+            Rectangle {
+              id: rpsButton
+              required property var modelData
+              width: (buttonsStrip.width - 4 * (buttonsStrip.count - 1))
+                     / buttonsStrip.count
+              height: parent.height
+              radius: 5
+              color: rpsButtonMouse.containsMouse
+                ? Qt.rgba(1, 1, 1, 0.14) : Qt.rgba(1, 1, 1, 0.07)
+              border.color: "#e8a355"
+              border.width: 1
+
+              Text {
+                anchors.centerIn: parent
+                text: rpsButton.modelData.label
+                color: "#f8f2e5"
+                font.pixelSize: 11
+                font.family: "sans-serif"
+              }
+
+              MouseArea {
+                id: rpsButtonMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: rpsButton.modelData.act()
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -1359,6 +1585,9 @@ PanelWindow {
         ...(root.hasCornerArt()
             ? [{ label: "Find a corner", action: () => root.startCornerTrip() }] : []),
         { label: "Walk over", action: () => root.walkTo(Math.random() * Math.max(1, root.width - root.spriteW)) },
+        // Starts straight away — no yes/no on the bubble. The ask with
+        // Yes/No buttons is only for challenges the mate starts itself.
+        { label: "Rock-paper-scissors", action: () => rps.startFromMenu() },
         // Only ever the *off* switch. Chasing is the one behaviour that
         // reaches out and moves something the user owns, so arming it stays in
         // the settings panel, next to the cadence and the sentence explaining

@@ -26,5 +26,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "rock-paper-scissors? YES! I mean— yes or no?",
+      "wanna play? I've been practicing all week!"
+    ],
+    "rpsAccepted": [
+      "okay okay okay! Pick one!"
+    ],
+    "rpsAsk": [
+      "rock, paper or scissors? I'm SO ready."
+    ],
+    "rpsDeclined": [
+      "aww... okay. I'll wait right here.",
+      "(puts paw away very slowly)"
+    ],
+    "rpsWin": [
+      "I did it! Good boy points for me!",
+      "who's a winner? I'M a winner!",
+      "all that fetch training finally paid off!"
+    ],
+    "rpsLose": [
+      "I got excited and threw early...",
+      "my paw fell asleep. Honest!",
+      "you're so good at this, {name}!",
+      "congrats! Best human ever!",
+      "no excuses — you earned that one. ...Mostly."
+    ],
+    "rpsDraw": [
+      "we match! High five! ...Paw five?"
+    ]
 }

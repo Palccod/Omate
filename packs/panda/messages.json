@@ -26,5 +26,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "rock-paper-scissors? I won't exert myself either way.",
+      "bored. Game? Yes or no."
+    ],
+    "rpsAccepted": [
+      "cool. Pick something. I'll do the same, probably."
+    ],
+    "rpsAsk": [
+      "rock, paper or scissors... whichever."
+    ],
+    "rpsDeclined": [
+      "great. More napping time.",
+      "fine by me. zzf."
+    ],
+    "rpsWin": [
+      "I win. Didn't even stand up.",
+      "effortless. As always.",
+      "bamboo break for me. I earned it."
+    ],
+    "rpsLose": [
+      "I was mid-blink.",
+      "my fur got in the way.",
+      "you woke me up for this AND I lost? Rude.",
+      "nice one, {name}. I guess.",
+      "one loss. Still majestic."
+    ],
+    "rpsDraw": [
+      "a tie. The least-effort outcome. Acceptable."
+    ]
 }

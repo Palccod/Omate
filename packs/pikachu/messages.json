@@ -58,5 +58,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "pika pika! (rock-paper-scissors? Yes or no!)",
+      "pika! Game? Pika pika!"
+    ],
+    "rpsAccepted": [
+      "pika pikachu! (pick one!)"
+    ],
+    "rpsAsk": [
+      "pika? (rock, paper or scissors?)"
+    ],
+    "rpsDeclined": [
+      "pikaaaa... (sad electric noises)",
+      "pika. (your loss!)"
+    ],
+    "rpsWin": [
+      "pika pika! (I win! I win!)",
+      "pikachu! (victory!)",
+      "pika! (too slow, trainer!)"
+    ],
+    "rpsLose": [
+      "pika... pi... (I sneezed a thunderbolt, I swear.)",
+      "pikachu... (static interference!)",
+      "piiiika! (good one, {name}!)",
+      "pika pika! (nice throw!)",
+      "chu... (okay okay. You win. Barely.)"
+    ],
+    "rpsDraw": [
+      "pika? (same throw! Spooky!)"
+    ]
 }

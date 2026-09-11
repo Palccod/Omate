@@ -59,5 +59,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "yo, rock-paper-scissors? Winner gets bragging rights. In or out?",
+      "friendly neighborhood game? Yes or no?"
+    ],
+    "rpsAccepted": [
+      "with great power comes great picking. Choose."
+    ],
+    "rpsAsk": [
+      "rock, paper or scissors? And here... we... go."
+    ],
+    "rpsDeclined": [
+      "cool, cool. I'll just fight crime alone. As one does.",
+      "no worries. Not everyone can handle this level of game."
+    ],
+    "rpsWin": [
+      "another one for the web-head!",
+      "does whatever a spider can. Including this.",
+      "oops. Tough luck, champ."
+    ],
+    "rpsLose": [
+      "my spidey-sense was... off? That's new.",
+      "webbed the wrong throw. My bad.",
+      "hey, you're pretty good at this, {name}!",
+      "alright, alright — nicely done.",
+      "...yeah, okay. That was all skill. I admit it."
+    ],
+    "rpsDraw": [
+      "great minds, right? Right?!"
+    ]
 }

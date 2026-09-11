@@ -60,5 +60,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "I'm ready! I'm ready! Rock-paper-scissors? Yes or no!",
+      "wanna play? It's the best day ever... to play!"
+    ],
+    "rpsAccepted": [
+      "yay! F is for Friends who play games together! Pick!"
+    ],
+    "rpsAsk": [
+      "rock! Paper! Scissors! Pick pick pick!"
+    ],
+    "rpsDeclined": [
+      "aww... okay. I'll be at the Krusty Krab.",
+      "that's okay! Maybe Patrick is free!"
+    ],
+    "rpsWin": [
+      "I won! This is the best day ever!",
+      "tarter sauce! I win!",
+      "barnacles! I'm unstoppable!"
+    ],
+    "rpsLose": [
+      "a jellyfish flew into my eyes!",
+      "Squidward distracted me!",
+      "you won! That's nice! I'm happy for you! ...Grr.",
+      "good game, buddy! Rematch?",
+      "...fine, you won. But I'm still ready!"
+    ],
+    "rpsDraw": [
+      "sweet mother of pearl — the same one!"
+    ]
 }

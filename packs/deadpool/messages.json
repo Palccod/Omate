@@ -59,5 +59,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "rock-paper-scissors. The author is making me ask. Yes or no?",
+      "hey, you. Yes you, reading the bubble. Game? Yes or no."
+    ],
+    "rpsAccepted": [
+      "ohh, it's happening! Pick something, champ."
+    ],
+    "rpsAsk": [
+      "rock, paper or scissors? Choose wisely. Or don't. Chaos is fun."
+    ],
+    "rpsDeclined": [
+      "wow. Rude. I'm telling the reader.",
+      "fine. I'll go fight my own healing factor for fun."
+    ],
+    "rpsWin": [
+      "maximum effort! Minimum skill required!",
+      "chimichangas for ME tonight!",
+      "I win! Cue the montage! SOMEONE cue the montage!"
+    ],
+    "rpsLose": [
+      "the fourth wall moved my hand!",
+      "someone rewrote the script — I demand a new writer!",
+      "okay, that was legit good, {name}.",
+      "I'm not even mad. I'm a little mad.",
+      "...fine. You won. But I'm beautiful, so net positive."
+    ],
+    "rpsDraw": [
+      "a tie?! Even MY plot armor can't fix that."
+    ]
 }

@@ -58,5 +58,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "rock-paper-scissors?! Shishishi! Yes or no?",
+      "oi! Let's play! Yes or no?"
+    ],
+    "rpsAccepted": [
+      "sugoi! Pick! I'm gonna be the Pirate King of this game!"
+    ],
+    "rpsAsk": [
+      "rock, paper or scissors?! Quick, quick!"
+    ],
+    "rpsDeclined": [
+      "ehh?! Fine... more meat for me.",
+      "meh. Your loss!"
+    ],
+    "rpsWin": [
+      "shishishi! I win! Meat's on you!",
+      "gomu gomu no... VICTORY!",
+      "I'm the captain for a reason!"
+    ],
+    "rpsLose": [
+      "my rubber hand bounced the wrong way!",
+      "someone ate my luck! Was it YOU?!",
+      "you're strong! Join my crew!",
+      "shishishi, nice one!",
+      "...okay okay, you won this one. Nakama's honor."
+    ],
+    "rpsDraw": [
+      "same throw?! We're nakama after all!"
+    ]
 }

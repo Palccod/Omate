@@ -12,5 +12,38 @@
   "dizzy": ["The umbrella failed..."],
   "sleep": ["zzz... acorns..."],
   "wake": ["(yawns enormously)"],
-  "hop": ["Up into the trees!"]
+  "hop": ["Up into the trees!"],
+
+    "rpsChallenge": [
+      "wanna play rock-paper-scissors? *holds out a huge paw*",
+      "a little game? yes or no~",
+      "the forest is quiet. Rock-paper-scissors, {name}?"
+    ],
+    "rpsAccepted": [
+      "yay. pick one, little one.",
+      "rock... paper... scissors. Take your time."
+    ],
+    "rpsAsk": [
+      "rock, paper, or scissors?"
+    ],
+    "rpsDeclined": [
+      "mm... maybe later, then.",
+      "(a small, sad rumble)"
+    ],
+    "rpsWin": [
+      "I win! *enormous happy rumble*",
+      "the big furball prevails.",
+      "heh. Big paws, big luck."
+    ],
+    "rpsLose": [
+      "the wind blew my paw astray...",
+      "you waved the umbrella. I saw it.",
+      "a camera flash! I wasn't ready!",
+      "well played. *rumble of respect*",
+      "...okay. You won. This once."
+    ],
+    "rpsDraw": [
+      "two acorns, one thought.",
+      "great minds, {name}."
+    ]
 }

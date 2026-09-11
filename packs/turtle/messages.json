@@ -26,5 +26,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "a game of rock-paper-scissors? Do give me a moment to think... yes or no?",
+      "care for a slow, deliberate match?"
+    ],
+    "rpsAccepted": [
+      "splendid. Take your time. I certainly will."
+    ],
+    "rpsAsk": [
+      "rock, paper, or scissors... no rush."
+    ],
+    "rpsDeclined": [
+      "quite alright. Slow and steady.",
+      "perhaps after my nap. All of them are naps."
+    ],
+    "rpsWin": [
+      "slow and steady wins the... throw.",
+      "patience, {name}. Patience.",
+      "a victory of pure calculation."
+    ],
+    "rpsLose": [
+      "I was still deliberating...",
+      "my shell blocked my view.",
+      "brilliantly played, {name}.",
+      "victory suits you. This time.",
+      "I demand a recount. Slowly."
+    ],
+    "rpsDraw": [
+      "a draw. Statistically inevitable."
+    ]
 }

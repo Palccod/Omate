@@ -140,7 +140,54 @@ Item {
       "Don't forget: {task}!"
     ],
     // Daily alarms announce from this pool instead of "reminder" above.
-    alarm: ["Alarm: {task}!"]
+    alarm: ["Alarm: {task}!"],
+    // Rock-paper-scissors (see OmateWindow's rps object): the mate's side
+    // of the game. These are the neutral defaults; packs override them in
+    // messages.json to give each character its own personality — a good
+    // rpsLose pool is mostly excuses, sometimes congratulations, and
+    // rarely an honest admission of defeat.
+    rpsChallenge: [
+      "wanna play rock-paper-scissors?",
+      "rock, paper, scissors — yes or no?",
+      "I'm bored. Quick game? Yes or no!",
+      "pick a throw, {name}. Yes or no?"
+    ],
+    rpsAccepted: [
+      "yes! Pick one.",
+      "alright! Rock, paper... or scissors?",
+      "you're going down. Choose!"
+    ],
+    rpsAsk: [
+      "rock, paper or scissors?",
+      "pick your throw!",
+      "ready? Choose!"
+    ],
+    rpsDeclined: [
+      "fine... maybe later then.",
+      "your loss!",
+      "okay. Some other time, then."
+    ],
+    rpsWin: [
+      "I win! The champion speaks: me.",
+      "heh. Too easy.",
+      "another win for the undefeated.",
+      "sorry, {name}. I just can't lose."
+    ],
+    rpsLose: [
+      "my paw slipped!",
+      "the screen flickered. I felt it.",
+      "you distracted me. Somehow.",
+      "beginner's luck!",
+      "well played, {name}. Well played.",
+      "okay okay, you win this one.",
+      "...fine. You won. This once."
+    ],
+    rpsDraw: [
+      "a tie. Suspicious.",
+      "great minds think alike, {name}.",
+      "the same throw?! Again!",
+      "we think alike. Scary."
+    ]
   })
   property var messages: defaultMessages
 
@@ -313,6 +360,9 @@ Item {
   // The mate's right-click menu asks for the settings panel; the bar's
   // main-screen panel instance answers this (see OmatePanel).
   signal panelRequested()
+  // Start a rock-paper-scissors game straight away (omate rps); the
+  // roaming window runs the game, since the bubble lives there.
+  signal rpsRequested()
 
   // --- sounds ------------------------------------------------------------------
 
@@ -1185,6 +1235,8 @@ Item {
     // Teleport onto a random floating window (or leap if there is none).
     function hop(): void { mateWindow.hopToWindow() }
     function corner(): void { mateWindow.startCornerTrip() }
+    // Challenge the user to rock-paper-scissors, no yes/no asked.
+    function rps(): void { root.rpsRequested() }
     function setCursorChase(enabled: bool): void { root.setCursorChase(enabled) }
     function toggleCursorChase(): void { root.setCursorChase(!root.cursorChase) }
     // Seconds between chases, 5-3600.

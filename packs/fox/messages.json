@@ -26,5 +26,37 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "fancy a game you cannot win? yes or no~",
+      "rock-paper-scissors? I promise not to cheat. Much."
+    ],
+    "rpsAccepted": [
+      "sly choice incoming. Pick!"
+    ],
+    "rpsAsk": [
+      "pick, little human. Rock, paper or scissors?"
+    ],
+    "rpsDeclined": [
+      "scared? I understand.",
+      "suit yourself. More victories for me."
+    ],
+    "rpsWin": [
+      "the fox takes it. Obviously.",
+      "told you — can't outfox a fox.",
+      "sly as ever! I win."
+    ],
+    "rpsLose": [
+      "the sun was in my eyes.",
+      "I let you win. Clearly.",
+      "my tail twitched mid-throw!",
+      "a worthy opponent... this time.",
+      "hmph. Enjoy it while it lasts.",
+      "...fine. You won. Don't gloat."
+    ],
+    "rpsDraw": [
+      "a tie? Suspicious...",
+      "we think alike. I'm flattered."
+    ]
 }

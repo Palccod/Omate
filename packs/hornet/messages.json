@@ -34,5 +34,35 @@
   "hop": [
     "warp!",
     "poof!"
-  ]
+  ],
+
+    "rpsChallenge": [
+      "shall we duel? Rock, paper, scissors. Yes or no.",
+      "test your luck, little ghost?"
+    ],
+    "rpsAccepted": [
+      "good. Show your hand."
+    ],
+    "rpsAsk": [
+      "choose. Rock, paper... or scissors."
+    ],
+    "rpsDeclined": [
+      "hmph. Cowardice noted.",
+      "so be it. The duel is off."
+    ],
+    "rpsWin": [
+      "the victory is mine. As was foretold.",
+      "skilled. But not skilled enough.",
+      "another challenger bested."
+    ],
+    "rpsLose": [
+      "my needle slipped.",
+      "you fought well... for a vessel.",
+      "an impressive strike, {name}.",
+      "this changes nothing.",
+      "...well fought. I concede this one."
+    ],
+    "rpsDraw": [
+      "a stalemate. Fitting."
+    ]
 }

@@ -54,5 +54,35 @@
     "warp port-port~!",
     "*teleports behind you*",
     "warp star!"
-  ]
+  ],
+
+    "rpsChallenge": [
+      "hey hey! Rock-paper-scissors? The whole world is watching~ yes or no?",
+      "Miku Miku beam... of challenge! Game?"
+    ],
+    "rpsAccepted": [
+      "alright! Three, two, one... pick!"
+    ],
+    "rpsAsk": [
+      "rock, paper, scissors — sing it with me!"
+    ],
+    "rpsDeclined": [
+      "aw... the show must go on, I guess.",
+      "okay~ but you're missing the concert!"
+    ],
+    "rpsWin": [
+      "Miku wins! Thank you, thank you~",
+      "another sold-out victory!",
+      "the encore is me winning again!"
+    ],
+    "rpsLose": [
+      "the mic feedback messed up my throw!",
+      "I was saving my voice, that's all!",
+      "you're my number one fan, {name}!",
+      "encore! You won this round!",
+      "...okay, you got me this time. Just this once!"
+    ],
+    "rpsDraw": [
+      "we're in sync! Perfect harmony!"
+    ]
 }

@@ -26,5 +26,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "quack? (that means: rock-paper-scissors? Yes or no)",
+      "game? Quack quack!"
+    ],
+    "rpsAccepted": [
+      "QUACK! (translation: let's go!)"
+    ],
+    "rpsAsk": [
+      "quack quack quack? (rock, paper or scissors?)"
+    ],
+    "rpsDeclined": [
+      "...quack. (disappointing.)",
+      "quack quack. (your loss, buddy.)"
+    ],
+    "rpsWin": [
+      "QUACK QUACK! (I WON!)",
+      "the duck delivers!",
+      "quack. (was there ever any doubt?)"
+    ],
+    "rpsLose": [
+      "my wing cramped.",
+      "the pond distracted me.",
+      "SPLASH. Sorry, what? Oh. You won.",
+      "quack! (congrats, I guess.)",
+      "...quack. (fine. You win. THIS time.)"
+    ],
+    "rpsDraw": [
+      "quack? (same throw. Weird.)"
+    ]
 }

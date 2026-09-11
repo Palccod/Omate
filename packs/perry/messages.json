@@ -59,5 +59,35 @@
     "*chomp*",
     "Nom. Your cursor is delicious.",
     "Caught it!"
-  ]
+  ],
+
+    "rpsChallenge": [
+      "(stares at you, then holds up a paw) ...?",
+      "(chatters) (translation: game? Yes or no.)"
+    ],
+    "rpsAccepted": [
+      "(chatters approvingly) (pick.)"
+    ],
+    "rpsAsk": [
+      "(paw raised. Waiting. Still waiting.)"
+    ],
+    "rpsDeclined": [
+      "(chatters dismissively and walks off... three steps.)",
+      "(walks away. Comes back. Walks away again.)"
+    ],
+    "rpsWin": [
+      "(chatters triumphantly)",
+      "(does not gloat. The eyes gloat.)",
+      "(secret agent 1, citizen 0.)"
+    ],
+    "rpsLose": [
+      "(blames the fur in his eyes)",
+      "(a fedora blocked his view. Somewhere. Somehow.)",
+      "(chatters respectfully. Well played.)",
+      "(you have earned his respect. And a head tilt.)",
+      "(does not admit defeat. Files the round under 'inconclusive'.)"
+    ],
+    "rpsDraw": [
+      "(both threw the same. Chatters suspiciously.)"
+    ]
 }

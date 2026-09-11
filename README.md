@@ -78,6 +78,20 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   for the next day; snoozing pushes one out by 10 minutes or an hour. The
   list survives restarts (`~/.local/state/omarchy/omate-reminders.json`),
   and `omarchy-shell omate remind 25 "Take a break"` sets one from the CLI.
+- **Rock-paper-scissors**: every so often the mate challenges you out of
+  the blue — the ask rides the speech bubble with Yes/No buttons on it.
+  Right-click → "Rock-paper-scissors" (or `omarchy-shell omate rps`)
+  skips the yes/no and goes straight to the throws. Pick Rock, Paper or
+  Scissors on the bubble; the mate answers randomly and announces only
+  the outcome — scissors cuts paper, paper covers rock, rock breaks
+  scissors. Every character reacts in its own voice: most invent an
+  excuse when they lose, some congratulate you, a rare few admit defeat,
+  and the winners never stop gloating. Each pack's `messages.json`
+  carries the pools (`rpsChallenge`, `rpsAccepted`, `rpsAsk`,
+  `rpsDeclined`, `rpsWin`, `rpsLose`, `rpsDraw`), so you can rewrite your
+  mate's table talk. Unanswered games just expire — no nagging — and the
+  outcome stays on screen until you click the mate, so a quick fade never
+  buries it.
 - **Speech bubbles**: idle chatter, event reactions, and any message you
   send it.
 - **Multi-screen**: with more than one monitor the mate occasionally takes
@@ -86,9 +100,10 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
   along an edge throws it across. "Lock to this screen" in the menu pins it
   where it is and stops all of that until unlocked.
 - **Sounds**: tiny synthesized blips (grab, purr, poke, thud, zzz, wake).
-- **Menu**: right-click the cat for settings / reminders / walk / nap /
-  screen lock / mute / hide (plus "Find a corner" for packs with `corner`
-  art, and "Stop chasing" while a chase is armed).
+- **Menu**: right-click the cat for settings / reminders / walk /
+  rock-paper-scissors / nap / screen lock / mute / hide (plus "Find a
+  corner" for packs with `corner` art, and "Stop chasing" while a chase
+  is armed).
 - **Settings panel**: click the bar button (or the cat's "Settings…" menu
   entry) for a popup card styled like the plugin manager's rows — an
   animated sprite in the header, an enable/disable power switch in the top
@@ -228,6 +243,7 @@ omarchy-shell omate setCursorChase true   # chase the mouse pointer
 omarchy-shell omate toggleCursorChase
 omarchy-shell omate setChaseCooldown 300  # seconds between chases, 5-3600
 omarchy-shell omate remind 25 "Take a break"  # one-shot reminder, minutes
+omarchy-shell omate rps             # challenge the mate to rock-paper-scissors
 omarchy-shell omate hop            # teleport onto a random floating window
                                    # (or leap for joy if none are around)
 omarchy-shell omate status
@@ -242,8 +258,10 @@ Everything lives in plain files; edit and run `omarchy restart shell`.
   picks from (`greet`, `idle`, `drag`, `pet`, `poke`, `land`, `dizzy`,
   `sleep`, `wake`, `corner`, `chase`, `bite`, and the time-of-day pools
   `morning`, `lunch`, `afternoon`, `evening`, `night`, plus `reminder` for
-  when a reminder comes due — it uses `{task}` for the reminder's name).
-  Any line can carry
+  when a reminder comes due — it uses `{task}` for the reminder's name —
+  and the rock-paper-scissors pools `rpsChallenge`, `rpsAccepted`,
+  `rpsAsk`, `rpsDeclined`, `rpsWin`, `rpsLose`, `rpsDraw`). Any line can
+  carry
   the placeholder `{name}` — it is replaced with the name set in the
   settings panel, and lines that use it are only picked when a name is set.
   Every pack's `messages.json` sits on top of built-in defaults, so a pack

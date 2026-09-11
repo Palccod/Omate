@@ -34,5 +34,35 @@
   "hop": [
     "warp!",
     "poof!"
-  ]
+  ],
+
+    "rpsChallenge": [
+      "if it pleases you — rock-paper-scissors? Rem would be honored. Yes or no?",
+      "shall Rem prepare a game? Yes or no, please."
+    ],
+    "rpsAccepted": [
+      "understood. Rem is ready when you are."
+    ],
+    "rpsAsk": [
+      "rock, paper, or scissors — as you wish."
+    ],
+    "rpsDeclined": [
+      "as you wish. Rem will be here.",
+      "very well. Perhaps another time."
+    ],
+    "rpsWin": [
+      "Rem has won. Please forgive her.",
+      "Rem's training was not wasted.",
+      "victory for Rem. Rem apologizes."
+    ],
+    "rpsLose": [
+      "Rem's handkerchief blocked her view...",
+      "Rem was distracted dusting the throw...",
+      "{name}-san is wonderful! Congratulations!",
+      "Rem is happy to lose to {name}-san.",
+      "...Rem admits it. Well played, {name}-san."
+    ],
+    "rpsDraw": [
+      "we chose the same. Rem and {name} are in sync."
+    ]
 }

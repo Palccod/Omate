@@ -59,5 +59,35 @@
     "Mine now.",
     "*chomp*",
     "Got you. ...fine, you can have it back."
-  ]
+  ],
+
+    "rpsChallenge": [
+      "rock-paper-scissors. Yes or no. Mrow.",
+      "Dieter is bored. Entertain him. Yes or no."
+    ],
+    "rpsAccepted": [
+      "acceptable. Throw something."
+    ],
+    "rpsAsk": [
+      "rock, paper or scissors. Dieter is waiting."
+    ],
+    "rpsDeclined": [
+      "good. Dieter needed a nap anyway.",
+      "mrow. Suit yourself."
+    ],
+    "rpsWin": [
+      "Dieter wins. Naturally.",
+      "MROW! Victory!",
+      "Dieter accepts your surrender."
+    ],
+    "rpsLose": [
+      "the sunbeam moved. Dieter was IN it.",
+      "someone poked Dieter's tail. Rude.",
+      "hmph. Beginner's luck, {name}.",
+      "...Dieter allows it. Once.",
+      "fine. FINE. You won. Tell no one."
+    ],
+    "rpsDraw": [
+      "the same throw. Dieter is not impressed."
+    ]
 }
