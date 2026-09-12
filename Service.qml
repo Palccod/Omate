@@ -775,7 +775,8 @@ Item {
   }
 
   function flushReminders() {
-    remindersFile.setText(JSON.stringify({ reminders: reminders }, null, 2) + "\n")
+    saveState("omate-reminders.json",
+      JSON.stringify({ reminders: reminders }, null, 2) + "\n")
   }
 
   // Parsed the loaded file into the live list. Also reconciles alarms that
@@ -829,7 +830,7 @@ Item {
 
   function flushPet() {
     positionDirty = false
-    petFile.setText(JSON.stringify({
+    saveState("omate-state.json", JSON.stringify({
       petX: petX,
       petY: petY,
       facingLeft: facingLeft,
@@ -854,7 +855,7 @@ Item {
     for (var current in settings) if (current in merged) merged[current] = settings[current]
     for (var change in patch) if (change in merged) merged[change] = patch[change]
     settings = merged
-    settingsFile.setText(JSON.stringify(settings, null, 2) + "\n")
+    saveState("omate-settings.json", JSON.stringify(settings, null, 2) + "\n")
   }
 
   // --- init --------------------------------------------------------------------
@@ -1163,33 +1164,49 @@ Item {
     packLister.running = true
   }
 
-  // Write-only views: preload off, text() is never called, so the shell
-  // never maps these files itself.
-  FileView {
-    id: settingsFile
-    path: root.settingsPath
-    preload: false
-    watchChanges: false
-    atomicWrites: true
-    printErrors: false
+  // State saves go through tools/secure-save.py instead of FileView
+  // atomicWrites: the helper opens every state-path ancestor with
+  // O_NOFOLLOW, verifies each is owned by the current user, stages a
+  // 0600 temp file relative to the final directory descriptor and
+  // publishes with renameat, revalidating before and after. FileView's
+  // atomic writes create and swap files through the raw path, trusting
+  // whatever the ancestors turn out to be. The payload rides argv (no
+  // shell) and is bounded by maxStateBytes, well under the kernel's
+  // 128 KiB per-argument limit. Saves queue so overlapping flushes
+  // publish in order.
+  Process {
+    id: stateWriter
+    property string fileName: ""
+    property var queue: []
+    command: []
+    stdout: StdioCollector {}
+    stderr: StdioCollector {}
+    onExited: function(exitCode) {
+      if (exitCode !== 0)
+        console.warn("omate: failed to save " + fileName)
+      fileName = ""
+      pump()
+    }
+    function save(name, text) {
+      for (var i = 0; i < queue.length; i++)
+        if (queue[i].name === name) { queue.splice(i, 1); break }
+      queue.push({ name: name, text: text })
+      pump()
+    }
+    function pump() {
+      if (running || queue.length === 0) return
+      var job = queue.shift()
+      fileName = job.name
+      command = ["python3", root.pluginFile("tools/secure-save.py"),
+                 root.stateDir, job.name, job.text]
+      running = true
+    }
   }
 
-  FileView {
-    id: petFile
-    path: root.petPath
-    preload: false
-    watchChanges: false
-    atomicWrites: true
-    printErrors: false
-  }
-
-  FileView {
-    id: remindersFile
-    path: root.remindersPath
-    preload: false
-    watchChanges: false
-    atomicWrites: true
-    printErrors: false
+  // Bounded save: never hand the helper more than a state file may hold.
+  function saveState(name, text) {
+    if (!initialized || text.length >= maxStateBytes) return
+    stateWriter.save(name, text)
   }
 
   // --- IPC -----------------------------------------------------------------------

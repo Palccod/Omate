@@ -28,9 +28,12 @@ Sizes range from the 24px cat up to 250px Totoro, settable per pack.
 - Hyprland (window tracking for window-sitting; the default)
 - PipeWire's `pw-play` for sound effects (stock on Omarchy; mute in the
   panel)
-- Optional, only for the character converters in `tools/`: `python3`
-  (plus `pillow` for the GIF importer). The plugin itself never runs
-  Python.
+- `python3` (stock on Omarchy): runs `tools/secure-save.py`, which the
+  plugin uses for every settings/pet/reminder save so state files are
+  published through owner-checked, no-follow directory descriptors
+  instead of unchecked paths
+- Optional, only for the character converters in `tools/`: `pillow` for
+  the GIF importer
 
 ## Features
 
