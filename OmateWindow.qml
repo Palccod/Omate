@@ -831,13 +831,15 @@ PanelWindow {
 
   // --- physics -----------------------------------------------------------------
 
-  Timer {
+  // Driven by the render clock rather than the event loop: FrameAnimation
+  // fires once per rendered frame and reports the real elapsed time, so
+  // motion is vsync-locked to whatever the panel runs. Idle is excluded so a
+  // resting mate costs nothing (cheaper at rest than the old 25 Hz timer).
+  FrameAnimation {
     id: physics
-    interval: 40
-    running: root.visible
-    repeat: true
+    running: root.visible && root.action !== "idle"
     onTriggered: {
-      var dt = interval / 1000
+      var dt = Math.min(frameTime, 0.05)
       // Falling asleep mid-stride used to sleepwalk: the sleep pose played
       // while the walk kept sliding to its target. Asleep means standing
       // still — the sleep pose, or idle for packs without sleep art.
