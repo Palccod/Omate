@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import qs.Commons
 import qs.Ui
+import "bridge" as OmateBridge
 
 // Bar button: the mate's face, animated with the current skin. Left click
 // opens its settings panel (skins, behavior, the enable/disable power
@@ -11,9 +12,19 @@ BarWidget {
   id: root
   moduleName: "palccod.omate"
 
-  readonly property var petService: bar && bar.shell
-    ? bar.shell.serviceFor(moduleName)
-    : null
+  // Primary path: the bar host's scoped facade. The first-party bar scopes
+  // it to this plugin, so serviceFor() reaches our own live service.
+  // Fallback: the engine-wide bridge singleton. Replacement bars (e.g.
+  // ruixen.bar) are handed a facade whose serviceFor() is a deliberate null
+  // stub -- Omarchy never exposes service resolution to them -- so widgets
+  // they host would otherwise never get past "Waking up…". Re-evaluates on
+  // its own when the service publishes itself (or is torn down).
+  readonly property var petService: {
+    var viaHost = bar && bar.shell && typeof bar.shell.serviceFor === "function"
+      ? bar.shell.serviceFor(moduleName)
+      : null
+    return viaHost || OmateBridge.Bridge.service
+  }
   readonly property bool serviceReady: !!petService && petService.initialized === true
 
   // Panel lifecycle forwarding, required by the bar's popout switching.

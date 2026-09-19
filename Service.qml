@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "bridge" as OmateBridge
 
 // Omate's headless brain: settings and pet state, the sleep cycle, the
 // message engine, sounds and the IPC surface. Loaded once at shell startup,
@@ -1160,9 +1161,14 @@ Item {
   }
 
   Component.onCompleted: {
+    OmateBridge.Bridge.service = root
     reloadPack()
     packLister.running = true
   }
+
+  // Unpublish so a widget falling back to the bridge never binds to a
+  // half-destroyed service during plugin reloads or shell teardown.
+  Component.onDestruction: if (OmateBridge.Bridge.service === root) OmateBridge.Bridge.service = null
 
   // State saves go through tools/secure-save.py instead of FileView
   // atomicWrites: the helper opens every state-path ancestor with

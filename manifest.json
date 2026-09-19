@@ -2,12 +2,21 @@
   "schemaVersion": 1,
   "id": "palccod.omate",
   "name": "Omate",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": "palccod",
   "license": "MIT",
   "description": "A lightweight desktop mate for Omarchy: eighteen characters that roam your screen, ride along when you drag them, sit, lie down, stumble when poked, and drop by with messages. No AI, no network — just companions.",
-  "keywords": ["pet", "mate", "companion", "cat", "fun"],
-  "kinds": ["service", "bar-widget"],
+  "keywords": [
+    "pet",
+    "mate",
+    "companion",
+    "cat",
+    "fun"
+  ],
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
   "entryPoints": {
     "service": "Service.qml",
     "barWidget": "BarWidget.qml"
