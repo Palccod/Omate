@@ -511,6 +511,30 @@ Panel {
             }
           }
 
+          // App awareness on/off.
+          Item {
+            width: parent.width
+            height: Style.space(30)
+
+            Text {
+              anchors.left: parent.left
+              anchors.verticalCenter: parent.verticalCenter
+              text: "App awareness"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              renderType: Text.NativeRendering
+            }
+            ToggleSwitch {
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              checked: root.enabledMate && root.petService.appAware
+              enabled: root.ready
+              foreground: root.foreground
+              onToggled: if (root.ready) root.petService.setAppAware(!checked)
+            }
+          }
+
           // Sound effects volume.
           Item {
             width: parent.width

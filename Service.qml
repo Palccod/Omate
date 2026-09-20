@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import "bridge" as OmateBridge
 
 // Omate's headless brain: settings and pet state, the sleep cycle, the
@@ -188,7 +189,47 @@ Item {
       "great minds think alike, {name}.",
       "the same throw?! Again!",
       "we think alike. Scary."
-    ]
+    ],
+    // Said when the focused window goes fullscreen: let the film play.
+    shh: [
+      "shh...",
+      "quiet. film's on.",
+      "*whispers* enjoy the movie, {name}."
+    ],
+    // App awareness: the mate occasionally comments when focus lands on an
+    // app it recognizes (see reactToFocusedApp). Keys are lowercase
+    // substrings matched against the focused window's Wayland app id; the
+    // first matching key wins. A pack's messages.json overrides the whole
+    // map by declaring the same key, so a pack can ship its own set.
+    appReactions: {
+      // Editors and IDEs.
+      "code": ["shipping bugs, {name}?", "is that bug still alive?", "*watches the cursor blink*"],
+      "jetbrains": ["compiling? I'll be quiet. Ish."],
+      "helix": ["kakoune walked so helix could run."],
+      "vim": [":wq, {name}. :wq."],
+      "emacs": ["great operating system. Shame about the editor."],
+      // Terminals.
+      "kitty": ["ooh. hacker mode."],
+      "foot": ["ooh. hacker mode."],
+      "alacritty": ["ooh. hacker mode."],
+      "ghostty": ["ooh. hacker mode."],
+      "wezterm": ["ooh. hacker mode."],
+      "konsole": ["ooh. hacker mode."],
+      // Browsers.
+      "firefox": ["reading or working? ...don't answer that."],
+      "chromium": ["how many tabs is that, {name}?"],
+      "chrome": ["how many tabs is that, {name}?"],
+      "brave": ["how many tabs is that, {name}?"],
+      "zen": ["reading or working? ...don't answer that."],
+      "librewolf": ["reading or working? ...don't answer that."],
+      // Media and play.
+      "mpv": ["ooh, what are we watching?"],
+      "vlc": ["ooh, what are we watching?"],
+      "spotify": ["*taps paw to the beat*"],
+      "steam": ["have fun! I'll guard the screen."],
+      "osu": ["my ears."],
+      "minecraft": ["don't dig straight down, {name}."]
+    }
   })
   property var messages: defaultMessages
 
@@ -280,7 +321,10 @@ Item {
     // turn the whole feature off and never come back.
     chaseCooldownSec: 300,
     // Roughly one idle line every N minutes while awake.
-    chatterMinutes: 4
+    chatterMinutes: 4,
+    // Comment occasionally on the app the user switches to (and hush during
+    // fullscreen video). Off still leaves the roaming brain untouched.
+    appAware: true
   })
   property var settings: defaultSettings
   readonly property real soundVolume: {
@@ -346,6 +390,7 @@ Item {
     loadedUserMessagesText !== "" ? loadedUserMessagesText : loadedRepoMessagesText
 
   readonly property bool roaming: settings.roamEnabled === true
+  readonly property bool appAware: settings.appAware === true
   readonly property bool screenLocked: settings.screenLocked === true
   readonly property bool cursorChase: settings.cursorChase === true
   readonly property int chaseCooldownSec: {
@@ -399,7 +444,9 @@ Item {
   // --- messages ----------------------------------------------------------------
 
   function pick(pool) {
-    var list = messages[pool]
+    // A pool is usually a name into `messages`; an inline list (the
+    // appReactions map) is accepted too.
+    var list = typeof pool === "string" ? messages[pool] : pool
     if (!list || list.length === 0) return ""
     if (displayName === "") {
       // Lines written around a name are only usable when there is one.
@@ -461,6 +508,10 @@ Item {
 
   function setRoaming(enabled) {
     updateSettings({ roamEnabled: enabled === true })
+  }
+
+  function setAppAware(enabled) {
+    updateSettings({ appAware: enabled === true })
   }
 
   function setCursorChase(enabled) {
@@ -577,7 +628,84 @@ Item {
     onTriggered: {
       interval = root.chatterInterval()
       if (root.sleeping || root.settings.visible !== true) return
+      // A fullscreen video is the user watching something; chatter over it
+      // spoils the scene.
+      if (root.focusedFullscreen) return
       if (Math.random() < 0.75) root.sayFrom("idle")
+    }
+  }
+
+  // --- app awareness -----------------------------------------------------------
+  // What the user is looking at, as Wayland's toplevel manager reports it.
+  // The mate drops an occasional comment when focus lands on an app it
+  // recognizes (messages.appReactions, keyed by lowercase substring of the
+  // Wayland app id) and whispers once when a fullscreen episode starts.
+  // Every path is guarded: awareness off, asleep, hidden, or a failed chance
+  // roll all mean nothing is said — most window switches are simply ignored.
+  readonly property var focusedToplevel: ToplevelManager.activeToplevel
+  readonly property string focusedApp: {
+    var t = focusedToplevel
+    if (!t || t.activated !== true) return ""
+    return String(t.appId || "").toLowerCase()
+  }
+  readonly property bool focusedFullscreen: {
+    var t = focusedToplevel
+    return !!t && t.activated === true && t.fullscreen === true
+  }
+  property string lastAppKey: ""
+  property string lastFullscreenApp: ""
+  property double lastAppLineMs: 0
+
+  function reactToFocusedApp(appId) {
+    if (!initialized) return
+    if (settings.appAware !== true) return
+    if (sleeping || settings.visible !== true) return
+    var now = Date.now()
+    // Hard floor of two minutes between any two app lines, however many
+    // windows flash past (alt-tab runs must never machine-gun bubbles).
+    if (now - lastAppLineMs < 120000) return
+    var map = messages.appReactions || {}
+    var pool = null
+    for (var key in map) {
+      if (appId !== "" && appId.indexOf(String(key).toLowerCase()) >= 0) {
+        pool = map[key]
+        break
+      }
+    }
+    if (!pool || pool.length === 0) return
+    // Occasional, not chatty: roughly one in three eligible switches.
+    if (Math.random() > 0.35) return
+    lastAppLineMs = now
+    sayFrom(pool)
+  }
+
+  Connections {
+    target: ToplevelManager
+    function onActiveToplevelChanged() {
+      var t = root.focusedToplevel
+      var appId = t && t.activated === true ? String(t.appId || "").toLowerCase() : ""
+      if (appId !== "" && appId !== root.lastAppKey) root.reactToFocusedApp(appId)
+      root.lastAppKey = appId
+    }
+  }
+
+  // Fullscreen edges fire on the current toplevel, not on focus changes, so
+  // they get their own watch. One whisper per episode, per app: replaying
+  // the same video fullscreen twice in a row is not two whispers.
+  Connections {
+    target: root.focusedToplevel
+    function onFullscreenChanged() {
+      var t = root.focusedToplevel
+      if (!t || t.activated !== true || t.fullscreen !== true) return
+      if (!root.initialized || root.settings.appAware !== true) return
+      if (root.sleeping || root.settings.visible !== true) return
+      var appId = String(t.appId || "").toLowerCase()
+      if (appId === "" || appId === root.lastFullscreenApp) return
+      if (Date.now() - root.lastAppLineMs < 120000) return
+      if (Math.random() > 0.6) return
+      root.lastFullscreenApp = appId
+      root.lastAppLineMs = Date.now()
+      root.sayFrom("shh")
     }
   }
 
@@ -1233,6 +1361,8 @@ Item {
     }
     function toggleRoam(): void { root.setRoaming(!root.roaming) }
     function setRoam(enabled: bool): void { root.setRoaming(enabled) }
+    function toggleAppAware(): void { root.setAppAware(!root.appAware) }
+    function setAppAware(enabled: bool): void { root.setAppAware(enabled) }
     function show(): void { root.setMateVisible(true) }
     function hide(): void { root.setMateVisible(false) }
     function toggleVisible(): void { root.toggleMateVisible() }
