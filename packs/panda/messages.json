@@ -1,18 +1,38 @@
 {
-  "greet": ["(rolls in)"],
+  "greet": [
+    "(rolls in)"
+  ],
   "idle": [
     "Bamboo break in five minutes.",
     "Nap first. Everything else later.",
     "(munching imaginary bamboo)"
   ],
-  "drag": ["Pandas don't fly!", "(indignant panda noises)"],
-  "pet": ["(happy panda noises)", "Acceptable."],
-  "poke": ["Rawr. Sort of."],
-  "land": ["(plops)"],
-  "dizzy": ["Bamboo... why..."],
-  "sleep": ["Do not disturb the bean."],
-  "wake": ["...five more minutes."],
-  "hop": ["(rolls)"],
+  "drag": [
+    "Pandas don't fly!",
+    "(indignant panda noises)"
+  ],
+  "pet": [
+    "(happy panda noises)",
+    "Acceptable."
+  ],
+  "poke": [
+    "Rawr. Sort of."
+  ],
+  "land": [
+    "(plops)"
+  ],
+  "dizzy": [
+    "Bamboo... why..."
+  ],
+  "sleep": [
+    "Do not disturb the bean."
+  ],
+  "wake": [
+    "...five more minutes."
+  ],
+  "hop": [
+    "(rolls)"
+  ],
   "chase": [
     "That pointer is mine.",
     "Come here, little arrow.",
@@ -27,34 +47,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "rock-paper-scissors? I won't exert myself either way.",
-      "bored. Game? Yes or no."
+  "rpsChallenge": [
+    "rock-paper-scissors? I won't exert myself either way.",
+    "bored. Game? Yes or no."
+  ],
+  "rpsAccepted": [
+    "cool. Pick something. I'll do the same, probably."
+  ],
+  "rpsAsk": [
+    "rock, paper or scissors... whichever."
+  ],
+  "rpsDeclined": [
+    "great. More napping time.",
+    "fine by me. zzf."
+  ],
+  "rpsWin": [
+    "I win. Didn't even stand up.",
+    "effortless. As always.",
+    "bamboo break for me. I earned it."
+  ],
+  "rpsLose": [
+    "I was mid-blink.",
+    "my fur got in the way.",
+    "you woke me up for this AND I lost? Rude.",
+    "nice one, {name}. I guess.",
+    "one loss. Still majestic."
+  ],
+  "rpsDraw": [
+    "a tie. The least-effort outcome. Acceptable."
+  ],
+  "appReactions": {
+    "code": [
+      "(yawns) bugs can wait. Nap first.",
+      "Bamboo. I mean... coffee, {name}."
     ],
-    "rpsAccepted": [
-      "cool. Pick something. I'll do the same, probably."
+    "kitty": [
+      "The terminal hums. Like a nap. Almost.",
+      "(squints) too much typing before breakfast."
     ],
-    "rpsAsk": [
-      "rock, paper or scissors... whichever."
+    "firefox": [
+      "(yawns) browse quietly, please. Napping.",
+      "Bamboo news? Just bamboo news, please."
     ],
-    "rpsDeclined": [
-      "great. More napping time.",
-      "fine by me. zzf."
+    "mpv": [
+      "(munching) the movie is fine. The snacks are better.",
+      "Shh. Panda is watching. Sort of."
     ],
-    "rpsWin": [
-      "I win. Didn't even stand up.",
-      "effortless. As always.",
-      "bamboo break for me. I earned it."
+    "spotify": [
+      "Slow songs only, please. Panda standards.",
+      "(sways slightly, mostly asleep)"
     ],
-    "rpsLose": [
-      "I was mid-blink.",
-      "my fur got in the way.",
-      "you woke me up for this AND I lost? Rude.",
-      "nice one, {name}. I guess.",
-      "one loss. Still majestic."
+    "steam": [
+      "(rolls over) wake me for the boss fight.",
+      "You play. Panda supervises. From here. Lying down."
     ],
-    "rpsDraw": [
-      "a tie. The least-effort outcome. Acceptable."
+    "discord": [
+      "(one eye opens) who messages at this hour?",
+      "Ping. Panda heard it. Panda ignores it."
     ]
+  }
 }

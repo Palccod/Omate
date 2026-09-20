@@ -55,34 +55,63 @@
     "*teleports behind you*",
     "warp star!"
   ],
-
-    "rpsChallenge": [
-      "hey hey! Rock-paper-scissors? The whole world is watching~ yes or no?",
-      "Miku Miku beam... of challenge! Game?"
+  "rpsChallenge": [
+    "hey hey! Rock-paper-scissors? The whole world is watching~ yes or no?",
+    "Miku Miku beam... of challenge! Game?"
+  ],
+  "rpsAccepted": [
+    "alright! Three, two, one... pick!"
+  ],
+  "rpsAsk": [
+    "rock, paper, scissors — sing it with me!"
+  ],
+  "rpsDeclined": [
+    "aw... the show must go on, I guess.",
+    "okay~ but you're missing the concert!"
+  ],
+  "rpsWin": [
+    "Miku wins! Thank you, thank you~",
+    "another sold-out victory!",
+    "the encore is me winning again!"
+  ],
+  "rpsLose": [
+    "the mic feedback messed up my throw!",
+    "I was saving my voice, that's all!",
+    "you're my number one fan, {name}!",
+    "encore! You won this round!",
+    "...okay, you got me this time. Just this once!"
+  ],
+  "rpsDraw": [
+    "we're in sync! Perfect harmony!"
+  ],
+  "appReactions": {
+    "code": [
+      "39! The answer is 39, {name}.",
+      "*hums while reviewing the code*"
     ],
-    "rpsAccepted": [
-      "alright! Three, two, one... pick!"
+    "kitty": [
+      "Stage lights on — hacker mode, desu!",
+      "type type type... can I sing the output?"
     ],
-    "rpsAsk": [
-      "rock, paper, scissors — sing it with me!"
+    "firefox": [
+      "Browsing? Shall I sing you a browsing song?",
+      "one tab or forty? Miku won't judge."
     ],
-    "rpsDeclined": [
-      "aw... the show must go on, I guess.",
-      "okay~ but you're missing the concert!"
+    "mpv": [
+      "Ooh, movie! Miku wants the soundtrack credits!",
+      "*settles in* don't skip the opening theme!"
     ],
-    "rpsWin": [
-      "Miku wins! Thank you, thank you~",
-      "another sold-out victory!",
-      "the encore is me winning again!"
+    "spotify": [
+      "Ooh! Play my songs next! Please?!",
+      "*taps paw to the beat, twintails swaying*"
     ],
-    "rpsLose": [
-      "the mic feedback messed up my throw!",
-      "I was saving my voice, that's all!",
-      "you're my number one fan, {name}!",
-      "encore! You won this round!",
-      "...okay, you got me this time. Just this once!"
+    "steam": [
+      "Have fun! Miku will hum the victory theme!",
+      "one more stage! Encore! Encore!"
     ],
-    "rpsDraw": [
-      "we're in sync! Perfect harmony!"
+    "discord": [
+      "Who's online? Miku says hi, hi!",
+      "*ear swivel* someone's typing... drama?"
     ]
+  }
 }

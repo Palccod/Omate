@@ -1,18 +1,38 @@
 {
-  "greet": ["Woof! Best friend reporting."],
+  "greet": [
+    "Woof! Best friend reporting."
+  ],
   "idle": [
     "Guarding the desktop. Napping too.",
     "Walk? Did someone say walk?",
     "(ear flick)"
   ],
-  "drag": ["No! Bad human!", "Borf borf!"],
-  "pet": ["Who's a good boy? I am.", "(leans into it)"],
-  "poke": ["Borf!"],
-  "land": ["Stuck the landing!"],
-  "dizzy": ["Shake it off..."],
-  "sleep": ["(dreaming of treats)"],
-  "wake": ["Treat?!"],
-  "hop": ["BOING!"],
+  "drag": [
+    "No! Bad human!",
+    "Borf borf!"
+  ],
+  "pet": [
+    "Who's a good boy? I am.",
+    "(leans into it)"
+  ],
+  "poke": [
+    "Borf!"
+  ],
+  "land": [
+    "Stuck the landing!"
+  ],
+  "dizzy": [
+    "Shake it off..."
+  ],
+  "sleep": [
+    "(dreaming of treats)"
+  ],
+  "wake": [
+    "Treat?!"
+  ],
+  "hop": [
+    "BOING!"
+  ],
   "chase": [
     "That pointer is mine.",
     "Come here, little arrow.",
@@ -27,34 +47,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "rock-paper-scissors? YES! I mean— yes or no?",
-      "wanna play? I've been practicing all week!"
+  "rpsChallenge": [
+    "rock-paper-scissors? YES! I mean— yes or no?",
+    "wanna play? I've been practicing all week!"
+  ],
+  "rpsAccepted": [
+    "okay okay okay! Pick one!"
+  ],
+  "rpsAsk": [
+    "rock, paper or scissors? I'm SO ready."
+  ],
+  "rpsDeclined": [
+    "aww... okay. I'll wait right here.",
+    "(puts paw away very slowly)"
+  ],
+  "rpsWin": [
+    "I did it! Good boy points for me!",
+    "who's a winner? I'M a winner!",
+    "all that fetch training finally paid off!"
+  ],
+  "rpsLose": [
+    "I got excited and threw early...",
+    "my paw fell asleep. Honest!",
+    "you're so good at this, {name}!",
+    "congrats! Best human ever!",
+    "no excuses — you earned that one. ...Mostly."
+  ],
+  "rpsDraw": [
+    "we match! High five! ...Paw five?"
+  ],
+  "appReactions": {
+    "code": [
+      "You typed! Good human.",
+      "*stares at the screen, tail still*"
     ],
-    "rpsAccepted": [
-      "okay okay okay! Pick one!"
+    "kitty": [
+      "A terminal! ...no squirrel in there. Disappointing.",
+      "Hacker mode. Guard mode. Same thing."
     ],
-    "rpsAsk": [
-      "rock, paper or scissors? I'm SO ready."
+    "firefox": [
+      "Walkies? No? Browsing. I'll wait by the door.",
+      "*head tilt* that page smells interesting."
     ],
-    "rpsDeclined": [
-      "aww... okay. I'll wait right here.",
-      "(puts paw away very slowly)"
+    "mpv": [
+      "Is that a squirrel on screen?! Tell me when it moves.",
+      "*leans against the screen to watch*"
     ],
-    "rpsWin": [
-      "I did it! Good boy points for me!",
-      "who's a winner? I'M a winner!",
-      "all that fetch training finally paid off!"
+    "spotify": [
+      "*howls along, on key-ish*",
+      "Walkies playlist? WALKIES PLAYLIST?"
     ],
-    "rpsLose": [
-      "I got excited and threw early...",
-      "my paw fell asleep. Honest!",
-      "you're so good at this, {name}!",
-      "congrats! Best human ever!",
-      "no excuses — you earned that one. ...Mostly."
+    "steam": [
+      "Go get the ball! ...or win the round. Both good.",
+      "I'll guard the keyboard. With my face."
     ],
-    "rpsDraw": [
-      "we match! High five! ...Paw five?"
+    "discord": [
+      "New friend smell! Where?! Let me say hi!",
+      "*excited tail thumping*"
     ]
+  }
 }

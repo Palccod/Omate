@@ -60,34 +60,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "yo, rock-paper-scissors? Winner gets bragging rights. In or out?",
-      "friendly neighborhood game? Yes or no?"
+  "rpsChallenge": [
+    "yo, rock-paper-scissors? Winner gets bragging rights. In or out?",
+    "friendly neighborhood game? Yes or no?"
+  ],
+  "rpsAccepted": [
+    "with great power comes great picking. Choose."
+  ],
+  "rpsAsk": [
+    "rock, paper or scissors? And here... we... go."
+  ],
+  "rpsDeclined": [
+    "cool, cool. I'll just fight crime alone. As one does.",
+    "no worries. Not everyone can handle this level of game."
+  ],
+  "rpsWin": [
+    "another one for the web-head!",
+    "does whatever a spider can. Including this.",
+    "oops. Tough luck, champ."
+  ],
+  "rpsLose": [
+    "my spidey-sense was... off? That's new.",
+    "webbed the wrong throw. My bad.",
+    "hey, you're pretty good at this, {name}!",
+    "alright, alright — nicely done.",
+    "...yeah, okay. That was all skill. I admit it."
+  ],
+  "rpsDraw": [
+    "great minds, right? Right?!"
+  ],
+  "appReactions": {
+    "code": [
+      "Bugs? My specialty. Not the radioactive kind.",
+      "With great code comes great debugging."
     ],
-    "rpsAccepted": [
-      "with great power comes great picking. Choose."
+    "kitty": [
+      "Nice. Command line. Very street-level hero of you.",
+      "Type it, {name}. With great power and all that."
     ],
-    "rpsAsk": [
-      "rock, paper or scissors? And here... we... go."
+    "firefox": [
+      "Web-slinging. Get it? The web? I'll be here all week.",
+      "Need a hand? A web? A tab?"
     ],
-    "rpsDeclined": [
-      "cool, cool. I'll just fight crime alone. As one does.",
-      "no worries. Not everyone can handle this level of game."
+    "mpv": [
+      "Popcorn's on me. Well, metaphorically. I'm broke.",
+      "Stay till the end — post-credits scene, trust me."
     ],
-    "rpsWin": [
-      "another one for the web-head!",
-      "does whatever a spider can. Including this.",
-      "oops. Tough luck, champ."
+    "spotify": [
+      "Left earbud for you, right for me. Wait, I have none.",
+      "*drumming fingers to the beat, web-shooter style*"
     ],
-    "rpsLose": [
-      "my spidey-sense was... off? That's new.",
-      "webbed the wrong throw. My bad.",
-      "hey, you're pretty good at this, {name}!",
-      "alright, alright — nicely done.",
-      "...yeah, okay. That was all skill. I admit it."
+    "steam": [
+      "Go get 'em, Tiger.",
+      "Respawn and try again. That's the whole gig."
     ],
-    "rpsDraw": [
-      "great minds, right? Right?!"
+    "discord": [
+      "Ping! Friendly neighborhood notification.",
+      "Tell them Spidey says hi. And to water their plants."
     ]
+  }
 }

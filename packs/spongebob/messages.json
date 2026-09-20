@@ -61,34 +61,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "I'm ready! I'm ready! Rock-paper-scissors? Yes or no!",
-      "wanna play? It's the best day ever... to play!"
+  "rpsChallenge": [
+    "I'm ready! I'm ready! Rock-paper-scissors? Yes or no!",
+    "wanna play? It's the best day ever... to play!"
+  ],
+  "rpsAccepted": [
+    "yay! F is for Friends who play games together! Pick!"
+  ],
+  "rpsAsk": [
+    "rock! Paper! Scissors! Pick pick pick!"
+  ],
+  "rpsDeclined": [
+    "aww... okay. I'll be at the Krusty Krab.",
+    "that's okay! Maybe Patrick is free!"
+  ],
+  "rpsWin": [
+    "I won! This is the best day ever!",
+    "tarter sauce! I win!",
+    "barnacles! I'm unstoppable!"
+  ],
+  "rpsLose": [
+    "a jellyfish flew into my eyes!",
+    "Squidward distracted me!",
+    "you won! That's nice! I'm happy for you! ...Grr.",
+    "good game, buddy! Rematch?",
+    "...fine, you won. But I'm still ready!"
+  ],
+  "rpsDraw": [
+    "sweet mother of pearl — the same one!"
+  ],
+  "appReactions": {
+    "code": [
+      "Is mayonnaise a programming language?",
+      "I'm ready! I'm ready! To debug!"
     ],
-    "rpsAccepted": [
-      "yay! F is for Friends who play games together! Pick!"
+    "kitty": [
+      "I'm typing! I'm typing!",
+      "F is for fire that burns down the whole... wait, wrong terminal."
     ],
-    "rpsAsk": [
-      "rock! Paper! Scissors! Pick pick pick!"
+    "firefox": [
+      "The inner machinations of my mind are an enigma. *spits out milk*",
+      "Browsing! Best day ever!"
     ],
-    "rpsDeclined": [
-      "aww... okay. I'll be at the Krusty Krab.",
-      "that's okay! Maybe Patrick is free!"
+    "mpv": [
+      "Movie night! I brought jellyfish jelly snacks!",
+      "This is the part where Patrick cries. Every time."
     ],
-    "rpsWin": [
-      "I won! This is the best day ever!",
-      "tarter sauce! I win!",
-      "barnacles! I'm unstoppable!"
+    "spotify": [
+      "Sweet victory! Crank it, {name}!",
+      "*dances like nobody's watching*"
     ],
-    "rpsLose": [
-      "a jellyfish flew into my eyes!",
-      "Squidward distracted me!",
-      "you won! That's nice! I'm happy for you! ...Grr.",
-      "good game, buddy! Rematch?",
-      "...fine, you won. But I'm still ready!"
+    "steam": [
+      "I'm ready! I'm ready! To lose gracefully!",
+      "Aww, barnacles! ...rematch!"
     ],
-    "rpsDraw": [
-      "sweet mother of pearl — the same one!"
+    "discord": [
+      "Squidward's online! Act natural!",
+      "Tell 'em SpongeBob sent ya!"
     ]
+  }
 }

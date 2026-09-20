@@ -1,18 +1,38 @@
 {
-  "greet": ["Quack! Your captain is here."],
+  "greet": [
+    "Quack! Your captain is here."
+  ],
   "idle": [
     "All systems quacking.",
     "Have you tried being a duck?",
     "Bread? Did someone say bread?"
   ],
-  "drag": ["Unhand the captain!", "This is a mutiny!"],
-  "pet": ["(pleased quack)", "(radio crackles softly)"],
-  "poke": ["QUACK!"],
-  "land": ["Water landing. Perfect."],
-  "dizzy": ["(dizzy quack)"],
-  "sleep": ["Floating offline..."],
-  "wake": ["Quack! Ready for duty."],
-  "hop": ["Takeoff!"],
+  "drag": [
+    "Unhand the captain!",
+    "This is a mutiny!"
+  ],
+  "pet": [
+    "(pleased quack)",
+    "(radio crackles softly)"
+  ],
+  "poke": [
+    "QUACK!"
+  ],
+  "land": [
+    "Water landing. Perfect."
+  ],
+  "dizzy": [
+    "(dizzy quack)"
+  ],
+  "sleep": [
+    "Floating offline..."
+  ],
+  "wake": [
+    "Quack! Ready for duty."
+  ],
+  "hop": [
+    "Takeoff!"
+  ],
   "chase": [
     "That pointer is mine.",
     "Come here, little arrow.",
@@ -27,34 +47,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "quack? (that means: rock-paper-scissors? Yes or no)",
-      "game? Quack quack!"
+  "rpsChallenge": [
+    "quack? (that means: rock-paper-scissors? Yes or no)",
+    "game? Quack quack!"
+  ],
+  "rpsAccepted": [
+    "QUACK! (translation: let's go!)"
+  ],
+  "rpsAsk": [
+    "quack quack quack? (rock, paper or scissors?)"
+  ],
+  "rpsDeclined": [
+    "...quack. (disappointing.)",
+    "quack quack. (your loss, buddy.)"
+  ],
+  "rpsWin": [
+    "QUACK QUACK! (I WON!)",
+    "the duck delivers!",
+    "quack. (was there ever any doubt?)"
+  ],
+  "rpsLose": [
+    "my wing cramped.",
+    "the pond distracted me.",
+    "SPLASH. Sorry, what? Oh. You won.",
+    "quack! (congrats, I guess.)",
+    "...quack. (fine. You win. THIS time.)"
+  ],
+  "rpsDraw": [
+    "quack? (same throw. Weird.)"
+  ],
+  "appReactions": {
+    "code": [
+      "All systems quacking, Captain!",
+      "Bug on deck! ...it's a feature, quack."
     ],
-    "rpsAccepted": [
-      "QUACK! (translation: let's go!)"
+    "kitty": [
+      "Terminal ahoy! Full speed ahead!",
+      "Quack. Very hacky, Captain."
     ],
-    "rpsAsk": [
-      "quack quack quack? (rock, paper or scissors?)"
+    "firefox": [
+      "Sailing the seven webs, quack!",
+      "Chart a course. Preferably to a bread forum."
     ],
-    "rpsDeclined": [
-      "...quack. (disappointing.)",
-      "quack quack. (your loss, buddy.)"
+    "mpv": [
+      "Movie night on deck! Quack quack!",
+      "*settles into the captain's seat*"
     ],
-    "rpsWin": [
-      "QUACK QUACK! (I WON!)",
-      "the duck delivers!",
-      "quack. (was there ever any doubt?)"
+    "spotify": [
+      "Quack beat. Quack quack. Beat.",
+      "Duck anthem time! Crank it, Captain!"
     ],
-    "rpsLose": [
-      "my wing cramped.",
-      "the pond distracted me.",
-      "SPLASH. Sorry, what? Oh. You won.",
-      "quack! (congrats, I guess.)",
-      "...quack. (fine. You win. THIS time.)"
+    "steam": [
+      "Battle stations! It's gaming o'clock!",
+      "One more level, then bread. Promise?"
     ],
-    "rpsDraw": [
-      "quack? (same throw. Weird.)"
+    "discord": [
+      "Crew messages! Quack! All hands!",
+      "Tell the crew the Captain says quack."
     ]
+  }
 }

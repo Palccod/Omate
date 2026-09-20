@@ -60,34 +60,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "rock-paper-scissors. The author is making me ask. Yes or no?",
-      "hey, you. Yes you, reading the bubble. Game? Yes or no."
+  "rpsChallenge": [
+    "rock-paper-scissors. The author is making me ask. Yes or no?",
+    "hey, you. Yes you, reading the bubble. Game? Yes or no."
+  ],
+  "rpsAccepted": [
+    "ohh, it's happening! Pick something, champ."
+  ],
+  "rpsAsk": [
+    "rock, paper or scissors? Choose wisely. Or don't. Chaos is fun."
+  ],
+  "rpsDeclined": [
+    "wow. Rude. I'm telling the reader.",
+    "fine. I'll go fight my own healing factor for fun."
+  ],
+  "rpsWin": [
+    "maximum effort! Minimum skill required!",
+    "chimichangas for ME tonight!",
+    "I win! Cue the montage! SOMEONE cue the montage!"
+  ],
+  "rpsLose": [
+    "the fourth wall moved my hand!",
+    "someone rewrote the script — I demand a new writer!",
+    "okay, that was legit good, {name}.",
+    "I'm not even mad. I'm a little mad.",
+    "...fine. You won. But I'm beautiful, so net positive."
+  ],
+  "rpsDraw": [
+    "a tie?! Even MY plot armor can't fix that."
+  ],
+  "appReactions": {
+    "code": [
+      "Ooh, a bug-fixing montage. My favorite genre.",
+      "Ctrl+S, {name}. CTRL. S."
     ],
-    "rpsAccepted": [
-      "ohh, it's happening! Pick something, champ."
+    "kitty": [
+      "Keep typing. I love watching you type. Creepy? Yes.",
+      "Very Matrix. Very 'I'm in the mainframe'."
     ],
-    "rpsAsk": [
-      "rock, paper or scissors? Choose wisely. Or don't. Chaos is fun."
+    "firefox": [
+      "Incognito mode, {name}? I saw NOTHING.",
+      "Forty tabs. All research. Sure, sure."
     ],
-    "rpsDeclined": [
-      "wow. Rude. I'm telling the reader.",
-      "fine. I'll go fight my own healing factor for fun."
+    "mpv": [
+      "I brought chimichangas. You brought nothing. Classic.",
+      "Shh, my movie. Okay, YOUR movie, but shh."
     ],
-    "rpsWin": [
-      "maximum effort! Minimum skill required!",
-      "chimichangas for ME tonight!",
-      "I win! Cue the montage! SOMEONE cue the montage!"
+    "spotify": [
+      "Chimichanga Anthem, on repeat. You're welcome.",
+      "*breakdances. badly. on purpose.*"
     ],
-    "rpsLose": [
-      "the fourth wall moved my hand!",
-      "someone rewrote the script — I demand a new writer!",
-      "okay, that was legit good, {name}.",
-      "I'm not even mad. I'm a little mad.",
-      "...fine. You won. But I'm beautiful, so net positive."
+    "steam": [
+      "Quicktime event! Left! LEFT! ...you missed it.",
+      "You die, we reload. That's the deal, {name}."
     ],
-    "rpsDraw": [
-      "a tie?! Even MY plot armor can't fix that."
+    "discord": [
+      "Tell 'em Deadpool says hi. And that I'm taller.",
+      "Ooh, group chat drama. Spill everything."
     ]
+  }
 }

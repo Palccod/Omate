@@ -59,34 +59,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "pika pika! (rock-paper-scissors? Yes or no!)",
-      "pika! Game? Pika pika!"
+  "rpsChallenge": [
+    "pika pika! (rock-paper-scissors? Yes or no!)",
+    "pika! Game? Pika pika!"
+  ],
+  "rpsAccepted": [
+    "pika pikachu! (pick one!)"
+  ],
+  "rpsAsk": [
+    "pika? (rock, paper or scissors?)"
+  ],
+  "rpsDeclined": [
+    "pikaaaa... (sad electric noises)",
+    "pika. (your loss!)"
+  ],
+  "rpsWin": [
+    "pika pika! (I win! I win!)",
+    "pikachu! (victory!)",
+    "pika! (too slow, trainer!)"
+  ],
+  "rpsLose": [
+    "pika... pi... (I sneezed a thunderbolt, I swear.)",
+    "pikachu... (static interference!)",
+    "piiiika! (good one, {name}!)",
+    "pika pika! (nice throw!)",
+    "chu... (okay okay. You win. Barely.)"
+  ],
+  "rpsDraw": [
+    "pika? (same throw! Spooky!)"
+  ],
+  "appReactions": {
+    "code": [
+      "Pika pika! The sparks mean it's ready!",
+      "*cheeks spark* ooh, bugs! Zap!"
     ],
-    "rpsAccepted": [
-      "pika pikachu! (pick one!)"
+    "kitty": [
+      "Pika! Hacker mode!",
+      "*cheeks glow at the screen* pika pika!"
     ],
-    "rpsAsk": [
-      "pika? (rock, paper or scissors?)"
+    "firefox": [
+      "Pika pika? (surfs the web)",
+      "So many links! Pika!"
     ],
-    "rpsDeclined": [
-      "pikaaaa... (sad electric noises)",
-      "pika. (your loss!)"
+    "mpv": [
+      "Pikaaaa~ (settles in to watch)",
+      "Pika! Don't spoil it!"
     ],
-    "rpsWin": [
-      "pika pika! (I win! I win!)",
-      "pikachu! (victory!)",
-      "pika! (too slow, trainer!)"
+    "spotify": [
+      "Pika pika pika~ (dances)",
+      "*static to the beat* pika!"
     ],
-    "rpsLose": [
-      "pika... pi... (I sneezed a thunderbolt, I swear.)",
-      "pikachu... (static interference!)",
-      "piiiika! (good one, {name}!)",
-      "pika pika! (nice throw!)",
-      "chu... (okay okay. You win. Barely.)"
+    "steam": [
+      "Pika! Thunderbolt on round one!",
+      "You got this! Pika pika!"
     ],
-    "rpsDraw": [
-      "pika? (same throw! Spooky!)"
+    "discord": [
+      "Pika! New messages, new friends!",
+      "*ear twitch* someone's typing!"
     ]
+  }
 }

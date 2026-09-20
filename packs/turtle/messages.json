@@ -1,18 +1,38 @@
 {
-  "greet": ["Sheldon has arrived. On time, technically."],
+  "greet": [
+    "Sheldon has arrived. On time, technically."
+  ],
   "idle": [
     "Slow and steady wins the desktop.",
     "Where is my salad?",
     "(contemplative blink)"
   ],
-  "drag": ["SHELL DOWN! I mean— HELP!", "Not the shell! ...okay, the shell is fine."],
-  "pet": ["Mind the shell. That's the spot.", "(slow blink of approval)"],
-  "poke": ["(hisses softly)"],
-  "land": ["Shell protects. Always."],
-  "dizzy": ["I felt that one in my shell."],
-  "sleep": ["Retracting for a while..."],
-  "wake": ["Was I out long?"],
-  "hop": ["Speed mode: engaged. Barely."],
+  "drag": [
+    "SHELL DOWN! I mean— HELP!",
+    "Not the shell! ...okay, the shell is fine."
+  ],
+  "pet": [
+    "Mind the shell. That's the spot.",
+    "(slow blink of approval)"
+  ],
+  "poke": [
+    "(hisses softly)"
+  ],
+  "land": [
+    "Shell protects. Always."
+  ],
+  "dizzy": [
+    "I felt that one in my shell."
+  ],
+  "sleep": [
+    "Retracting for a while..."
+  ],
+  "wake": [
+    "Was I out long?"
+  ],
+  "hop": [
+    "Speed mode: engaged. Barely."
+  ],
   "chase": [
     "That pointer is mine.",
     "Come here, little arrow.",
@@ -27,34 +47,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "a game of rock-paper-scissors? Do give me a moment to think... yes or no?",
-      "care for a slow, deliberate match?"
+  "rpsChallenge": [
+    "a game of rock-paper-scissors? Do give me a moment to think... yes or no?",
+    "care for a slow, deliberate match?"
+  ],
+  "rpsAccepted": [
+    "splendid. Take your time. I certainly will."
+  ],
+  "rpsAsk": [
+    "rock, paper, or scissors... no rush."
+  ],
+  "rpsDeclined": [
+    "quite alright. Slow and steady.",
+    "perhaps after my nap. All of them are naps."
+  ],
+  "rpsWin": [
+    "slow and steady wins the... throw.",
+    "patience, {name}. Patience.",
+    "a victory of pure calculation."
+  ],
+  "rpsLose": [
+    "I was still deliberating...",
+    "my shell blocked my view.",
+    "brilliantly played, {name}.",
+    "victory suits you. This time.",
+    "I demand a recount. Slowly."
+  ],
+  "rpsDraw": [
+    "a draw. Statistically inevitable."
+  ],
+  "appReactions": {
+    "code": [
+      "Slow and steady ships the code.",
+      "That bug isn't going anywhere. Neither am I."
     ],
-    "rpsAccepted": [
-      "splendid. Take your time. I certainly will."
+    "kitty": [
+      "(contemplative blink) a terminal. How timely.",
+      "Type slowly. Like me. It works out."
     ],
-    "rpsAsk": [
-      "rock, paper, or scissors... no rush."
+    "firefox": [
+      "We'll get to that tab eventually.",
+      "(contemplative blink) the web is vast. Pace yourself."
     ],
-    "rpsDeclined": [
-      "quite alright. Slow and steady.",
-      "perhaps after my nap. All of them are naps."
+    "mpv": [
+      "I'll watch. Eventually. We have time.",
+      "(settles in slowly) started two hours ago. Worth it."
     ],
-    "rpsWin": [
-      "slow and steady wins the... throw.",
-      "patience, {name}. Patience.",
-      "a victory of pure calculation."
+    "spotify": [
+      "Slow tempo. Like me. Perfect.",
+      "(contemplative blink to the beat)"
     ],
-    "rpsLose": [
-      "I was still deliberating...",
-      "my shell blocked my view.",
-      "brilliantly played, {name}.",
-      "victory suits you. This time.",
-      "I demand a recount. Slowly."
+    "steam": [
+      "Quick games are overrated. Chess, maybe.",
+      "You win? ...I knew you would. In time."
     ],
-    "rpsDraw": [
-      "a draw. Statistically inevitable."
+    "discord": [
+      "Messages accumulate. Like moss.",
+      "Reply in your own time. Time is relative."
     ]
+  }
 }

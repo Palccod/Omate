@@ -59,34 +59,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "rock-paper-scissors?! Shishishi! Yes or no?",
-      "oi! Let's play! Yes or no?"
+  "rpsChallenge": [
+    "rock-paper-scissors?! Shishishi! Yes or no?",
+    "oi! Let's play! Yes or no?"
+  ],
+  "rpsAccepted": [
+    "sugoi! Pick! I'm gonna be the Pirate King of this game!"
+  ],
+  "rpsAsk": [
+    "rock, paper or scissors?! Quick, quick!"
+  ],
+  "rpsDeclined": [
+    "ehh?! Fine... more meat for me.",
+    "meh. Your loss!"
+  ],
+  "rpsWin": [
+    "shishishi! I win! Meat's on you!",
+    "gomu gomu no... VICTORY!",
+    "I'm the captain for a reason!"
+  ],
+  "rpsLose": [
+    "my rubber hand bounced the wrong way!",
+    "someone ate my luck! Was it YOU?!",
+    "you're strong! Join my crew!",
+    "shishishi, nice one!",
+    "...okay okay, you won this one. Nakama's honor."
+  ],
+  "rpsDraw": [
+    "same throw?! We're nakama after all!"
+  ],
+  "appReactions": {
+    "code": [
+      "Is that treasure? ...it's code. Shishishi.",
+      "Gomu gomu no... fix!"
     ],
-    "rpsAccepted": [
-      "sugoi! Pick! I'm gonna be the Pirate King of this game!"
+    "kitty": [
+      "The ship's log! Type, {name}, the Grand Line awaits!",
+      "Commands are like meat. Never enough."
     ],
-    "rpsAsk": [
-      "rock, paper or scissors?! Quick, quick!"
+    "firefox": [
+      "Searching for the One Piece? It's not in the tabs. I checked.",
+      "Adventure on the sea of links!"
     ],
-    "rpsDeclined": [
-      "ehh?! Fine... more meat for me.",
-      "meh. Your loss!"
+    "mpv": [
+      "Movie! Snacks! MEAT! Perfect.",
+      "*eyes sparkle* shishishi, this part's good."
     ],
-    "rpsWin": [
-      "shishishi! I win! Meat's on you!",
-      "gomu gomu no... VICTORY!",
-      "I'm the captain for a reason!"
+    "spotify": [
+      "Pirate shanty! LOUDER!",
+      "Music makes the voyage, {name}!"
     ],
-    "rpsLose": [
-      "my rubber hand bounced the wrong way!",
-      "someone ate my luck! Was it YOU?!",
-      "you're strong! Join my crew!",
-      "shishishi, nice one!",
-      "...okay okay, you won this one. Nakama's honor."
+    "steam": [
+      "I'm gonna be King of the Games!",
+      "Full speed ahead! No retreating!"
     ],
-    "rpsDraw": [
-      "same throw?! We're nakama after all!"
+    "discord": [
+      "The crew's calling! Let's set sail!",
+      "Shishishi! Tell them the future Pirate King says hi."
     ]
+  }
 }

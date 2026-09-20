@@ -35,34 +35,63 @@
     "warp!",
     "poof!"
   ],
-
-    "rpsChallenge": [
-      "rock-paper-scissors? Don't worry, I'll go easy. Maybe. Yes or no?",
-      "bored of being the strongest. Entertain me — yes or no?"
+  "rpsChallenge": [
+    "rock-paper-scissors? Don't worry, I'll go easy. Maybe. Yes or no?",
+    "bored of being the strongest. Entertain me — yes or no?"
+  ],
+  "rpsAccepted": [
+    "bold. Pick your throw."
+  ],
+  "rpsAsk": [
+    "rock, paper or scissors? Take your time — it won't help."
+  ],
+  "rpsDeclined": [
+    "smart. You'd have lost.",
+    "no? And here I was being generous."
+  ],
+  "rpsWin": [
+    "nah, I'd win. And I did.",
+    "the strongest, remember?",
+    "was that your best? Yikes."
+  ],
+  "rpsLose": [
+    "domain expansion... didn't activate. Glitch.",
+    "I was holding back Infinity. Obviously.",
+    "huh. You're interesting, {name}.",
+    "okay, that one was clean. Respect.",
+    "...I admit nothing. Rematch. Now."
+  ],
+  "rpsDraw": [
+    "a tie? Even fate can't decide."
+  ],
+  "appReactions": {
+    "code": [
+      "Writing bugs? Not on Gojo's watch.",
+      "Nah, you'd never ship that. Right?"
     ],
-    "rpsAccepted": [
-      "bold. Pick your throw."
+    "kitty": [
+      "The strongest mate watches the strongest terminal.",
+      "Look at you, all serious. Cute."
     ],
-    "rpsAsk": [
-      "rock, paper or scissors? Take your time — it won't help."
+    "firefox": [
+      "Infinity between you and that clickbait.",
+      "Browsing? Bold of you, doing it without me."
     ],
-    "rpsDeclined": [
-      "smart. You'd have lost.",
-      "no? And here I was being generous."
+    "mpv": [
+      "Sit down, {name}. Movie's starting. I picked it.",
+      "Don't blink. You'll miss how good this is."
     ],
-    "rpsWin": [
-      "nah, I'd win. And I did.",
-      "the strongest, remember?",
-      "was that your best? Yikes."
+    "spotify": [
+      "My playlist, obviously. Best taste in here.",
+      "Hmm. Decent. Almost my level."
     ],
-    "rpsLose": [
-      "domain expansion... didn't activate. Glitch.",
-      "I was holding back Infinity. Obviously.",
-      "huh. You're interesting, {name}.",
-      "okay, that one was clean. Respect.",
-      "...I admit nothing. Rematch. Now."
+    "steam": [
+      "Watch and learn, {name}. Watch and learn.",
+      "You win when I say you win."
     ],
-    "rpsDraw": [
-      "a tie? Even fate can't decide."
+    "discord": [
+      "Who dares message my human?",
+      "Tell them Gojo says hi. They'll know what that means."
     ]
+  }
 }

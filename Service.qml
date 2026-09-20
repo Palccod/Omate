@@ -199,36 +199,112 @@ Item {
     // App awareness: the mate occasionally comments when focus lands on an
     // app it recognizes (see reactToFocusedApp). Keys are lowercase
     // substrings matched against the focused window's Wayland app id; the
-    // first matching key wins. A pack's messages.json overrides the whole
-    // map by declaring the same key, so a pack can ship its own set.
+    // first matching key wins. Packs override these per app key — declaring
+    // "kitty" in a pack's messages.json revoces just the kitty pool while
+    // every other app keeps the neutral lines, so a character only speaks
+    // up about the apps its personality would notice.
     appReactions: {
       // Editors and IDEs.
-      "code": ["shipping bugs, {name}?", "is that bug still alive?", "*watches the cursor blink*"],
-      "jetbrains": ["compiling? I'll be quiet. Ish."],
-      "helix": ["kakoune walked so helix could run."],
-      "vim": [":wq, {name}. :wq."],
-      "emacs": ["great operating system. Shame about the editor."],
+      "code": [
+        "shipping bugs, {name}?", "is that bug still alive?",
+        "*watches the cursor blink*", "red squiggles mean it's working."
+      ],
+      "jetbrains": [
+        "compiling? I'll be quiet. Ish.", "indexing. Again. Forever.",
+        "*stares at the progress bar*"
+      ],
+      "helix": [
+        "kakoune walked so helix could run.", "modal, minimal, fast. Respect.",
+        "so fast. Suspiciously fast."
+      ],
+      "vim": [
+        ":wq, {name}. :wq.", "escape, colon, w, q. I believe in you.",
+        "still stuck in vim? ...same."
+      ],
+      "emacs": [
+        "great operating system. Shame about the editor.",
+        "meta-x pet-the-mate.", "an editor? I thought it was an OS."
+      ],
       // Terminals.
-      "kitty": ["ooh. hacker mode."],
-      "foot": ["ooh. hacker mode."],
-      "alacritty": ["ooh. hacker mode."],
-      "ghostty": ["ooh. hacker mode."],
-      "wezterm": ["ooh. hacker mode."],
-      "konsole": ["ooh. hacker mode."],
+      "kitty": [
+        "ooh. hacker mode.", "type type type... what are we building?",
+        "did it work? Tell me it worked.", "*eyes the command line*"
+      ],
+      "foot": [
+        "ooh. hacker mode.", "type type type... what are we building?",
+        "did it work? Tell me it worked.", "*eyes the command line*"
+      ],
+      "alacritty": [
+        "ooh. hacker mode.", "type type type... what are we building?",
+        "did it work? Tell me it worked.", "*eyes the command line*"
+      ],
+      "ghostty": [
+        "ooh. hacker mode.", "type type type... what are we building?",
+        "did it work? Tell me it worked.", "*eyes the command line*"
+      ],
+      "wezterm": [
+        "ooh. hacker mode.", "type type type... what are we building?",
+        "did it work? Tell me it worked.", "*eyes the command line*"
+      ],
+      "konsole": [
+        "ooh. hacker mode.", "type type type... what are we building?",
+        "did it work? Tell me it worked.", "*eyes the command line*"
+      ],
       // Browsers.
-      "firefox": ["reading or working? ...don't answer that."],
-      "chromium": ["how many tabs is that, {name}?"],
-      "chrome": ["how many tabs is that, {name}?"],
-      "brave": ["how many tabs is that, {name}?"],
-      "zen": ["reading or working? ...don't answer that."],
-      "librewolf": ["reading or working? ...don't answer that."],
+      "firefox": [
+        "reading or working? ...don't answer that.",
+        "one tab or forty? Be honest.", "don't believe everything you read, {name}."
+      ],
+      "chromium": [
+        "how many tabs is that, {name}?", "the tab count is a lifestyle.",
+        "the internet is big today, huh.", "*squints at the address bar*"
+      ],
+      "chrome": [
+        "how many tabs is that, {name}?", "the tab count is a lifestyle.",
+        "the internet is big today, huh.", "*squints at the address bar*"
+      ],
+      "brave": [
+        "how many tabs is that, {name}?", "the tab count is a lifestyle.",
+        "the internet is big today, huh.", "*squints at the address bar*"
+      ],
+      "zen": [
+        "reading or working? ...don't answer that.",
+        "one tab or forty? Be honest.", "don't believe everything you read, {name}."
+      ],
+      "librewolf": [
+        "reading or working? ...don't answer that.",
+        "one tab or forty? Be honest.", "don't believe everything you read, {name}."
+      ],
+      // Chat.
+      "discord": [
+        "who are we talking to, {name}?", "*ear swivel* someone's typing...",
+        "tell them I said hi.", "ooh, drama?"
+      ],
       // Media and play.
-      "mpv": ["ooh, what are we watching?"],
-      "vlc": ["ooh, what are we watching?"],
-      "spotify": ["*taps paw to the beat*"],
-      "steam": ["have fun! I'll guard the screen."],
-      "osu": ["my ears."],
-      "minecraft": ["don't dig straight down, {name}."]
+      "mpv": [
+        "ooh, what are we watching?", "no skipping the intro!",
+        "*settles in to watch*", "snacks? You forgot snacks."
+      ],
+      "vlc": [
+        "ooh, what are we watching?", "no skipping the intro!",
+        "*settles in to watch*", "snacks? You forgot snacks."
+      ],
+      "spotify": [
+        "*taps paw to the beat*", "dancing. Don't look.",
+        "this song again? ...okay, it's good.", "volume's fine. Turn it up."
+      ],
+      "steam": [
+        "have fun! I'll guard the screen.", "one more round. Just one.",
+        "*hides during the loading screen*", "let me know when you win, {name}."
+      ],
+      "osu": [
+        "my ears.", "click click click!", "so many circles...",
+        "*dizzy just watching*"
+      ],
+      "minecraft": [
+        "don't dig straight down, {name}.", "bring a torch. Trust me.",
+        "creepers. Always listen for creepers.", "build me a little house?"
+      ]
     }
   })
   property var messages: defaultMessages
@@ -1174,7 +1250,13 @@ Item {
         // a pack that ships no time-of-day pools (or no hop, or no dizzy)
         // still falls back to the defaults instead of going quiet for that
         // pool, and a pack that does ship them overrides.
-        if (parsedMessages) messages = Object.assign({}, defaultMessages, parsedMessages)
+        var mergedMessages = Object.assign({}, defaultMessages, parsedMessages)
+        // appReactions merges per app key rather than wholesale: a pack
+        // that revoces "kitty" in its own voice keeps the neutral pools
+        // for every app it doesn't mention.
+        if (parsedMessages.appReactions)
+          mergedMessages.appReactions = Object.assign({}, defaultMessages.appReactions, parsedMessages.appReactions)
+        messages = mergedMessages
       } catch (error) {
         console.warn("omate: messages for '" + packName + "' unreadable, keeping current")
       }

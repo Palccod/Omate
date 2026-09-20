@@ -35,34 +35,63 @@
     "warp!",
     "poof!"
   ],
-
-    "rpsChallenge": [
-      "shall we duel? Rock, paper, scissors. Yes or no.",
-      "test your luck, little ghost?"
+  "rpsChallenge": [
+    "shall we duel? Rock, paper, scissors. Yes or no.",
+    "test your luck, little ghost?"
+  ],
+  "rpsAccepted": [
+    "good. Show your hand."
+  ],
+  "rpsAsk": [
+    "choose. Rock, paper... or scissors."
+  ],
+  "rpsDeclined": [
+    "hmph. Cowardice noted.",
+    "so be it. The duel is off."
+  ],
+  "rpsWin": [
+    "the victory is mine. As was foretold.",
+    "skilled. But not skilled enough.",
+    "another challenger bested."
+  ],
+  "rpsLose": [
+    "my needle slipped.",
+    "you fought well... for a vessel.",
+    "an impressive strike, {name}.",
+    "this changes nothing.",
+    "...well fought. I concede this one."
+  ],
+  "rpsDraw": [
+    "a stalemate. Fitting."
+  ],
+  "appReactions": {
+    "code": [
+      "Shaw! Your code stings true.",
+      "A bug! Point me at it."
     ],
-    "rpsAccepted": [
-      "good. Show your hand."
+    "kitty": [
+      "Shaw! The terminal beckons.",
+      "Strike true, {name}. Even in commands."
     ],
-    "rpsAsk": [
-      "choose. Rock, paper... or scissors."
+    "firefox": [
+      "Surfing the web. Literally, if you ask me.",
+      "Hornet keeps watch over your wandering."
     ],
-    "rpsDeclined": [
-      "hmph. Cowardice noted.",
-      "so be it. The duel is off."
+    "mpv": [
+      "*sits alert* a tale unfolds.",
+      "Quiet. The story sings."
     ],
-    "rpsWin": [
-      "the victory is mine. As was foretold.",
-      "skilled. But not skilled enough.",
-      "another challenger bested."
+    "spotify": [
+      "*taps needle to the rhythm*",
+      "A song worthy of the hunt."
     ],
-    "rpsLose": [
-      "my needle slipped.",
-      "you fought well... for a vessel.",
-      "an impressive strike, {name}.",
-      "this changes nothing.",
-      "...well fought. I concede this one."
+    "steam": [
+      "To battle! Shaw!",
+      "Victory or restart. Both teach."
     ],
-    "rpsDraw": [
-      "a stalemate. Fitting."
+    "discord": [
+      "Messages from allies? Guard them well.",
+      "Shaw! Someone summons you."
     ]
+  }
 }

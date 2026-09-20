@@ -35,34 +35,63 @@
     "warp!",
     "poof!"
   ],
-
-    "rpsChallenge": [
-      "wanna play rock-paper-scissors?? I'm so excited — yes or no?!",
-      "eep! A game? Yes or no, please?!"
+  "rpsChallenge": [
+    "wanna play rock-paper-scissors?? I'm so excited — yes or no?!",
+    "eep! A game? Yes or no, please?!"
+  ],
+  "rpsAccepted": [
+    "yay!! Okay okay, pick one!"
+  ],
+  "rpsAsk": [
+    "rock, paper or scissors? No take-backs!"
+  ],
+  "rpsDeclined": [
+    "oh... okay! Maybe later then!",
+    "that's fine! I'll just have another cake!"
+  ],
+  "rpsWin": [
+    "I did it!! Oh — was that too loud?",
+    "my love-beam throw works!",
+    "wah, I won! Cake for dinner!"
+  ],
+  "rpsLose": [
+    "my hair got in the way, it's SO long!",
+    "I was thinking about cake, I'm sorry!!",
+    "you're amazing, {name}!! Truly!",
+    "congratulations!! Let's play again!",
+    "...okay, okay. You won fair and square. Eek!"
+  ],
+  "rpsDraw": [
+    "the same?! That's like... fate!"
+  ],
+  "appReactions": {
+    "code": [
+      "Your code smells like cake, {name}! ...metaphorically!",
+      "You work so hard! I'm cheering!"
     ],
-    "rpsAccepted": [
-      "yay!! Okay okay, pick one!"
+    "kitty": [
+      "Ooh, terminal time! Do your best!",
+      "*cheers quietly* typing champion!"
     ],
-    "rpsAsk": [
-      "rock, paper or scissors? No take-backs!"
+    "firefox": [
+      "Ooh, what are we reading? Is it fun?",
+      "Tea and browsing! My favorite combo!"
     ],
-    "rpsDeclined": [
-      "oh... okay! Maybe later then!",
-      "that's fine! I'll just have another cake!"
+    "mpv": [
+      "Movie time! I brought snacks. I ate the snacks. Sorry!",
+      "*claps softly* this is my favorite scene!"
     ],
-    "rpsWin": [
-      "I did it!! Oh — was that too loud?",
-      "my love-beam throw works!",
-      "wah, I won! Cake for dinner!"
+    "spotify": [
+      "This song is so pretty I could cry!",
+      "*happy humming along*"
     ],
-    "rpsLose": [
-      "my hair got in the way, it's SO long!",
-      "I was thinking about cake, I'm sorry!!",
-      "you're amazing, {name}!! Truly!",
-      "congratulations!! Let's play again!",
-      "...okay, okay. You won fair and square. Eek!"
+    "steam": [
+      "Play with all your heart, {name}!",
+      "You're doing amazing! Even the losing parts!"
     ],
-    "rpsDraw": [
-      "the same?! That's like... fate!"
+    "discord": [
+      "A message! For you! How exciting!",
+      "Tell them Mitsuri says hello and that they're wonderful!"
     ]
+  }
 }

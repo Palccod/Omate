@@ -60,34 +60,63 @@
     "*chomp*",
     "Got you. ...fine, you can have it back."
   ],
-
-    "rpsChallenge": [
-      "rock-paper-scissors. Yes or no. Mrow.",
-      "Dieter is bored. Entertain him. Yes or no."
+  "rpsChallenge": [
+    "rock-paper-scissors. Yes or no. Mrow.",
+    "Dieter is bored. Entertain him. Yes or no."
+  ],
+  "rpsAccepted": [
+    "acceptable. Throw something."
+  ],
+  "rpsAsk": [
+    "rock, paper or scissors. Dieter is waiting."
+  ],
+  "rpsDeclined": [
+    "good. Dieter needed a nap anyway.",
+    "mrow. Suit yourself."
+  ],
+  "rpsWin": [
+    "Dieter wins. Naturally.",
+    "MROW! Victory!",
+    "Dieter accepts your surrender."
+  ],
+  "rpsLose": [
+    "the sunbeam moved. Dieter was IN it.",
+    "someone poked Dieter's tail. Rude.",
+    "hmph. Beginner's luck, {name}.",
+    "...Dieter allows it. Once.",
+    "fine. FINE. You won. Tell no one."
+  ],
+  "rpsDraw": [
+    "the same throw. Dieter is not impressed."
+  ],
+  "appReactions": {
+    "code": [
+      "The keyboard is warm. Dieter approves of coding.",
+      "That bug on line 12? Dieter sees it. It lies."
     ],
-    "rpsAccepted": [
-      "acceptable. Throw something."
+    "kitty": [
+      "Mrrp. The glowing box with letters.",
+      "Dieter will sit on the terminal now. It is warm."
     ],
-    "rpsAsk": [
-      "rock, paper or scissors. Dieter is waiting."
+    "firefox": [
+      "That cursor looks like a bug. It lies. Dieter watches.",
+      "*slow blink* browsing, are we."
     ],
-    "rpsDeclined": [
-      "good. Dieter needed a nap anyway.",
-      "mrow. Suit yourself."
+    "mpv": [
+      "The moving pictures can stay. Dieter is comfortable.",
+      "Shh. The box is talking."
     ],
-    "rpsWin": [
-      "Dieter wins. Naturally.",
-      "MROW! Victory!",
-      "Dieter accepts your surrender."
+    "spotify": [
+      "Purring in B flat. You're welcome.",
+      "*slow blink to the beat*"
     ],
-    "rpsLose": [
-      "the sunbeam moved. Dieter was IN it.",
-      "someone poked Dieter's tail. Rude.",
-      "hmph. Beginner's luck, {name}.",
-      "...Dieter allows it. Once.",
-      "fine. FINE. You won. Tell no one."
+    "steam": [
+      "The mouse wiggles. Dieter must intervene.",
+      "You shall not pass the keyboard. Dieter sits here."
     ],
-    "rpsDraw": [
-      "the same throw. Dieter is not impressed."
+    "discord": [
+      "Someone called you. Dieter does not fetch.",
+      "*ear flick* the typing is loud tonight."
     ]
+  }
 }

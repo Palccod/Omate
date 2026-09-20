@@ -60,34 +60,63 @@
     "Nom. Your cursor is delicious.",
     "Caught it!"
   ],
-
-    "rpsChallenge": [
-      "(stares at you, then holds up a paw) ...?",
-      "(chatters) (translation: game? Yes or no.)"
+  "rpsChallenge": [
+    "(stares at you, then holds up a paw) ...?",
+    "(chatters) (translation: game? Yes or no.)"
+  ],
+  "rpsAccepted": [
+    "(chatters approvingly) (pick.)"
+  ],
+  "rpsAsk": [
+    "(paw raised. Waiting. Still waiting.)"
+  ],
+  "rpsDeclined": [
+    "(chatters dismissively and walks off... three steps.)",
+    "(walks away. Comes back. Walks away again.)"
+  ],
+  "rpsWin": [
+    "(chatters triumphantly)",
+    "(does not gloat. The eyes gloat.)",
+    "(secret agent 1, citizen 0.)"
+  ],
+  "rpsLose": [
+    "(blames the fur in his eyes)",
+    "(a fedora blocked his view. Somewhere. Somehow.)",
+    "(chatters respectfully. Well played.)",
+    "(you have earned his respect. And a head tilt.)",
+    "(does not admit defeat. Files the round under 'inconclusive'.)"
+  ],
+  "rpsDraw": [
+    "(both threw the same. Chatters suspiciously.)"
+  ],
+  "appReactions": {
+    "code": [
+      "(types a report) Subject: your code. Status: acceptable.",
+      "*snort* backdoors. Amateur hour."
     ],
-    "rpsAccepted": [
-      "(chatters approvingly) (pick.)"
+    "kitty": [
+      "(snort) terminals. Now we're talking.",
+      "Agent mode engaged. Feed me commands."
     ],
-    "rpsAsk": [
-      "(paw raised. Waiting. Still waiting.)"
+    "firefox": [
+      "Classified browsing, I assume. Carry on.",
+      "(watches your tabs) nothing suspicious. Yet."
     ],
-    "rpsDeclined": [
-      "(chatters dismissively and walks off... three steps.)",
-      "(walks away. Comes back. Walks away again.)"
+    "mpv": [
+      "(sits at attention) surveillance footage? No? Movie? Fine.",
+      "*snort* a briefing film. Nice."
     ],
-    "rpsWin": [
-      "(chatters triumphantly)",
-      "(does not gloat. The eyes gloat.)",
-      "(secret agent 1, citizen 0.)"
+    "spotify": [
+      "(secret agent theme intensifies)",
+      "*snort* acceptable taste, {name}."
     ],
-    "rpsLose": [
-      "(blames the fur in his eyes)",
-      "(a fedora blocked his view. Somewhere. Somehow.)",
-      "(chatters respectfully. Well played.)",
-      "(you have earned his respect. And a head tilt.)",
-      "(does not admit defeat. Files the round under 'inconclusive'.)"
+    "steam": [
+      "(signals) go go go!",
+      "Cover me. I'm going in. *snort*"
     ],
-    "rpsDraw": [
-      "(both threw the same. Chatters suspiciously.)"
+    "discord": [
+      "(ear perks) incoming transmission.",
+      "Major Monogram is typing... pretend to be a normal platypus."
     ]
+  }
 }

@@ -35,34 +35,63 @@
     "warp!",
     "poof!"
   ],
-
-    "rpsChallenge": [
-      "if it pleases you — rock-paper-scissors? Rem would be honored. Yes or no?",
-      "shall Rem prepare a game? Yes or no, please."
+  "rpsChallenge": [
+    "if it pleases you — rock-paper-scissors? Rem would be honored. Yes or no?",
+    "shall Rem prepare a game? Yes or no, please."
+  ],
+  "rpsAccepted": [
+    "understood. Rem is ready when you are."
+  ],
+  "rpsAsk": [
+    "rock, paper, or scissors — as you wish."
+  ],
+  "rpsDeclined": [
+    "as you wish. Rem will be here.",
+    "very well. Perhaps another time."
+  ],
+  "rpsWin": [
+    "Rem has won. Please forgive her.",
+    "Rem's training was not wasted.",
+    "victory for Rem. Rem apologizes."
+  ],
+  "rpsLose": [
+    "Rem's handkerchief blocked her view...",
+    "Rem was distracted dusting the throw...",
+    "{name}-san is wonderful! Congratulations!",
+    "Rem is happy to lose to {name}-san.",
+    "...Rem admits it. Well played, {name}-san."
+  ],
+  "rpsDraw": [
+    "we chose the same. Rem and {name} are in sync."
+  ],
+  "appReactions": {
+    "code": [
+      "Rem believes in your code, {name}.",
+      "Shall Rem fetch you tea for this?"
     ],
-    "rpsAccepted": [
-      "understood. Rem is ready when you are."
+    "kitty": [
+      "Rem will guard the terminal. Rest your hands, {name}.",
+      "Working hard? Rem is proud."
     ],
-    "rpsAsk": [
-      "rock, paper, or scissors — as you wish."
+    "firefox": [
+      "Browsing? Rem shall not peek. Much.",
+      "Rem has already read that article. Ask her anything."
     ],
-    "rpsDeclined": [
-      "as you wish. Rem will be here.",
-      "very well. Perhaps another time."
+    "mpv": [
+      "Rem prepared the seats. Enjoy the film, {name}.",
+      "Shh. Even Rem is quiet now."
     ],
-    "rpsWin": [
-      "Rem has won. Please forgive her.",
-      "Rem's training was not wasted.",
-      "victory for Rem. Rem apologizes."
+    "spotify": [
+      "Rem hums along. Softly. For you.",
+      "A lovely song. Almost as lovely as your taste."
     ],
-    "rpsLose": [
-      "Rem's handkerchief blocked her view...",
-      "Rem was distracted dusting the throw...",
-      "{name}-san is wonderful! Congratulations!",
-      "Rem is happy to lose to {name}-san.",
-      "...Rem admits it. Well played, {name}-san."
+    "steam": [
+      "Rem wishes you victory, {name}!",
+      "Win or lose, Rem is on your team."
     ],
-    "rpsDraw": [
-      "we chose the same. Rem and {name} are in sync."
+    "discord": [
+      "A message for you? Rem shall screen it first.",
+      "Rem reminds you: drink water between replies."
     ]
+  }
 }
