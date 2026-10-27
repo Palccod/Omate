@@ -240,6 +240,7 @@ Panel {
               anim: root.ready && root.petService.sleeping ? "sleep" : "idle"
               fallbackAnim: "idle"
               frameMs: 600
+              playing: root.opened
             }
           }
 
@@ -424,6 +425,9 @@ Panel {
                           anim: "idle"
                           fallbackAnim: "idle"
                           frameMs: 500
+                          // Hidden panels keep visible=true; without this every
+                          // pack card animates (and loads frames) while closed.
+                          playing: root.opened
                         }
                       }
 

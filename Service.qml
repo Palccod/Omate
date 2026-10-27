@@ -33,7 +33,9 @@ Item {
   // never lands in git.
   readonly property string userPacksDir: stateDir + "/omate-packs"
 
-  readonly property string repoPacksRoot: "packs/"
+  // Absolute file:// so frame loads skip quickshell's qs:/// interceptor,
+  // which logs a debug line for every rewritten URL (every frame).
+  readonly property string repoPacksRoot: Qt.resolvedUrl("packs/").toString().replace(/^qs:\/\//, "file://")
   // First-run pack and the fallback for anything unresolvable. Was "default"
   // (Mochi), which shipped its last version and is gone; the old name maps
   // to this pack in resolvePack() so pre-removal settings files keep working.
